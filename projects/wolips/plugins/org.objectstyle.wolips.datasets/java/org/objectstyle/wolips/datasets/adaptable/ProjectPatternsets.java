@@ -288,14 +288,20 @@ public class ProjectPatternsets extends AbstractProjectAdapterType {
 	private String[] toProjectRelativePaths(IResource resource) {
 		String[] returnValue = null;
 		if (resource.getParent().getType() != IResource.ROOT
-				&& resource.getParent().getType() != IResource.PROJECT) {
+				/*&& resource.getParent().getType() != IResource.PROJECT*/) {
 			returnValue = new String[2];
+			String string = null;
+			if(resource.getType() != IResource.FOLDER) {
 			IPath path = resource.getParent().getProjectRelativePath();
 			/*
 			 * String string = resource.getProject().getName() + "/" +
 			 * path.toString() + "/";
 			 */
-			String string = path.toString() + "/";
+			string = path.toString() + "/";
+			}
+			else {
+				string = "/" + resource.getName() + "/";
+			}
 			returnValue[0] = string;
 		} else {
 			returnValue = new String[1];
