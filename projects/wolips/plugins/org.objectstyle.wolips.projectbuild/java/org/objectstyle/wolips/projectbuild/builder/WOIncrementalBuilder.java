@@ -60,13 +60,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
-import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceDelta;
@@ -78,7 +76,6 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaCore;
-import org.objectstyle.cayenne.wocompat.PropertyListSerialization;
 import org.objectstyle.wolips.commons.logging.ILogger;
 import org.objectstyle.wolips.datasets.adaptable.Project;
 import org.objectstyle.wolips.datasets.pattern.StringUtilities;
@@ -86,7 +83,6 @@ import org.objectstyle.wolips.projectbuild.ProjectBuildPlugin;
 import org.objectstyle.wolips.projectbuild.builder.incremental.BuildVisitor;
 import org.objectstyle.wolips.projectbuild.builder.incremental.JarBuilder;
 import org.objectstyle.wolips.projectbuild.natures.IncrementalNature;
-import org.objectstyle.wolips.projectbuild.util.ResourceUtilities;
 
 /**
  * @author Harald Niesche
@@ -261,32 +257,6 @@ public class WOIncrementalBuilder extends AbstractIncrementalProjectBuilder {
 		Project project = (Project) (getProject()).getAdapter(Project.class);
 		IncrementalNature nature = (IncrementalNature) project
 				.getIncrementalNature();
-		HashMap customInfo = null;
-		IFile cipl = getProject().getFile("CustomInfo.plist");
-		if (cipl.exists()) {
-			try {
-				Object o = PropertyListSerialization.propertyListFromFile(cipl
-						.getLocation().toFile());
-				if (o instanceof HashMap) {
-					customInfo = (HashMap) o;
-					ResourceUtilities.unmarkResource(cipl,
-							ProjectBuildPlugin.MARKER_BUILD_PROBLEM);
-				} else {
-					ResourceUtilities.markResource(cipl,
-							ProjectBuildPlugin.MARKER_BUILD_PROBLEM,
-							IMarker.SEVERITY_WARNING,
-							"Cayenne parser can't parse this file "
-									+ "(comments are not supported for now)",
-							"unknown");
-				}
-			} catch (Throwable up) {
-				getLogger().debug("parsing CustomInfo.plist:");
-				getLogger().log(up);
-				ResourceUtilities.markResource(cipl,
-						ProjectBuildPlugin.MARKER_BUILD_PROBLEM,
-						IMarker.SEVERITY_WARNING, up.getMessage(), "unknown");
-			}
-		}
 		String infoPlist;
 		if (nature.isFramework()) {
 			infoPlist = INFO_PLIST_FRAMEWORK;
@@ -303,26 +273,31 @@ public class WOIncrementalBuilder extends AbstractIncrementalProjectBuilder {
 				.getWebResourceName().toString());
 		infoPlist = StringUtilities.replace(infoPlist, "$$type$$", nature
 				.isFramework() ? "FMWK" : "APPL");
-		String principalClassEntry = (principalClass == null && customInfo != null) ? (String) customInfo
-				.get("NSPrincipalClass")
-				: principalClass;
-		if (principalClassEntry != null) {
-			String principal = "  <key>NSPrincipalClass</key>" + "\r\n"
-					+ "  <string>" + principalClassEntry + "</string>" + "\r\n";
+		if (principalClass != null && principalClass.length() > 0) {
+			String string = "  <key>NSPrincipalClass</key>" + "\r\n"
+					+ "  <string>" + principalClass + "</string>" + "\r\n";
 			infoPlist = StringUtilities.replace(infoPlist,
-					"$$principalclass$$", principal);
+					"$$principalclass$$", string);
+		} else {
+			infoPlist = StringUtilities.replace(infoPlist,
+					"$$principalclass$$", "");
 		}
-		String adaptor = "";
-		if (null != customInfo) {
-			String tmp = (String) customInfo.get("EOAdaptorClassName");
-			if (null != tmp) {
-				adaptor = "  <key>EOAdaptorClassName</key>" + "\r\n"
-						+ "  <string>" + tmp + "</string>" + "\r\n";
-			}
+		if (customInfoPListContent != null) {
+			infoPlist = StringUtilities.replace(infoPlist,
+					"$$customInfoPListContent$$", customInfoPListContent);
+		} else {
+			infoPlist = StringUtilities.replace(infoPlist,
+					"$$customInfoPListContent$$", "");
 		}
-		infoPlist = StringUtilities.replace(infoPlist, "$$eoadaptorclass$$",
-				adaptor);
-
+		if (project.isFramework() && eoAdaptorClassName != null && eoAdaptorClassName.length() > 0) {
+			String string = "  <key>EOAdaptorClassName</key>" + "\r\n"
+					+ "  <string>" + eoAdaptorClassName + "</string>" + "\r\n";
+			infoPlist = StringUtilities.replace(infoPlist,
+					"$$EOAdaptorClassName$$", string);
+		} else {
+			infoPlist = StringUtilities.replace(infoPlist,
+					"$$EOAdaptorClassName$$", "");
+		}
 		IPath infoPath = nature.getInfoPath().append("Info.plist");
 		IFile resFile = getProject().getWorkspace().getRoot().getFile(infoPath);
 
@@ -390,10 +365,10 @@ public class WOIncrementalBuilder extends AbstractIncrementalProjectBuilder {
 		return ProjectBuildPlugin.getDefault().getPluginLogger();
 	}
 
-private void jarBuild(IResourceDelta delta, IProgressMonitor monitor, Project project)
-			throws CoreException {
+	private void jarBuild(IResourceDelta delta, IProgressMonitor monitor,
+			Project project) throws CoreException {
 		getLogger().debug("<jar build>");
-		if(jarBuilder == null)
+		if (jarBuilder == null)
 			jarBuilder = new JarBuilder();
 		jarBuilder.reinitForNextBuild(monitor, project);
 		long t0 = System.currentTimeMillis();
@@ -417,7 +392,9 @@ private void jarBuild(IResourceDelta delta, IProgressMonitor monitor, Project pr
 				"executing jar copy took " + (System.currentTimeMillis() - t0)
 						+ " ms");
 		getLogger().debug("</jar build>");
-	}	private IJavaProject getJavaProject() {
+	}
+
+	private IJavaProject getJavaProject() {
 		try {
 			return ((IJavaProject) (getProject().getNature(JavaCore.NATURE_ID)));
 		} catch (CoreException up) {
@@ -516,7 +493,7 @@ private void jarBuild(IResourceDelta delta, IProgressMonitor monitor, Project pr
 			+ "  <string>Contents/WebServerResources/Java</string>"
 			+ "\r\n"
 			+ "$$principalclass$$"
-			+ "$$customInfoPlistContent$$"
+			+ "$$customInfoPListContent$$"
 			+ "\r\n"
 			+ "</dict>" + "\r\n" + "</plist>" + "\r\n";
 
@@ -603,7 +580,7 @@ private void jarBuild(IResourceDelta delta, IProgressMonitor monitor, Project pr
 			+ "  <string>$$type$$</string>"
 			+ "\r\n"
 			+ "$$principalclass$$"
-			+ "$$customInfoPlistContent$$"
+			+ "$$customInfoPListContent$$"
 			+ "$$EOAdaptorClassName$$"
 			+ "\r\n"
 			+ "</dict>" + "\r\n" + "</plist>" + "\r\n";
