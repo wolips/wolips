@@ -8,7 +8,6 @@
 
    <runtime>
       <library name="lib/wolips-wizards.jar">
-         <packages prefixes="org.objectstyle.wolips.wizards,org.objectstyle.wolips.wizards.actions"/>
       </library>
    </runtime>
    <requires>

@@ -9,7 +9,6 @@
 
    <runtime>
       <library name="lib/wolips-profiling.jar">
-         <packages prefixes="org.objectstyle.wolips.profiling"/>
       </library>
    </runtime>
    <requires>

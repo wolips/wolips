@@ -9,7 +9,6 @@
    <runtime>
       <library name="lib/woproject.jar">
          <export name="*"/>
-         <packages prefixes="org.objectstyle.woenvironment"/>
       </library>
    </runtime>
    <requires>

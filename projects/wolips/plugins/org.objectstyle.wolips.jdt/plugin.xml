@@ -9,7 +9,6 @@
 
    <runtime>
       <library name="lib/wolips-jdt.jar">
-         <packages prefixes="org.objectstyle.wolips.jdt,org.objectstyle.wolips.jdt.listener,org.objectstyle.wolips.jdt.classpath,org.objectstyle.wolips.jdt.classpath.model,org.objectstyle.wolips.jdt.ant"/>
          <export name="*"/>
       </library>
    </runtime>

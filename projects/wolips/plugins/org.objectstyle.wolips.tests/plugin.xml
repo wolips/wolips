@@ -9,7 +9,6 @@
 
    <runtime>
       <library name="lib/wolips-tests.jar">
-         <packages prefixes="org.objectstyle.wolips.tests,org.objectstyle.wolips.tests.suite"/>
       </library>
    </runtime>
    <requires>

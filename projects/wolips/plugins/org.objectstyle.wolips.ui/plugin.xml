@@ -9,7 +9,6 @@
 
    <runtime>
       <library name="lib/wolips-ui.jar">
-         <packages prefixes="org.objectstyle.wolips.ui.actions,org.objectstyle.wolips.ui.editor,org.objectstyle.wolips.ui.labeldecorator,org.objectstyle.wolips.ui.preferences,org.objectstyle.wolips.ui.propertypages,org.objectstyle.wolips.ui.support,org.objectstyle.wolips.ui.view,org.objectstyle.wolips.ui"/>
       </library>
    </runtime>
    <requires>
@@ -69,6 +68,9 @@
             </separator>
             <separator
                   name="group6">
+            </separator>
+            <separator
+                  name="group7">
             </separator>
          </menu>
       </objectContribution>
@@ -381,7 +383,7 @@
    <extension
          point="org.eclipse.ui.decorators">
       <decorator
-            objectClass="org.eclipse.core.resources.IFolder"
+            objectClass="org.eclipse.core.resources.IResource"
             label="WebObjects"
             state="true"
             class="org.objectstyle.wolips.ui.labeldecorator.WOLabelDecorator"

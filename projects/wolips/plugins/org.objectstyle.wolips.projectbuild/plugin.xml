@@ -10,7 +10,6 @@
    <runtime>
       <library name="lib/wolips-projectbuild.jar">
          <export name="*"/>
-         <packages prefixes="org.objectstyle.wolips.projectbuild,org.objectstyle.wolips.projectbuild.builder,org.objectstyle.wolips.projectbuild.natures,org.objectstyle.wolips.projectbuild.util"/>
       </library>
    </runtime>
    
