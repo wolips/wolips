@@ -102,6 +102,9 @@ final class BuildResourceValidator extends DefaultDeltaVisitor {
 	 * @return boolean
 	 */
 	private final boolean examineResource(IResource resource, int kindOfChange) {
+		if(this.buildRequired) {
+			return false;
+		}
 		//see bugreport #708385
 		if (!resource.isAccessible() && kindOfChange != IResourceDelta.REMOVED)
 			return false;
@@ -114,6 +117,12 @@ final class BuildResourceValidator extends DefaultDeltaVisitor {
 			this.project = (Project) resource.getAdapter(Project.class);
 			return true;
 		case IResource.FOLDER:
+			if (this.project.matchesResourcesPattern(resource)
+					|| this.project.matchesWOAppResourcesPattern(resource)
+					|| this.project.matchesClassesPattern(resource)) {
+				this.buildRequired = true;
+				return false;
+			}
 			// further examination of resource delta needed
 			return true;
 		case IResource.FILE:
