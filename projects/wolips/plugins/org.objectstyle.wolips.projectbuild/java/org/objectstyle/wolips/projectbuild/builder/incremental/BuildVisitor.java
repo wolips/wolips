@@ -63,7 +63,6 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jdt.core.IJavaProject;
 import org.objectstyle.wolips.datasets.adaptable.Project;
@@ -84,12 +83,14 @@ public class BuildVisitor extends BuildHelper {
 	// key: IPath/destination, value: IResource/source
 	private Map _destinations = new HashMap();
 
+	/**
+	 * 
+	 */
 	public BuildVisitor() {
 		super();
 	}
 
-	public void reinitForNextBuild(IProgressMonitor monitor, Project project)
-			throws CoreException {
+	public void reinitForNextBuild(Project project) {
 		super.reinitForNextBuild( project);
 		try {
 			IJavaProject jp = this.getIncrementalNature().getJavaProject();
@@ -222,7 +223,7 @@ public class BuildVisitor extends BuildHelper {
 	 * @throws CoreException
 	 */
 	public boolean _handleResource(IResource res, IResourceDelta delta,
-			IPath copyToPath) throws CoreException {
+			IPath copyToPath) {
 		if (null == copyToPath)
 			return false;
 

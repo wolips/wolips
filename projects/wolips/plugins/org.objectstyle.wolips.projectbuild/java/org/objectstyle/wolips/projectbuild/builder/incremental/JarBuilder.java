@@ -59,7 +59,6 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.IProgressMonitor;
 import org.objectstyle.wolips.datasets.adaptable.Project;
 
 /**
@@ -67,17 +66,10 @@ import org.objectstyle.wolips.datasets.adaptable.Project;
  */
 public class JarBuilder extends BuildHelper {
 	/**
-	 * @param monitor
-	 * @param project
-	 * @throws CoreException
+	 * The constructor
 	 */
 	public JarBuilder() {
 		super();
-	}
-
-	public void reinitForNextBuild(IProgressMonitor monitor, Project project)
-			throws CoreException {
-		super.reinitForNextBuild(project);
 	}
 
 	/*

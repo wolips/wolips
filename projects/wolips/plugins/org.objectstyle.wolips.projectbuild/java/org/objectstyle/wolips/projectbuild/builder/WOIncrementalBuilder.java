@@ -168,7 +168,7 @@ public class WOIncrementalBuilder extends AbstractIncrementalProjectBuilder {
 			if (buildVisitor == null) {
 				buildVisitor = new BuildVisitor();
 			}
-			buildVisitor.reinitForNextBuild(monitor, project);
+			buildVisitor.reinitForNextBuild(project);
 			if (!fullBuild) {
 				monitor.subTask("checking directory structure ...");
 				if (!buildVisitor._checkDirs()) {
@@ -370,7 +370,7 @@ public class WOIncrementalBuilder extends AbstractIncrementalProjectBuilder {
 		getLogger().debug("<jar build>");
 		if (jarBuilder == null)
 			jarBuilder = new JarBuilder();
-		jarBuilder.reinitForNextBuild(monitor, project);
+		jarBuilder.reinitForNextBuild(project);
 		long t0 = System.currentTimeMillis();
 		if (null != delta) {
 			delta.accept(jarBuilder, IResourceDelta.ALL_WITH_PHANTOMS);

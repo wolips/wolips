@@ -273,18 +273,22 @@ public abstract class BuildHelper extends ResourceUtilities implements
 	}
 
 	/**
-	 * @param monitor
-	 * @param project
-	 * @throws CoreException
+	 * The constructor
 	 */
 	public BuildHelper() {
 		super();
 	}
 
-	public void reinitForNextBuild(Project project)
-			throws CoreException {
+	/**
+	 * @param project
+	 */
+	public void reinitForNextBuild(Project project) {
 		_project = project;
-		_woNature = (IncrementalNature) _project.getIncrementalNature();
+		try {
+			_woNature = (IncrementalNature) _project.getIncrementalNature();
+		} catch (CoreException e) {
+			ProjectBuildPlugin.getDefault().getPluginLogger().log(e);
+		}
 		_distPath = new Path("dist");
 		_buildWork = 0;
 		_buildTasks = new ArrayList();
