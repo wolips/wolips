@@ -3,7 +3,7 @@
  * 
  * The ObjectStyle Group Software License, Version 1.0
  * 
- * Copyright (c) 2002 - 2004 The ObjectStyle Group and individual authors of the
+ * Copyright (c) 2002, 2004 The ObjectStyle Group and individual authors of the
  * software. All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -94,7 +94,7 @@ public class ProjectNaturePage extends PropertyPage implements IAdaptable {
 
 	private static final String PROJECT_KIND_NOTE_TITLE = "Note: ";
 
-	private static final String PROJECT_KIND_NOTE = "The settings below will only affect the incremental build style.";
+	private static final String PROJECT_KIND_NOTE = "Setting will only affect the incremental build style.";
 
 	private static final String WO_NATURE_TITLE = "Is a WebObjects Project (options below apply only if this is checked)";
 
@@ -157,19 +157,6 @@ public class ProjectNaturePage extends PropertyPage implements IAdaptable {
 		boolean isIncremental = project.isIncremental();
 		this._woIsIncrementalButton.setSelection(isIncremental);
 		antButton.setSelection(!isIncremental);
-		Label noteTitle = new Label(group, SWT.BOLD);
-		noteTitle.setText(PROJECT_KIND_NOTE_TITLE);
-		noteTitle.setFont(JFaceResources.getBannerFont());
-		fd = new FormData();
-		fd.left = new FormAttachment(0, 0);
-		fd.top = new FormAttachment(this._woIsIncrementalButton, 5);
-		noteTitle.setLayoutData(fd);
-		Label note = new Label(group, SWT.NULL);
-		note.setText(PROJECT_KIND_NOTE);
-		fd = new FormData();
-		fd.left = new FormAttachment(noteTitle, 0);
-		fd.top = new FormAttachment(this._woIsIncrementalButton, 5);
-		note.setLayoutData(fd);
 	}
 
 	/**
@@ -196,6 +183,19 @@ public class ProjectNaturePage extends PropertyPage implements IAdaptable {
 		boolean isFramework = project.isFramework();
 		this._woIsFrameworkButton.setSelection(isFramework);
 		this._woIsApplicationButton.setSelection(!isFramework);
+		Label noteTitle = new Label(group, SWT.BOLD);
+		noteTitle.setText(PROJECT_KIND_NOTE_TITLE);
+		noteTitle.setFont(JFaceResources.getBannerFont());
+		fd = new FormData();
+		fd.left = new FormAttachment(0, 0);
+		fd.top = new FormAttachment(this._woIsApplicationButton, 5);
+		noteTitle.setLayoutData(fd);
+		Label note = new Label(group, SWT.NULL);
+		note.setText(PROJECT_KIND_NOTE);
+		fd = new FormData();
+		fd.left = new FormAttachment(noteTitle, 0);
+		fd.top = new FormAttachment(this._woIsApplicationButton, 5);
+		note.setLayoutData(fd);
 	}
 
 	private Text _addTextField(Composite parent, String label) {
@@ -272,9 +272,9 @@ public class ProjectNaturePage extends PropertyPage implements IAdaptable {
 		this._woTargetBuilderCheck.setEnabled(enabled);
 		this._woIsFrameworkButton.setEnabled(enabled);
 		this._woIsApplicationButton.setEnabled(enabled);
-		this.principalClass.setEnabled(enabled);
-		this.customInfoPListContent.setEnabled(enabled);
-		this.eoAdaptorClassName.setEnabled(enabled);
+		this.principalClass.setEnabled(true);
+		this.customInfoPListContent.setEnabled(true);
+		this.eoAdaptorClassName.setEnabled(true);
 	}
 
 	/**
