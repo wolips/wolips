@@ -189,6 +189,8 @@ public class ComponentEngine extends AbstractEngine {
 			TemplateEnginePlugin.getDefault().getPluginLogger().log(e);
 			throw new InvocationTargetException(e);
 		}
+		if(this.getCreateBodyTag())
+			this.setPropertyForKey(this.getCreateBodyTag() + "", "CreateBodyTag");
 		this.addTemplate(new TemplateDefinition(
 				"wocomponent/wocomponent.html.vm", this.getComponentPath().toOSString(), this.componentName + "."
 						+ IWOLipsModel.EXT_HTML, IWOLipsModel.EXT_HTML));
