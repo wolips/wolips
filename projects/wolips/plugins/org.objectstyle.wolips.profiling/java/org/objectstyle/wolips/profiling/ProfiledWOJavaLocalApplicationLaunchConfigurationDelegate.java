@@ -82,6 +82,7 @@ public class ProfiledWOJavaLocalApplicationLaunchConfigurationDelegate
 	            String args = ProfilingLaunchSupport.getHProfVMArguments(configuration, hprofPort);
 	            // Fire up the listener thread
 	            ProfilingLaunchSupport.launchHprofListener(launch, hprofPort);
+	            System.err.println(args);
 	            vmArgs.append(args);
 	        }
 	    } catch (CoreException e) {
