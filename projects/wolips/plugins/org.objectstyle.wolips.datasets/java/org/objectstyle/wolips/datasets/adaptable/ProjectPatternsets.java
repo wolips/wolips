@@ -548,7 +548,7 @@ public class ProjectPatternsets extends AbstractProjectAdapterType {
 				"resources.exclude.patternset");
 		PatternsetWriter.create(resourcesIncludePatternset, (String[]) list
 				.toArray(new String[list.size()]));
-		this.woappResourcesIncludeMatcher = new PatternsetMatcher(
+		this.resourcesIncludeMatcher = new PatternsetMatcher(
 				resourcesIncludePatternset);
 		try {
 			resourcesIncludePatternset.refreshLocal(IResource.DEPTH_ONE,
