@@ -53,6 +53,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
@@ -114,7 +115,8 @@ public class ResourceChangeListener extends WorkspaceJob {
 					projectUpdater.syncProjectName();
 				projectUpdater.syncFilestable((HashMap) resourceValidator
 						.getAddedResourcesProjectDict()
-						.get(projectFileToUpdate), IResourceDelta.ADDED);
+						.get(projectFileToUpdate), IResourceDelta.ADDED,
+						resourceValidator.getLanguages());
 			}
 		}
 		Object[] allRemovedKeys = resourceValidator
@@ -130,7 +132,8 @@ public class ResourceChangeListener extends WorkspaceJob {
 					projectUpdater.syncFilestable((HashMap) resourceValidator
 							.getRemovedResourcesProjectDict().get(
 									projectFileToUpdate),
-							IResourceDelta.REMOVED);
+							IResourceDelta.REMOVED, resourceValidator
+									.getLanguages());
 				}
 			}
 		}
@@ -144,6 +147,8 @@ public class ResourceChangeListener extends WorkspaceJob {
 		private HashMap addedResourcesProjectDict;
 
 		private HashMap removedResourcesProjectDict;
+
+		ArrayList languages = new ArrayList();
 
 		Project project = null;
 
@@ -338,6 +343,15 @@ public class ResourceChangeListener extends WorkspaceJob {
 					|| IResourceDelta.CHANGED == kindOfChange;
 		}
 
+		private String language(IResource resource) {
+			IContainer folder = resource.getParent();
+			String extension = folder.getFileExtension();
+			if (extension == null || !extension.equals(IWOLipsModel.EXT_LPROJ)) {
+				return null;
+			}
+			return folder.getName().substring(0, folder.getName().length() - 6);
+		}
+
 		/**
 		 * Method updateProjectFile adds or removes resources from project file
 		 * if the resources belongs to project file (determined in
@@ -352,6 +366,10 @@ public class ResourceChangeListener extends WorkspaceJob {
 				IFile projectFileToUpdate) {
 			if (projectFileToUpdate == null) {
 				return;
+			}
+			String language = language(resourceToUpdate);
+			if (language != null && !languages.contains(language)) {
+				languages.add(language);
 			}
 			ArrayList changedResourcesArray = null;
 			// let's examine the type of change
@@ -424,6 +442,10 @@ public class ResourceChangeListener extends WorkspaceJob {
 		 */
 		public final HashMap getRemovedResourcesProjectDict() {
 			return this.removedResourcesProjectDict;
+		}
+
+		public final String[] getLanguages() {
+			return (String[]) languages.toArray(new String[languages.size()]);
 		}
 	}
 

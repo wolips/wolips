@@ -71,10 +71,14 @@ public interface IWOLipsModel {
 	 * Comment for <code>EXT_PROJECT</code>
 	 */
 	public static final String EXT_PROJECT = "project";
-	 /**
+	/**
 	 * Comment for <code>EXT_SUBPROJECT</code>
 	 */
 	public static final String EXT_SUBPROJECT = "subproj";
+	/**
+	 * Comment for <code>EXT_LPROJ</code>
+	 */
+	public static final String EXT_LPROJ = "lproj";
 	 /**
 	 * Comment for <code>EXT_JAVA</code>
 	 */

@@ -149,16 +149,19 @@ public final class PBProjectUpdater {
 
 	private final void handleException(Throwable throwable) {
 		this.addProjectMarker();
-		class RunnableExceptionHandler implements Runnable
-		 {
+		class RunnableExceptionHandler implements Runnable {
 			public IContainer projectContainer;
+
 			public Throwable throwable;
+
 			public void run() {
-		WorkbenchUtilitiesPlugin.handleException(new Shell(), throwable,
-				"An error occured while reading/saving the PB.project in project: "
-						+ projectContainer.getProject().getName());
+				WorkbenchUtilitiesPlugin.handleException(new Shell(),
+						throwable,
+						"An error occured while reading/saving the PB.project in project: "
+								+ projectContainer.getProject().getName());
 			}
-		};
+		}
+		;
 		RunnableExceptionHandler runnable = new RunnableExceptionHandler();
 		runnable.projectContainer = this.projectContainer;
 		runnable.throwable = throwable;
@@ -321,39 +324,52 @@ public final class PBProjectUpdater {
 	 * @param changedResources
 	 * @param kindOfChange
 	 */
-	public void syncFilestable(Map changedResources, int kindOfChange) {
+	public void syncFilestable(Map changedResources, int kindOfChange,
+			String[] languages) {
 		List actualResources;
 		String currentKey;
 		Object[] allKeys = changedResources.keySet().toArray();
 		for (int i = 0; i < allKeys.length; i++) {
 			currentKey = (String) allKeys[i];
 			if (IWOLipsModel.RESOURCES_ID.equals(currentKey)) {
-				actualResources = this.pbProject.getWoAppResources();
-				switch (kindOfChange) {
-				case IResourceDelta.ADDED:
-					this.pbProject.setWoAppResources(addResources(
-							(List) changedResources.get(currentKey),
-							actualResources));
-					break;
-				case IResourceDelta.REMOVED:
-					this.pbProject.setWoAppResources(removeResources(
-							(List) changedResources.get(currentKey),
-							actualResources));
-					break;
+				for (int j = 0; j <= languages.length; j++) {
+					String language = null;
+					if (j < languages.length) {
+						language = languages[j];
+					}
+					actualResources = this.pbProject.getWoAppResources(language);
+					switch (kindOfChange) {
+					case IResourceDelta.ADDED:
+						this.pbProject.setWoAppResources(addResources(
+								(List) changedResources.get(currentKey),
+								actualResources, language), language);
+						break;
+					case IResourceDelta.REMOVED:
+						this.pbProject.setWoAppResources(removeResources(
+								(List) changedResources.get(currentKey),
+								actualResources, language), language);
+						break;
+					}
 				}
 			} else if (IWOLipsModel.WS_RESOURCES_ID.equals(currentKey)) {
-				actualResources = this.pbProject.getWebServerResources();
-				switch (kindOfChange) {
-				case IResourceDelta.ADDED:
-					this.pbProject.setWebServerResources(addResources(
-							(List) changedResources.get(currentKey),
-							actualResources));
-					break;
-				case IResourceDelta.REMOVED:
-					this.pbProject.setWebServerResources(removeResources(
-							(List) changedResources.get(currentKey),
-							actualResources));
-					break;
+				for (int j = 0; j <= languages.length; j++) {
+					String language = null;
+					if (j < languages.length) {
+						language = languages[j];
+					}
+					actualResources = this.pbProject.getWebServerResources(language);
+					switch (kindOfChange) {
+					case IResourceDelta.ADDED:
+						this.pbProject.setWebServerResources(addResources(
+								(List) changedResources.get(currentKey),
+								actualResources, language), language);
+						break;
+					case IResourceDelta.REMOVED:
+						this.pbProject.setWebServerResources(removeResources(
+								(List) changedResources.get(currentKey),
+								actualResources, language), language);
+						break;
+					}
 				}
 			} else if (IWOLipsModel.CLASSES_ID.equals(currentKey)) {
 				actualResources = this.pbProject.getClasses();
@@ -361,12 +377,12 @@ public final class PBProjectUpdater {
 				case IResourceDelta.ADDED:
 					this.pbProject.setClasses(addResources(
 							(List) changedResources.get(currentKey),
-							actualResources));
+							actualResources, null));
 					break;
 				case IResourceDelta.REMOVED:
 					this.pbProject.setClasses(removeResources(
 							(List) changedResources.get(currentKey),
-							actualResources));
+							actualResources, null));
 					break;
 				}
 			} else if (IWOLipsModel.SUBPROJECTS_ID.equals(currentKey)) {
@@ -375,27 +391,33 @@ public final class PBProjectUpdater {
 				case IResourceDelta.ADDED:
 					this.pbProject.setSubprojects(addResources(
 							(List) changedResources.get(currentKey),
-							actualResources));
+							actualResources, null));
 					break;
 				case IResourceDelta.REMOVED:
 					this.pbProject.setSubprojects(removeResources(
 							(List) changedResources.get(currentKey),
-							actualResources));
+							actualResources, null));
 					break;
 				}
 			} else if (IWOLipsModel.COMPONENTS_ID.equals(currentKey)) {
-				actualResources = this.pbProject.getWoComponents();
-				switch (kindOfChange) {
-				case IResourceDelta.ADDED:
-					this.pbProject.setWoComponents(addResources(
-							(List) changedResources.get(currentKey),
-							actualResources));
-					break;
-				case IResourceDelta.REMOVED:
-					this.pbProject.setWoComponents(removeResources(
-							(List) changedResources.get(currentKey),
-							actualResources));
-					break;
+				for (int j = 0; j <= languages.length; j++) {
+					String language = null;
+					if (j < languages.length) {
+						language = languages[j];
+					}
+					actualResources = this.pbProject.getWoComponents(language);
+					switch (kindOfChange) {
+					case IResourceDelta.ADDED:
+						this.pbProject.setWoComponents(addResources(
+								(List) changedResources.get(currentKey),
+								actualResources, language), language);
+						break;
+					case IResourceDelta.REMOVED:
+						this.pbProject.setWoComponents(removeResources(
+								(List) changedResources.get(currentKey),
+								actualResources, language), language);
+						break;
+					}
 				}
 			}
 		}
@@ -413,7 +435,8 @@ public final class PBProjectUpdater {
 	 * @param actualResources
 	 * @return List
 	 */
-	private List addResources(List newResources, List actualResources) {
+	private List addResources(List newResources, List actualResources,
+			String language) {
 		if (actualResources == null) {
 			actualResources = new ArrayList();
 		}
@@ -421,18 +444,26 @@ public final class PBProjectUpdater {
 		IFile projectFile = this.projectContainer.getFile(new Path(
 				IWOLipsModel.PROJECT_FILE_NAME));
 		for (int i = 0; i < newResources.size(); i++) {
-			relativResourcePath = relativResourcePath((IResource) newResources
-					.get(i), projectFile);
-			if (relativResourcePath != null
-					&& !actualResources.contains(relativResourcePath)) {
-				this.saveRequired = true;
-				actualResources.add(relativResourcePath);
+			IResource resource = (IResource) newResources.get(i);
+			String parentExtension = resource.getParent().getFileExtension();
+			String parentName = resource.getParent().getName();
+			if ((language == null && parentExtension == null)
+					|| (language == null && !IWOLipsModel.EXT_LPROJ.equals(parentExtension))
+					|| (language != null && parentName.equals(language + "."
+							+ IWOLipsModel.EXT_LPROJ))) {
+				relativResourcePath = relativResourcePath(resource, projectFile, language);
+				if (relativResourcePath != null
+						&& !actualResources.contains(relativResourcePath)) {
+					this.saveRequired = true;
+					actualResources.add(relativResourcePath);
+				}
 			}
 		}
 		return actualResources;
 	}
 
-	private List removeResources(List removedResources, List actualResources) {
+	private List removeResources(List removedResources, List actualResources,
+			String language) {
 		if (actualResources == null) {
 			return new ArrayList();
 		}
@@ -440,12 +471,19 @@ public final class PBProjectUpdater {
 		IFile projectFile = this.projectContainer.getFile(new Path(
 				IWOLipsModel.PROJECT_FILE_NAME));
 		for (int i = 0; i < removedResources.size(); i++) {
-			relativResourcePath = relativResourcePath(
-					(IResource) removedResources.get(i), projectFile);
-			if (relativResourcePath != null
-					&& actualResources.contains(relativResourcePath)) {
-				this.saveRequired = true;
-				actualResources.remove(relativResourcePath);
+			IResource resource = (IResource) removedResources.get(i);
+			String parentExtension = resource.getParent().getFileExtension();
+			String parentName = resource.getParent().getName();
+			if ((language == null && parentExtension == null)
+					|| (language == null &&  !IWOLipsModel.EXT_LPROJ.equals(parentExtension))
+					|| (language != null && parentName.equals(language + "."
+							+ IWOLipsModel.EXT_LPROJ))) {
+				relativResourcePath = relativResourcePath(resource, projectFile, language);
+				if (relativResourcePath != null
+						&& actualResources.contains(relativResourcePath)) {
+					this.saveRequired = true;
+					actualResources.remove(relativResourcePath);
+				}
 			}
 		}
 		return actualResources;
@@ -458,7 +496,7 @@ public final class PBProjectUpdater {
 	 * @param projectFile
 	 * @return String
 	 */
-	private String relativResourcePath(IResource resource, IFile projectFile) {
+	private String relativResourcePath(IResource resource, IFile projectFile, String language) {
 		// determine relativ path to resource
 		String resourcePath;
 		if (projectFile.getParent().equals(resource.getParent())) {
@@ -478,6 +516,11 @@ public final class PBProjectUpdater {
 			for (int i = 0; i < projectFile.getProjectRelativePath()
 					.segmentCount() - 1; i++) {
 				resourcePath = "../" + resourcePath;
+			}
+		}
+		if(language != null) {
+			if(resourcePath.startsWith(language + "." + IWOLipsModel.EXT_LPROJ)) {
+				resourcePath = resourcePath.substring(language.length() + 7);
 			}
 		}
 		return resourcePath;
