@@ -73,7 +73,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Scrollable;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.dialogs.PropertyPage;
 import org.objectstyle.wolips.datasets.adaptable.Project;
@@ -249,7 +248,7 @@ public class ProjectNaturePage extends PropertyPage implements IAdaptable {
 		this.principalClass = _addTextField(group, "Principal Class");
 		this.eoAdaptorClassName = _addTextField(group, "EOAdaptorClassName");
 		this.customInfoPListContent = _addTextArea(group,
-				"Custom Info.plist context");
+				"Custom Info.plist content");
 	}
 
 	/**
