@@ -1,4 +1,4 @@
 classes.dir = bin
 project.name = ${WOLipsContext.getProjectName()}
-principalClass =
+principalClass = Application
 customInfoPListContent =

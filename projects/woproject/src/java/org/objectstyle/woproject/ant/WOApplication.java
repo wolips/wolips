@@ -122,7 +122,7 @@ public class WOApplication extends WOTask {
 
 	public String getPrincipalClass() {
 		String aPrincipalClass = super.getPrincipalClass();
-		if (aPrincipalClass == null) {
+		if (aPrincipalClass == null || aPrincipalClass.length() == 0) {
 			aPrincipalClass = "Application";
 		}
 		return aPrincipalClass;
