@@ -56,6 +56,8 @@
 package org.objectstyle.wolips.jdt.classpath;
 import java.io.File;
 import java.io.FilenameFilter;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 
 import org.eclipse.core.runtime.IPath;
@@ -64,6 +66,7 @@ import org.eclipse.jdt.core.IClasspathContainer;
 import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.launching.IRuntimeContainerComparator;
+import org.eclipse.jdt.ui.JavaUI;
 import org.objectstyle.wolips.variables.VariablesPlugin;
 /**
  * @author Harald Niesche
@@ -155,6 +158,14 @@ public final class WOClasspathContainer
 						IClasspathEntry entry = JavaCore.newLibraryEntry(
 								archivePath, null, null, false);
 						_path.add(entry);
+						if(framework.indexOf("Java") == 0) {
+						    try {
+                                JavaUI.setLibraryJavadocLocation(archivePath, new URL("file:///Developer/Documentation/WebObjects/Reference/API/"));
+                            } catch (MalformedURLException e) {
+                                // TODO Auto-generated catch block
+                                e.printStackTrace();
+                            }
+						}
 					}
 				}
 			}
