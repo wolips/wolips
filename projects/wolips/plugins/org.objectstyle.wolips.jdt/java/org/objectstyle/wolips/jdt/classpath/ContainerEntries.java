@@ -56,6 +56,7 @@
 package org.objectstyle.wolips.jdt.classpath;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
@@ -126,12 +127,33 @@ public class ContainerEntries {
 	 * @return
 	 */
 	public boolean contains(Framework framework) {
+		ContainerEntry containerEntry = this.getEntry(framework);
+		return containerEntry != null;
+	}
+
+	/**
+	 * @param framework
+	 * @return
+	 */
+	public ContainerEntry getEntry(Framework framework) {
 		for(int i = 0; i < this.entries.size(); i++) {
 			ContainerEntry containerEntry = (ContainerEntry)this.entries.get(i);
 			if(framework.getName().equals(containerEntry.getName())) {
-				return true;
+				return containerEntry;
 			}
 		}
-		return false;
+		return null;
+	}
+	
+	/**
+	 * @param entries
+	 */
+	public void setEntries(ArrayList entries) {
+		ContainerEntry[] containerEntries = (ContainerEntry[])entries.toArray(new ContainerEntry[entries.size()]);
+		Arrays.sort(containerEntries);
+		this.entries = new ArrayList();
+		for(int i =0; i < containerEntries.length; i++) {
+			this.entries.add(containerEntries[i]);
+		}
 	}
 }

@@ -67,7 +67,7 @@ import org.objectstyle.wolips.jdt.classpath.model.Framework;
 /**
  * @author ulrich
  */
-public class ContainerEntry {
+public class ContainerEntry implements Comparable {
 	private ArrayList entries = new ArrayList();
 
 	private String name;
@@ -95,28 +95,33 @@ public class ContainerEntry {
 		this.srcPath = srcPath;
 		this.javaDocPath = javaDocPath;
 
-		if ("nil".equals(this.srcPath.toString())) {
+		if (this.srcPath != null && "nil".equals(this.srcPath.toString())) {
 			this.srcPath = null;
 		}
-		if ("nil".equals(this.javaDocPath.toString())) {
+		if (this.javaDocPath != null
+				&& "nil".equals(this.javaDocPath.toString())) {
 			this.javaDocPath = null;
 		}
-		if("true"
-		.equals(exported)) {
+		if ("true".equals(exported)) {
 			this.exported = true;
 		}
-		
+
 		JdtPlugin.getDefault().getPluginLogger().debug("name : " + this.name);
 		JdtPlugin.getDefault().getPluginLogger().debug("order : " + this.order);
-		JdtPlugin.getDefault().getPluginLogger().debug("srcPath : " + this.srcPath);
-		JdtPlugin.getDefault().getPluginLogger().debug("javaDocPath : " + this.javaDocPath);
-		JdtPlugin.getDefault().getPluginLogger().debug("exported : " + this.exported);
+		JdtPlugin.getDefault().getPluginLogger().debug(
+				"srcPath : " + this.srcPath);
+		JdtPlugin.getDefault().getPluginLogger().debug(
+				"javaDocPath : " + this.javaDocPath);
+		JdtPlugin.getDefault().getPluginLogger().debug(
+				"exported : " + this.exported);
 		Framework framework = JdtPlugin.getDefault().getClasspathModel()
 				.getFrameworkWithName(this.name);
 		if (framework != null) {
 			IPath[] libraryPaths = framework.getLibraryPaths();
 			for (int i = 0; i < libraryPaths.length; i++) {
-				IClasspathEntry entry = JavaCore.newLibraryEntry(libraryPaths[i], this.srcPath, this.javaDocPath, this.exported);
+				IClasspathEntry entry = JavaCore.newLibraryEntry(
+						libraryPaths[i], this.srcPath, this.javaDocPath,
+						this.exported);
 				this.entries.add(entry);
 			}
 		} else {
@@ -129,7 +134,8 @@ public class ContainerEntry {
 	 * @return
 	 * @throws PathCoderException
 	 */
-	public static ContainerEntry initWithPath(IPath path) throws PathCoderException {
+	public static ContainerEntry initWithPath(IPath path)
+			throws PathCoderException {
 		IPath[] details = PathCoder.decode(path);
 		return new ContainerEntry(details[0].toString(), details[1],
 				details[2], details[3].toString(), details[4].toString());
@@ -186,5 +192,60 @@ public class ContainerEntry {
 	 */
 	protected boolean isExported() {
 		return this.exported;
+	}
+
+	/**
+	 * @param framework
+	 */
+	public void push(Framework framework) {
+		entries = new ArrayList();
+		this.srcPath = framework.getSrcPath();
+		this.javaDocPath = framework.getJavaDocPath();
+		this.order = framework.getOrder();
+		this.exported = framework.isExported();
+		if (framework != null) {
+			IPath[] libraryPaths = framework.getLibraryPaths();
+			for (int j = 0; j < libraryPaths.length; j++) {
+				IClasspathEntry entry = JavaCore.newLibraryEntry(
+						libraryPaths[j], this.srcPath, this.javaDocPath,
+						this.exported);
+				this.entries.add(entry);
+			}
+		}
+		if (this.order == null) {
+			order = "0";
+		}
+	}
+
+	/**
+	 * @param framework
+	 */
+	public void pull(Framework framework) {
+		framework.setSrcPath(this.srcPath);
+		framework.setJavaDocPath(this.javaDocPath);
+		framework.setOrder(this.order);
+		framework.setExported(this.exported);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Comparable#compareTo(java.lang.Object)
+	 */
+	public int compareTo(Object object) {
+		ContainerEntry compareTo = (ContainerEntry) object;
+		Integer left = new Integer(0);
+		Integer right = new Integer(0);
+		try {
+			left = new Integer(this.order);
+		} catch (NumberFormatException numberFormatException) {
+			JdtPlugin.getDefault().getPluginLogger().log(numberFormatException);
+		}
+		try {
+			right = new Integer(compareTo.order);
+		} catch (NumberFormatException numberFormatException) {
+			JdtPlugin.getDefault().getPluginLogger().log(numberFormatException);
+		}
+		return left.compareTo(right);
 	}
 }

@@ -57,6 +57,7 @@ package org.objectstyle.wolips.jdt.ui;
 
 import java.util.ArrayList;
 
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.jdt.core.JavaCore;
@@ -70,6 +71,7 @@ import org.objectstyle.wolips.jdt.JdtPlugin;
 import org.objectstyle.wolips.jdt.PluginImages;
 import org.objectstyle.wolips.jdt.classpath.Container;
 import org.objectstyle.wolips.jdt.classpath.ContainerEntries;
+import org.objectstyle.wolips.jdt.classpath.ContainerEntry;
 import org.objectstyle.wolips.jdt.classpath.PathCoderException;
 import org.objectstyle.wolips.jdt.classpath.model.Framework;
 import org.objectstyle.wolips.jdt.classpath.model.Root;
@@ -104,31 +106,73 @@ public class ContainerContentProvider implements ITreeContentProvider,
 	/**
 	 * @param containerEntry
 	 */
-	public ContainerContentProvider(IClasspathEntry containerEntry) {
+public ContainerContentProvider(IClasspathEntry containerEntry) {
 		super();
 		ContainerEntries containerEntries = null;
 		try {
-			containerEntries = ContainerEntries.initWithPath(containerEntry
-					.getPath());
+			IPath path = containerEntry
+			.getPath();
+			if(Container.CONTAINER_IDENTITY.equals(path.segment(0)));
+			{
+				path = path.removeFirstSegments(1);
+			}
+			containerEntries = ContainerEntries.initWithPath(path);
+			this.pull(containerEntries);
 		} catch (PathCoderException e) {
 			JdtPlugin.getDefault().getPluginLogger().log(e);
 		}
 		this.container = new Container(containerEntries);
+	}
+	private void pull(ContainerEntries containerEntries) {
+		Root[] roots = JdtPlugin.getDefault().getClasspathModel().getRoots();
+		for (int i = 0; i < roots.length; i++) {
+			Framework[] frameworks = roots[i].getEntries();
+			if (frameworks != null)
+				for (int j = 0; j < frameworks.length; j++) {
+					ContainerEntry containerEntry = containerEntries
+							.getEntry(frameworks[j]);
+					if (containerEntry != null) {
+						containerEntry.pull(frameworks[j]);
+					}
+				}
+		}
 	}
 
 	private void setCheckedElements() {
 		ArrayList checked = new ArrayList();
 		Root[] roots = JdtPlugin.getDefault().getClasspathModel().getRoots();
 		for (int i = 0; i < roots.length; i++) {
-			Framework[] entries = roots[i].getEntries();
-			if (entries != null)
-				for (int j = 0; j < entries.length; j++) {
-					if (this.container.contains(entries[j]))
-						checked.add(entries[j]);
+			Framework[] frameworks = roots[i].getEntries();
+			if (frameworks != null)
+				for (int j = 0; j < frameworks.length; j++) {
+					if (this.container.contains(frameworks[j]))
+						checked.add(frameworks[j]);
 				}
 		}
 		this.checkboxTreeViewer.setCheckedElements(checked.toArray());
 
+	}
+
+	/**
+	 * @return
+	 */
+	public IClasspathEntry getClasspathEntry() {
+		ArrayList checked = new ArrayList();
+		Root[] roots = JdtPlugin.getDefault().getClasspathModel().getRoots();
+		for (int i = 0; i < roots.length; i++) {
+			Framework[] frameworks = roots[i].getEntries();
+			if (frameworks != null)
+				for (int j = 0; j < frameworks.length; j++) {
+					if (roots[i].getEntries() != null
+							&& this.checkboxTreeViewer.getChecked(roots[i]
+									.getEntries()[j])) {
+						checked.add(roots[i].getEntries()[j]);
+					}
+				}
+		}
+		this.container.setContent((Framework[]) checked
+				.toArray(new Framework[checked.size()]));
+		return JavaCore.newContainerEntry(this.container.getPath(), false);
 	}
 
 	/*
@@ -259,13 +303,6 @@ public class ContainerContentProvider implements ITreeContentProvider,
 	 */
 	public void removeListener(ILabelProviderListener listener) {
 		return;
-	}
-
-	/**
-	 * @return
-	 */
-	public IClasspathEntry getClasspathEntry() {
-		return JavaCore.newContainerEntry(this.container.getPath(), false);
 	}
 
 	/**

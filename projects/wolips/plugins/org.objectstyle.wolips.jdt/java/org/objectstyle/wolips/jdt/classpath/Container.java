@@ -55,6 +55,8 @@
  */
 package org.objectstyle.wolips.jdt.classpath;
 
+import java.util.ArrayList;
+
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jdt.core.IClasspathContainer;
@@ -75,6 +77,7 @@ public class Container implements IClasspathContainer {
 	 * Comment for <code>DEFAULT_PATH</code>
 	 */
 	public static final String DEFAULT_PATH = "/10/1/JavaWebObjects/1/nil/1/nil/1/0/1/nil/10/1/JavaFoundation/1/nil/1/nil/1/0/1/nil/10/1/JavaXML/1/nil/1/nil/1/0/1/nil/10/1/JavaWOExtensions/1/nil/1/nil/1/0/1/nil/10/1/JavaEOAccess/1/nil/1/nil/1/0/1/nil/10/1/JavaEOControl/1/nil/1/nil/1/0/1/nil";
+
 	/**
 	 * Names of the standard frameworks.
 	 */
@@ -83,6 +86,7 @@ public class Container implements IClasspathContainer {
 			"JavaEOAccess", "JavaEOControl" };
 
 	private ContainerEntries containerEntries = null;
+
 	private IClasspathEntry[] classpathEntries = null;
 
 	/**
@@ -91,7 +95,7 @@ public class Container implements IClasspathContainer {
 	public Container(ContainerEntries containerEntries) {
 		super();
 		this.containerEntries = containerEntries;
-		if(this.containerEntries == null) {
+		if (this.containerEntries == null) {
 			this.containerEntries = new ContainerEntries();
 		}
 	}
@@ -102,7 +106,7 @@ public class Container implements IClasspathContainer {
 	 * @see org.eclipse.jdt.core.IClasspathContainer#getClasspathEntries()
 	 */
 	public IClasspathEntry[] getClasspathEntries() {
-		if(classpathEntries == null) {
+		if (classpathEntries == null) {
 			classpathEntries = this.containerEntries.getEntries();
 		}
 		return classpathEntries;
@@ -137,5 +141,28 @@ public class Container implements IClasspathContainer {
 	 */
 	public boolean contains(Framework framework) {
 		return this.containerEntries.contains(framework);
+	}
+
+	/**
+	 * @param frameworks
+	 */
+	public void setContent(Framework[] frameworks) {
+		ArrayList newEntries = new ArrayList();
+		for (int i = 0; i < frameworks.length; i++) {
+			Framework framework = frameworks[i];
+			ContainerEntry containerEntry = null;
+			if (containerEntries.contains(framework)) {
+				containerEntry = containerEntries.getEntry(framework);
+				containerEntry.push(framework);
+			}
+			else {
+				containerEntry = new ContainerEntry(framework.getName(),
+						framework.getSrcPath(), framework.getJavaDocPath(),
+						framework.getOrder(), framework.isExported() + "");
+			}
+			newEntries.add(containerEntry);
+		}
+		this.containerEntries.setEntries(newEntries);
+		this.classpathEntries = null;
 	}
 }

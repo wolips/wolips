@@ -142,7 +142,7 @@ public class ContainerPage extends WizardPage implements
 		this.checkboxTreeViewer.setLabelProvider(this.containerContentProvider);
 		this.checkboxTreeViewer.setInput(this.containerContentProvider);
 		this.checkboxTreeViewer.addSelectionChangedListener(this);
-		if (false) {
+		if (true) {
 			Composite row = new Composite(thisPage, SWT.NONE);
 			row.setLayout(new RowLayout());
 			Label lbl = new Label(row, SWT.SINGLE);
@@ -162,12 +162,13 @@ public class ContainerPage extends WizardPage implements
 					fileDialog.open();
 					String path = fileDialog.getFilterPath();
 					String file = fileDialog.getFileName();
-					if (path != null) {
-						if (file != null) {
-							sourceField.setText(path + file);
-						} else {
-							sourceField.setText(path);
-						}
+					if (path != null && file != null) {
+						sourceField.setText(path + file);
+						Path srcPath = new Path(path);
+						framework.setSrcPath(srcPath.append(file));
+					} else {
+						sourceField.setText("");
+						framework.setSrcPath(null);
 					}
 				}
 
@@ -191,7 +192,12 @@ public class ContainerPage extends WizardPage implements
 					String path = directoryDialog.getFilterPath();
 					if (path != null) {
 						sourceField.setText(path);
-						framework.setSrcPath(new Path(path));
+						if (framework != null) {
+							framework.setSrcPath(new Path(path));
+						}
+					} else {
+						sourceField.setText("");
+						framework.setSrcPath(null);
 					}
 				}
 
@@ -200,67 +206,71 @@ public class ContainerPage extends WizardPage implements
 				}
 
 			});
+			if (false) {
+				row = new Composite(thisPage, SWT.NONE);
+				row.setLayout(new RowLayout());
+				lbl = new Label(row, SWT.SINGLE);
+				lbl.setText("Javadoc location");
+				javaDocField = new Text(row, SWT.SINGLE);
+				javaDocField.setEditable(false);
+				javaDocFileButton = new Button(row, SWT.PUSH);
+				javaDocFileButton.setText("Choose File");
+				javaDocFileButton.addMouseListener(new MouseListener() {
 
-			row = new Composite(thisPage, SWT.NONE);
-			row.setLayout(new RowLayout());
-			lbl = new Label(row, SWT.SINGLE);
-			lbl.setText("Javadoc location");
-			javaDocField = new Text(row, SWT.SINGLE);
-			javaDocField.setEditable(false);
-			javaDocFileButton = new Button(row, SWT.PUSH);
-			javaDocFileButton.setText("Choose File");
-			javaDocFileButton.addMouseListener(new MouseListener() {
+					public void mouseDoubleClick(MouseEvent e) {
+						return;
+					}
 
-				public void mouseDoubleClick(MouseEvent e) {
-					return;
-				}
-
-				public void mouseDown(MouseEvent e) {
-					FileDialog fileDialog = new FileDialog(new Shell());
-					fileDialog.open();
-					String path = fileDialog.getFilterPath();
-					String file = fileDialog.getFileName();
-					if (path != null) {
-						if (file != null) {
-							sourceField.setText(path + file);
-							Path srcPath = new Path(path);
-							framework.setJavaDocPath(srcPath.append(file));
+					public void mouseDown(MouseEvent e) {
+						FileDialog fileDialog = new FileDialog(new Shell());
+						fileDialog.open();
+						String path = fileDialog.getFilterPath();
+						String file = fileDialog.getFileName();
+						if (path != null && file != null) {
+							javaDocField.setText(path + file);
+							Path javaDocPath = new Path(path);
+							framework.setJavaDocPath(javaDocPath.append(file));
 						} else {
-							javaDocField.setText(path);
-							framework.setJavaDocPath(new Path(path));
+							javaDocField.setText("");
+							framework.setJavaDocPath(null);
 						}
 					}
-				}
 
-				public void mouseUp(MouseEvent e) {
-					return;
-				}
-
-			});
-			javaDocFolderButton = new Button(row, SWT.PUSH);
-			javaDocFolderButton.setText("Choose Folder");
-			javaDocFolderButton.addMouseListener(new MouseListener() {
-
-				public void mouseDoubleClick(MouseEvent e) {
-					return;
-				}
-
-				public void mouseDown(MouseEvent e) {
-					DirectoryDialog directoryDialog = new DirectoryDialog(
-							new Shell());
-					directoryDialog.open();
-					String path = directoryDialog.getFilterPath();
-					if (path != null) {
-						javaDocField.setText(path);
+					public void mouseUp(MouseEvent e) {
+						return;
 					}
-				}
 
-				public void mouseUp(MouseEvent e) {
-					return;
-				}
+				});
+				javaDocFolderButton = new Button(row, SWT.PUSH);
+				javaDocFolderButton.setText("Choose Folder");
+				javaDocFolderButton.addMouseListener(new MouseListener() {
 
-			});
+					public void mouseDoubleClick(MouseEvent e) {
+						return;
+					}
 
+					public void mouseDown(MouseEvent e) {
+						DirectoryDialog directoryDialog = new DirectoryDialog(
+								new Shell());
+						directoryDialog.open();
+						String path = directoryDialog.getFilterPath();
+						if (path != null) {
+							javaDocField.setText(path);
+							if (framework != null) {
+								framework.setJavaDocPath(new Path(path));
+							}
+						} else {
+							javaDocField.setText("");
+							framework.setJavaDocPath(null);
+						}
+					}
+
+					public void mouseUp(MouseEvent e) {
+						return;
+					}
+
+				});
+			}
 			row = new Composite(thisPage, SWT.NONE);
 			row.setLayout(new RowLayout());
 			lbl = new Label(row, SWT.SINGLE);
@@ -358,16 +368,15 @@ public class ContainerPage extends WizardPage implements
 	}
 
 	private void frameworkChanged() {
-		if(true) {
-			return;
-		}
 		if (this.framework == null) {
 			sourceField.setText("");
 			sourceFileButton.setEnabled(false);
 			sourceFolderButton.setEnabled(false);
-			javaDocField.setText("");
-			javaDocFileButton.setEnabled(false);
-			javaDocFolderButton.setEnabled(false);
+			if (false) {
+				javaDocField.setText("");
+				javaDocFileButton.setEnabled(false);
+				javaDocFolderButton.setEnabled(false);
+			}
 			orderField.setText("");
 			orderField.setEditable(false);
 			exportedButton.setSelection(false);
@@ -380,19 +389,28 @@ public class ContainerPage extends WizardPage implements
 			}
 			sourceFileButton.setEnabled(true);
 			sourceFolderButton.setEnabled(true);
-			if (framework.getJavaDocPath() != null) {
-				javaDocField.setText(framework.getJavaDocPath().toString());
-			} else {
-				javaDocField.setText("");
-			}
-			javaDocFileButton.setEnabled(true);
-			javaDocFolderButton.setEnabled(true);
-			if (framework.getOrder() != null) {
-				orderField.setText(framework.getOrder());
-			} else {
-				javaDocField.setText("");
+			if (false) {
+				if (framework.getJavaDocPath() != null) {
+					javaDocField.setText(framework.getJavaDocPath().toString());
+				} else {
+					javaDocField.setText("");
+				}
+				javaDocFileButton.setEnabled(true);
+				javaDocFolderButton.setEnabled(true);
+				if (framework.getOrder() != null) {
+					orderField.setText(framework.getOrder());
+				} else {
+					javaDocField.setText("");
+				}
 			}
 			orderField.setEditable(true);
+			String string = framework.getOrder();
+			if(string == null) {
+				orderField.setText("");
+			}
+			else {
+				orderField.setText(string);
+			}
 			exportedButton.setSelection(framework.isExported());
 			exportedButton.setEnabled(true);
 		}
