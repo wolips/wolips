@@ -69,22 +69,11 @@ import org.objectstyle.wolips.datasets.DataSetsPlugin;
 */
 public class PatternsetReader {
 	private String[] pattern = new String[0];
-	private long lastReadAt = 0;
-	private IFile theFile = null;
+	/*private long lastReadAt = 0;
+	private IFile theFile = null;*/
 
 	public PatternsetReader(IFile patternset) {
-		_read(patternset);
-	}
-	
-	/**
-	 * @param pattern
-	 */
-	public PatternsetReader(String[] pattern) {
-		super();
-		this.pattern = pattern;
-	}
 
-	private void _read(IFile patternset) {
 		ArrayList patternList = new ArrayList();
 		BufferedReader patternReader = null;
 		try {
@@ -96,8 +85,6 @@ public class PatternsetReader {
 				}
 				line = patternReader.readLine();
 			}
-			lastReadAt = patternset.getModificationStamp();
-			theFile = patternset;
 		} catch (IOException ioe) {
 			DataSetsPlugin.getDefault().getPluginLogger().log(ioe);
 			//String msg = "An error occured while reading from pattern file: "
@@ -114,13 +101,19 @@ public class PatternsetReader {
 		}
 		pattern = (String[])patternList.toArray(new String[patternList.size()]);
 	}
+	
+	/**
+	 * @param pattern
+	 */
+	public PatternsetReader(String[] pattern) {
+		super();
+		this.pattern = pattern;
+	}
+
 	/**
 	 * @return Returns the pattern.
 	 */
 	public String[] getPattern() {
-		if (null != theFile && theFile.getModificationStamp() != lastReadAt) {
-			_read(theFile);
-		}
 		return pattern;
 	}
 }
