@@ -68,9 +68,7 @@ public class WOLipsPlugin extends Plugin {
 		plugin = this;
 	}
 	/**
-	 * Returns the shared instance.
-	 * 
-	 * @return
+	 * @return Returns the shared instance.
 	 */
 	public static WOLipsPlugin getDefault() {
 		return plugin;
