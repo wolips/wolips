@@ -37,6 +37,18 @@
       <objectContribution
             objectClass="org.eclipse.core.resources.IResource"
             adaptable="true"
+            id="org.objectstyle.wolips.ant.ui.FixWaitingForVirtualMachineToExitActions">
+         <action
+               label="Fix 'Waiting for virtual machine to exit' bug"
+               class="org.objectstyle.wolips.ant.ui.FixWaitingForVirtualMachineToExitAction"
+               menubarPath="org.objectstyle.wolips.ui.ResourceContributions/group6"
+               enablesFor="1"
+               id="org.objectstyle.wolips.ant.ui.FixWaitingForVirtualMachineToExitAction">
+         </action>
+      </objectContribution>
+      <objectContribution
+            objectClass="org.eclipse.core.resources.IResource"
+            adaptable="true"
             id="org.objectstyle.wolips.ant.ui.InstallActions">
          <action
                label="Install..."

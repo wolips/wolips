@@ -54,92 +54,68 @@
 *
 */
 
-package org.objectstyle.wolips.ant;
+package org.objectstyle.wolips.ant.ui;
 
-import java.util.MissingResourceException;
-import java.util.ResourceBundle;
+import java.util.ArrayList;
+import java.util.List;
 
-import org.eclipse.ui.plugin.AbstractUIPlugin;
-import org.objectstyle.wolips.commons.logging.PluginLogger;
-import org.osgi.framework.BundleContext;
+import org.eclipse.ant.internal.ui.launchConfigurations.IAntLaunchConfigurationConstants;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.debug.core.DebugPlugin;
+import org.eclipse.debug.core.ILaunchConfiguration;
+import org.eclipse.debug.core.ILaunchConfigurationType;
+import org.eclipse.debug.core.ILaunchManager;
+import org.eclipse.jface.action.IAction;
+import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.ui.IActionDelegate;
+import org.objectstyle.wolips.ant.AntPlugin;
 
 /**
- * The main plugin class to be used in the desktop.
+ * @author ulrich
  */
-public class AntPlugin extends AbstractUIPlugin {
-	//The shared instance.
-	private static AntPlugin plugin;
-	//Resource bundle.
-	private ResourceBundle resourceBundle;
-	private static String PLUGIN_ID ="org.objectstyle.wolips.ant";
-	
-	private PluginLogger pluginLogger;
-	
-	/**
-	 * The constructor.
-	 */
-	public AntPlugin() {
-	super();
-	plugin = this;
-	try {
-		this.resourceBundle = ResourceBundle
-				.getBundle("org.objectstyle.wolips.jdt.JdtPluginResources");
-	} catch (MissingResourceException x) {
-		this.resourceBundle = null;
-	}
-}
+public class FixWaitingForVirtualMachineToExitAction implements IActionDelegate {
 
-	/**
-	 * Returns the shared instance.
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.eclipse.ui.IActionDelegate#run(org.eclipse.jface.action.IAction)
 	 */
-	public static AntPlugin getDefault() {
-		return plugin;
-	}
+	public void run(IAction action) {
 
-	/**
-	 * Returns the string from the plugin's resource bundle,
-	 * or 'key' if not found.
-	 */
-	public static String getResourceString(String key) {
-		ResourceBundle bundle = AntPlugin.getDefault().getResourceBundle();
-		try {
-			return (bundle != null) ? bundle.getString(key) : key;
-		} catch (MissingResourceException e) {
-			return key;
+		ILaunchManager manager = DebugPlugin.getDefault().getLaunchManager();
+		ILaunchConfigurationType type = manager
+				.getLaunchConfigurationType(IAntLaunchConfigurationConstants.ID_ANT_LAUNCH_CONFIGURATION_TYPE);
+		List validConfigs = new ArrayList();
+		if (type != null) {
+			ILaunchConfiguration[] configs = null;
+			try {
+				configs = manager.getLaunchConfigurations(type);
+			} catch (CoreException e) {
+				AntPlugin.getDefault().getPluginLogger().log(e);
+			}
+			if (configs != null && configs.length > 0) {
+				for (int i = 0; i < configs.length; i++) {
+					ILaunchConfiguration launchConfiguration = configs[i];
+					String name = launchConfiguration.getName();
+					if (name != null && name.indexOf("(WOLips)") != -1) {
+						try {
+							launchConfiguration.delete();
+						} catch (CoreException e) {
+							AntPlugin.getDefault().getPluginLogger().log(e);
+						}
+					}
+				}
+			}
 		}
 	}
 
-	/**
-	 * Returns the plugin's resource bundle,
-	 */
-	public ResourceBundle getResourceBundle() {
-		return resourceBundle;
-	}
-	/**
-	 * @return Returns the pluginLogger.
-	 */
-	public PluginLogger getPluginLogger() {
-		return pluginLogger;
-	}
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.osgi.framework.BundleActivator#start(org.osgi.framework.BundleContext)
+	 * @see org.eclipse.ui.IActionDelegate#selectionChanged(org.eclipse.jface.action.IAction,
+	 *      org.eclipse.jface.viewers.ISelection)
 	 */
-	public void start(BundleContext context) throws Exception {
-		super.start(context);
-		this.pluginLogger = new PluginLogger(AntPlugin.PLUGIN_ID, false);
+	public void selectionChanged(IAction action, ISelection selection) {
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.osgi.framework.BundleActivator#stop(org.osgi.framework.BundleContext)
-	 */
-	public void stop(BundleContext context) throws Exception {
-		super.stop(context);
-		this.pluginLogger = null;
-	}
-	
-	
 }
