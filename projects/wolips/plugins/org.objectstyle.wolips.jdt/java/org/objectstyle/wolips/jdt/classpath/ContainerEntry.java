@@ -236,15 +236,21 @@ public class ContainerEntry implements Comparable {
 		ContainerEntry compareTo = (ContainerEntry) object;
 		Integer left = new Integer(0);
 		Integer right = new Integer(0);
-		try {
-			left = new Integer(this.order);
-		} catch (NumberFormatException numberFormatException) {
-			JdtPlugin.getDefault().getPluginLogger().log(numberFormatException);
+		if (this.order != null && this.order.length() > 0) {
+			try {
+				left = new Integer(this.order);
+			} catch (NumberFormatException numberFormatException) {
+				JdtPlugin.getDefault().getPluginLogger().log(
+						numberFormatException);
+			}
 		}
-		try {
-			right = new Integer(compareTo.order);
-		} catch (NumberFormatException numberFormatException) {
-			JdtPlugin.getDefault().getPluginLogger().log(numberFormatException);
+		if (compareTo.order != null && compareTo.order.length() > 0) {
+			try {
+				right = new Integer(compareTo.order);
+			} catch (NumberFormatException numberFormatException) {
+				JdtPlugin.getDefault().getPluginLogger().log(
+						numberFormatException);
+			}
 		}
 		return left.compareTo(right);
 	}
