@@ -83,7 +83,7 @@ public class Container implements IClasspathContainer {
 	 */
 	public static final String[] STANDARD_FRAMEWORK_NAMES = new String[] {
 			"JavaWebObjects", "JavaFoundation", "JavaXML", "JavaWOExtensions",
-			"JavaEOAccess", "JavaEOControl" };
+			"JavaEOAccess", "JavaEOControl", "JavaJDBCAdaptor" };
 
 	private ContainerEntries containerEntries = null;
 

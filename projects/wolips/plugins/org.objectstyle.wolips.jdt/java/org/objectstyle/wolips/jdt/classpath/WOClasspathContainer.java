@@ -76,7 +76,7 @@ public final class WOClasspathContainer
 	public static final String WOLIPS_CLASSPATH_CONTAINER_IDENTITY = "org.objectstyle.wolips.WO_CLASSPATH";
 	public static final String[] WOLIPS_CLASSPATH_STANDARD_FRAMEWORKS = new String[]{
 			"JavaWebObjects", "JavaFoundation", "JavaXML", "JavaWOExtensions",
-			"JavaEOAccess", "JavaEOControl"};
+			"JavaEOAccess", "JavaEOControl", "JavaJDBCAdaptor"};
 	
 	private IClasspathEntry[] classpathEntries = null;
 	/**
