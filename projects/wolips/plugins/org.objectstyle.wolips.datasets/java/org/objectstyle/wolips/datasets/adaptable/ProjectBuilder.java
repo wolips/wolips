@@ -97,6 +97,7 @@ public class ProjectBuilder extends ProjectFiles {
 	private static final String ANT_BUILDER_ID = "org.objectstyle.wolips.antbuilder";
 
 	public boolean fullBuildRequired = false;
+
 	/**
 	 * @param project
 	 */
@@ -259,7 +260,7 @@ public class ProjectBuilder extends ProjectFiles {
 		if (null == result) {
 			// this doesn't exist pre-JDK1.3, is that a problem?
 			result = Collections.EMPTY_MAP;
-			//result = new HashMap();
+			// result = new HashMap();
 		}
 		return (result);
 	}
@@ -486,6 +487,83 @@ public class ProjectBuilder extends ProjectFiles {
 	}
 
 	/**
+	 * @return generate webxml
+	 */
+	public boolean getWebXML() {
+		String returnValue = null;
+		try {
+			returnValue = (String) this.getBuildProperties().get("webXML");
+		} catch (CoreException e) {
+			DataSetsPlugin.getDefault().getPluginLogger().log(e);
+		} catch (IOException e) {
+			DataSetsPlugin.getDefault().getPluginLogger().log(e);
+		}
+		if (returnValue == null || !"true".equalsIgnoreCase(returnValue)) {
+			return false;
+		}
+		return true;
+	}
+
+	/**
+	 * generate webxml
+	 */
+	public void setWebXML(boolean webXML) {
+		try {
+			Properties properties = this.getBuildProperties();
+			if (!webXML) {
+				properties.remove("webXML");
+			} else {
+				properties
+						.put("webXML", "true");
+			}
+			this.setBuildProperties(properties);
+		} catch (CoreException e) {
+			DataSetsPlugin.getDefault().getPluginLogger().log(e);
+		} catch (IOException e) {
+			DataSetsPlugin.getDefault().getPluginLogger().log(e);
+		}
+	}
+	
+	/**
+	 * @return webxml custom content
+	 */
+	public String getWebXML_CustomContent() {
+		String returnValue = null;
+		try {
+			returnValue = (String) this.getBuildProperties().get("webXML_CustomContent");
+		} catch (CoreException e) {
+			DataSetsPlugin.getDefault().getPluginLogger().log(e);
+		} catch (IOException e) {
+			DataSetsPlugin.getDefault().getPluginLogger().log(e);
+		}
+		if(returnValue == null) {
+			return "";
+		}
+		return returnValue;
+	}
+
+	/**
+	 * webxml custom content
+	 */
+	public void setWebXML_CustomContent(String  webXML_CustomContent) {
+		try {
+			Properties properties = this.getBuildProperties();
+			if (webXML_CustomContent == null
+					|| webXML_CustomContent.length() == 0) {
+				properties.remove("webXML_CustomContent");
+			} else {
+				properties
+						.put("webXML_CustomContent", webXML_CustomContent);
+			}
+			this.setBuildProperties(properties);
+		} catch (CoreException e) {
+			DataSetsPlugin.getDefault().getPluginLogger().log(e);
+		} catch (IOException e) {
+			DataSetsPlugin.getDefault().getPluginLogger().log(e);
+		}
+	}
+
+	/**
 	 * Method getPrincipalClass.
 	 * 
 	 * @return String
@@ -493,14 +571,18 @@ public class ProjectBuilder extends ProjectFiles {
 	 * @throws CoreException
 	 */
 	public String getPrincipalClass() {
+		String returnValue = null;
 		try {
-			return (String) this.getBuildProperties().get("principalClass");
+			returnValue = (String) this.getBuildProperties().get("principalClass");
 		} catch (CoreException e) {
 			DataSetsPlugin.getDefault().getPluginLogger().log(e);
 		} catch (IOException e) {
 			DataSetsPlugin.getDefault().getPluginLogger().log(e);
 		}
-		return null;
+		if(returnValue == null) {
+			return "";
+		}
+		return returnValue;
 	}
 
 	/**
@@ -532,15 +614,19 @@ public class ProjectBuilder extends ProjectFiles {
 	 * @throws CoreException
 	 */
 	public String getCustomInfoPListContent() {
+		String returnValue = null;
 		try {
-			return (String) this.getBuildProperties().get(
+			returnValue = (String) this.getBuildProperties().get(
 					"customInfoPListContent");
 		} catch (CoreException e) {
 			DataSetsPlugin.getDefault().getPluginLogger().log(e);
 		} catch (IOException e) {
 			DataSetsPlugin.getDefault().getPluginLogger().log(e);
 		}
-		return null;
+		if(returnValue == null) {
+			return "";
+		}
+		return returnValue;
 	}
 
 	/**
@@ -572,14 +658,18 @@ public class ProjectBuilder extends ProjectFiles {
 	 * @throws CoreException
 	 */
 	public String getEOAdaptorClassName() {
+		String returnValue = null;
 		try {
-			return (String) this.getBuildProperties().get("eoAdaptorClassName");
+			returnValue =  (String) this.getBuildProperties().get("eoAdaptorClassName");
 		} catch (CoreException e) {
 			DataSetsPlugin.getDefault().getPluginLogger().log(e);
 		} catch (IOException e) {
 			DataSetsPlugin.getDefault().getPluginLogger().log(e);
 		}
-		return null;
+		if(returnValue == null) {
+			return "";
+		}
+		return returnValue;
 	}
 
 	/**
