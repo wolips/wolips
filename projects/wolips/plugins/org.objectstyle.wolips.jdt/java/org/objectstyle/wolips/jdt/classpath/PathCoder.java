@@ -77,7 +77,6 @@ public class PathCoder {
 		int segmentCount = path.segmentCount();
 		//if something goes wrong max 2048 runs
 		for (int i = 0; i < segmentCount && i < 2048;) {
-			boolean skip = false;
 			Integer integer = null;
 			try {
 				String string = path.segment(i);

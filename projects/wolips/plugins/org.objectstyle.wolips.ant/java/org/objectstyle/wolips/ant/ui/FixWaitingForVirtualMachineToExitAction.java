@@ -56,9 +56,6 @@
 
 package org.objectstyle.wolips.ant.ui;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.eclipse.ant.internal.ui.launchConfigurations.IAntLaunchConfigurationConstants;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.debug.core.DebugPlugin;
@@ -85,7 +82,6 @@ public class FixWaitingForVirtualMachineToExitAction implements IActionDelegate 
 		ILaunchManager manager = DebugPlugin.getDefault().getLaunchManager();
 		ILaunchConfigurationType type = manager
 				.getLaunchConfigurationType(IAntLaunchConfigurationConstants.ID_ANT_LAUNCH_CONFIGURATION_TYPE);
-		List validConfigs = new ArrayList();
 		if (type != null) {
 			ILaunchConfiguration[] configs = null;
 			try {
