@@ -10,7 +10,6 @@
    <runtime>
       <library name="lib/wolips.jar">
          <export name="*"/>
-         <packages prefixes="org.objectstyle.wolips.core.plugin"/>
       </library>
    </runtime>
    <requires>

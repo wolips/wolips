@@ -10,7 +10,6 @@
    <runtime>
       <library name="lib/wolips-datasets.jar">
          <export name="*"/>
-         <packages prefixes="org.objectstyle.wolips.datasets,org.objectstyle.wolips.datasets.internal,org.objectstyle.wolips.datasets.listener,org.objectstyle.wolips.datasets.pattern,org.objectstyle.wolips.datasets.project,org.objectstyle.wolips.datasets.resources"/>
       </library>
    </runtime>
    <requires>

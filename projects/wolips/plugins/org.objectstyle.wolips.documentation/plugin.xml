@@ -9,7 +9,6 @@
 
    <runtime>
       <library name="lib/wolips-documentation.jar">
-         <packages prefixes="org.objectstyle.wolips.documentation"/>
       </library>
    </runtime>
    <requires>
