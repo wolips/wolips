@@ -62,8 +62,12 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.resources.IWorkspaceRunnable;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.objectstyle.wolips.datasets.DataSetsPlugin;
 import org.objectstyle.wolips.datasets.pattern.IStringMatcher;
@@ -116,12 +120,27 @@ public class ProjectPatternsets extends AbstractProjectAdapterType {
 	 * Creates the folder "ant" within the project if it does not exist.
 	 */
 	public void createAntFolder() {
-		String string = this.getAntFolder().getLocation().toOSString();
-		File file = new File(string);
-		file.mkdirs();
+		if(this.getAntFolder().exists()) {
+			return;
+		}
+		IWorkspaceRunnable operation = new IWorkspaceRunnable() {
+
+			public void run(IProgressMonitor monitor) throws CoreException {
+				String string = getAntFolder().getLocation().toOSString();
+				File file = new File(string);
+				file.mkdirs();
+				try {
+					getAntFolder().refreshLocal(IResource.DEPTH_ZERO, monitor);
+				} catch (CoreException e) {
+					DataSetsPlugin.getDefault().getPluginLogger().log(e);
+				}
+			}
+
+		};
+		IWorkspace workspace = ResourcesPlugin.getWorkspace();
 		try {
-			this.getAntFolder().refreshLocal(IResource.DEPTH_ZERO,
-					new NullProgressMonitor());
+			workspace.run(operation, this.getIProject(),
+					IWorkspace.AVOID_UPDATE, new NullProgressMonitor());
 		} catch (CoreException e) {
 			DataSetsPlugin.getDefault().getPluginLogger().log(e);
 		}
@@ -288,18 +307,17 @@ public class ProjectPatternsets extends AbstractProjectAdapterType {
 	private String[] toProjectRelativePaths(IResource resource) {
 		String[] returnValue = null;
 		if (resource.getParent().getType() != IResource.ROOT
-				/*&& resource.getParent().getType() != IResource.PROJECT*/) {
+		/* && resource.getParent().getType() != IResource.PROJECT */) {
 			returnValue = new String[2];
 			String string = null;
-			if(resource.getType() != IResource.FOLDER) {
-			IPath path = resource.getParent().getProjectRelativePath();
-			/*
-			 * String string = resource.getProject().getName() + "/" +
-			 * path.toString() + "/";
-			 */
-			string = path.toString() + "/";
-			}
-			else {
+			if (resource.getType() != IResource.FOLDER) {
+				IPath path = resource.getParent().getProjectRelativePath();
+				/*
+				 * String string = resource.getProject().getName() + "/" +
+				 * path.toString() + "/";
+				 */
+				string = path.toString() + "/";
+			} else {
 				string = "/" + resource.getName() + "/";
 			}
 			returnValue[0] = string;
@@ -307,7 +325,8 @@ public class ProjectPatternsets extends AbstractProjectAdapterType {
 			returnValue = new String[1];
 		}
 		IPath path = resource.getProjectRelativePath();
-		//String string = resource.getProject().getName() + "/" + path.toString();
+		//String string = resource.getProject().getName() + "/" +
+		// path.toString();
 		String string = path.toString();
 		if (returnValue.length == 2) {
 			returnValue[1] = string;
