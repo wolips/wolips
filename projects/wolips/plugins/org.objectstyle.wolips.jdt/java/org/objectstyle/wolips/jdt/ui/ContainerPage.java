@@ -56,6 +56,7 @@
 
 package org.objectstyle.wolips.jdt.ui;
 
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.jdt.ui.wizards.IClasspathContainerPage;
@@ -143,70 +144,78 @@ public class ContainerPage extends WizardPage implements
 		this.checkboxTreeViewer.setInput(this.containerContentProvider);
 		this.checkboxTreeViewer.addSelectionChangedListener(this);
 		if (true) {
-			Composite row = new Composite(thisPage, SWT.NONE);
-			row.setLayout(new RowLayout());
-			Label lbl = new Label(row, SWT.SINGLE);
-			lbl.setText("Source location");
-			sourceField = new Text(row, SWT.SINGLE);
-			sourceField.setEditable(false);
-			sourceFileButton = new Button(row, SWT.PUSH);
-			sourceFileButton.setText("Choose File");
-			sourceFileButton.addMouseListener(new MouseListener() {
-
-				public void mouseDoubleClick(MouseEvent e) {
-					return;
-				}
-
-				public void mouseDown(MouseEvent e) {
-					FileDialog fileDialog = new FileDialog(new Shell());
-					fileDialog.open();
-					String path = fileDialog.getFilterPath();
-					String file = fileDialog.getFileName();
-					if (path != null && file != null) {
-						sourceField.setText(path + file);
-						Path srcPath = new Path(path);
-						framework.setSrcPath(srcPath.append(file));
-					} else {
-						sourceField.setText("");
-						framework.setSrcPath(null);
-					}
-				}
-
-				public void mouseUp(MouseEvent e) {
-					return;
-				}
-
-			});
-			sourceFolderButton = new Button(row, SWT.PUSH);
-			sourceFolderButton.setText("Choose Folder");
-			sourceFolderButton.addMouseListener(new MouseListener() {
-
-				public void mouseDoubleClick(MouseEvent e) {
-					return;
-				}
-
-				public void mouseDown(MouseEvent e) {
-					DirectoryDialog directoryDialog = new DirectoryDialog(
-							new Shell());
-					directoryDialog.open();
-					String path = directoryDialog.getFilterPath();
-					if (path != null) {
-						sourceField.setText(path);
-						if (framework != null) {
-							framework.setSrcPath(new Path(path));
-						}
-					} else {
-						sourceField.setText("");
-						framework.setSrcPath(null);
-					}
-				}
-
-				public void mouseUp(MouseEvent e) {
-					return;
-				}
-
-			});
+			Composite row = null;
+			Label lbl = null;
 			if (false) {
+			row = new Composite(thisPage, SWT.NONE);
+			row.setLayout(new RowLayout());
+			lbl = new Label(row, SWT.SINGLE);
+			lbl.setText("Source location");
+				sourceField = new Text(row, SWT.SINGLE);
+				sourceField.setEditable(false);
+				sourceFileButton = new Button(row, SWT.PUSH);
+				sourceFileButton.setText("Choose File");
+				sourceFileButton.addMouseListener(new MouseListener() {
+
+					public void mouseDoubleClick(MouseEvent e) {
+						return;
+					}
+
+					public void mouseDown(MouseEvent e) {
+						FileDialog fileDialog = new FileDialog(new Shell());
+						fileDialog.open();
+						String path = fileDialog.getFilterPath();
+						String file = fileDialog.getFileName();
+						if (path != null && file != null) {
+							sourceField.setText(path + file);
+							Path srcPath = new Path(path);
+							framework.setSrcPath(srcPath.append(file));
+						} else {
+							sourceField.setText("");
+							framework.setSrcPath(null);
+						}
+					}
+
+					public void mouseUp(MouseEvent e) {
+						return;
+					}
+
+				});
+				sourceFolderButton = new Button(row, SWT.PUSH);
+				sourceFolderButton.setText("Choose Folder");
+				sourceFolderButton.addMouseListener(new MouseListener() {
+
+					public void mouseDoubleClick(MouseEvent e) {
+						return;
+					}
+
+					public void mouseDown(MouseEvent e) {
+						DirectoryDialog directoryDialog = new DirectoryDialog(
+								new Shell());
+						directoryDialog.open();
+						String stringPath = directoryDialog.getFilterPath();
+						if (stringPath != null) {
+							sourceField.setText(stringPath);
+							if (framework != null) {
+								IPath path = new Path(stringPath);
+								/*
+								 * if(stringPath.length() > 2 &&
+								 * stringPath.charAt(1) == ':') { path =
+								 * path.setDevice(stringPath.substring(2)); }
+								 */
+								framework.setSrcPath(path);
+							}
+						} else {
+							sourceField.setText("");
+							framework.setSrcPath(null);
+						}
+					}
+
+					public void mouseUp(MouseEvent e) {
+						return;
+					}
+
+				});
 				row = new Composite(thisPage, SWT.NONE);
 				row.setLayout(new RowLayout());
 				lbl = new Label(row, SWT.SINGLE);
@@ -369,10 +378,10 @@ public class ContainerPage extends WizardPage implements
 
 	private void frameworkChanged() {
 		if (this.framework == null) {
-			sourceField.setText("");
-			sourceFileButton.setEnabled(false);
-			sourceFolderButton.setEnabled(false);
 			if (false) {
+				sourceField.setText("");
+				sourceFileButton.setEnabled(false);
+				sourceFolderButton.setEnabled(false);
 				javaDocField.setText("");
 				javaDocFileButton.setEnabled(false);
 				javaDocFolderButton.setEnabled(false);
@@ -382,14 +391,14 @@ public class ContainerPage extends WizardPage implements
 			exportedButton.setSelection(false);
 			exportedButton.setEnabled(false);
 		} else {
-			if (framework.getSrcPath() != null) {
-				sourceField.setText(framework.getSrcPath().toString());
-			} else {
-				sourceField.setText("");
-			}
-			sourceFileButton.setEnabled(true);
-			sourceFolderButton.setEnabled(true);
 			if (false) {
+				if (framework.getSrcPath() != null) {
+					sourceField.setText(framework.getSrcPath().toString());
+				} else {
+					sourceField.setText("");
+				}
+				sourceFileButton.setEnabled(true);
+				sourceFolderButton.setEnabled(true);
 				if (framework.getJavaDocPath() != null) {
 					javaDocField.setText(framework.getJavaDocPath().toString());
 				} else {
@@ -405,10 +414,9 @@ public class ContainerPage extends WizardPage implements
 			}
 			orderField.setEditable(true);
 			String string = framework.getOrder();
-			if(string == null) {
+			if (string == null) {
 				orderField.setText("");
-			}
-			else {
+			} else {
 				orderField.setText(string);
 			}
 			exportedButton.setSelection(framework.isExported());
