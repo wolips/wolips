@@ -59,10 +59,12 @@ package org.objectstyle.woproject.ant;
 import java.io.File;
 
 import org.objectstyle.cayenne.gen.AntClassGenerator;
+import org.objectstyle.cayenne.gen.ClassGenerator;
 import org.objectstyle.cayenne.gen.DefaultClassGenerator;
-import org.objectstyle.cayenne.gen.MapClassGenerator;
 import org.objectstyle.cayenne.map.DataMap;
+import org.objectstyle.cayenne.map.ObjEntity;
 import org.objectstyle.cayenne.tools.CayenneGenerator;
+import org.objectstyle.cayenne.gen.MapClassGenerator;
 
 /**
   * Ant task to generate EOEnterpriseObjects from EOModel. 
@@ -161,6 +163,24 @@ public class WOGenerator extends CayenneGenerator {
             }
 
             return false;
+        }
+        
+        /**
+         * Fixes some Classgenerator defaults assumed by Cayenne.
+         */
+        protected void initClassGenerator(
+                ClassGenerator gen,
+                ObjEntity entity,
+                boolean superclass) {
+
+            super.initClassGenerator(gen, entity, superclass);
+
+            // fix default superclass
+            if (gen.getSuperClassName() == null
+                    || gen.getSuperClassName().indexOf("org.objectstyle.cayenne") >= 0) {
+
+                gen.setSuperClassName("EOGenericRecord");
+            }
         }
 
     }
