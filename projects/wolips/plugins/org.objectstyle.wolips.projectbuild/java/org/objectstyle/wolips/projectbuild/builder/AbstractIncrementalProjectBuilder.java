@@ -57,6 +57,7 @@ package org.objectstyle.wolips.projectbuild.builder;
 
 import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.runtime.CoreException;
+import org.objectstyle.wolips.datasets.adaptable.Project;
 import org.objectstyle.wolips.datasets.listener.PatternsetDeltaVisitor;
 import org.objectstyle.wolips.projectbuild.ProjectBuildPlugin;
 
@@ -75,11 +76,16 @@ public abstract class AbstractIncrementalProjectBuilder extends IncrementalProje
 	 */
 	protected boolean projectNeedsAnUpdate() {
 		this.buildResourceValidator.reset();
+		this.patternsetDeltaVisitor.reset();
 		if(this.getProject() == null
 				|| this.getDelta(this.getProject()) == null)
 			return false;
 		try {
 			this.getDelta(this.getProject()).accept(patternsetDeltaVisitor);
+			Project project = (Project)this.getProject().getAdapter(Project.class);
+			if(project.fullBuildRequired) {
+				return true;
+			}
 			this.getDelta(this.getProject()).accept(this.buildResourceValidator);
 		} catch (CoreException e) {
 			ProjectBuildPlugin.getDefault().getPluginLogger().log(e);
