@@ -2,7 +2,7 @@
  *
  * The ObjectStyle Group Software License, Version 1.0
  *
- * Copyright (c) 2002 The ObjectStyle Group
+ * Copyright (c) 2002 - 2004 The ObjectStyle Group
  * and individual authors of the software.  All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -584,8 +584,32 @@ public class AppFormat extends ProjectFormat {
 						"\n",
 						"\n" + WEBINFROOT);
 		}
+		paths = FileStringScanner.replace(
+				paths,
+				WEBINFROOT,
+				WEBINFROOT + WEBINFROOT);
 
-		WOApplication woappTask = (WOApplication) this.task;
+		paths = FileStringScanner.replace(
+				paths,
+				"WOROOT",
+				"");
+
+		paths = FileStringScanner.replace(
+				paths,
+				"APPROOT",
+				"");
+
+		paths = FileStringScanner.replace(
+				paths,
+				"LOCALROOT",
+				"");
+		
+		paths = FileStringScanner.replace(
+				paths,
+				"<",
+				WEBINFROOT +"<");
+
+	WOApplication woappTask = (WOApplication) this.task;
 		log(
 			" AppFormat.webXMLFilter().woappTask: " + woappTask,
 			Project.MSG_VERBOSE);
@@ -598,6 +622,11 @@ public class AppFormat extends ProjectFormat {
 		filter.addFilter("WOClasspath", paths);
 		filter.addFilter("WOApplicationClass", this.getAppClass());
 		filter.addFilter("WOTagLib", woappTask.getWebXML_WOtaglib());
+		String customContent = woappTask.getWebXML_CustomContent();
+		if(customContent == null) {
+			customContent = "";
+		}
+		filter.addFilter("CustomContent", woappTask.getWebXML_WOtaglib());
 
 		return new FilterSetCollection(filter);
 	}

@@ -2,7 +2,7 @@
  *
  * The ObjectStyle Group Software License, Version 1.0
  *
- * Copyright (c) 2002 The ObjectStyle Group
+ * Copyright (c) 2002 -2004 The ObjectStyle Group
  * and individual authors of the software.  All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -112,6 +112,8 @@ public class WOApplication extends WOTask {
 	protected String webXML_WOAppMode = null;
 
 	protected String webXML_WOtaglib = null;
+
+	protected String webXML_CustomContent = null;
 
 	public void release() {
 		super.release();
@@ -569,5 +571,11 @@ public class WOApplication extends WOTask {
 							"'webXML_WOtaglib' attribute is missing.");
 			}
 		}
+	}
+	public String getWebXML_CustomContent() {
+		return webXML_CustomContent;
+	}
+	public void setWebXML_CustomContent(String webXML_CustomContent) {
+		this.webXML_CustomContent = webXML_CustomContent;
 	}
 }
