@@ -100,17 +100,11 @@ public class ProjectPatternsets extends AbstractProjectAdapterType {
 	private PatternsetMatcher classesIncludeMatcher = null;
 
 	private PatternsetMatcher classesExcludeMatcher = null;
-	
-	private final static PatternsetMatcher DEFAULT_EXCLUDE_MATCHER = new PatternsetMatcher(new String[] {
-	        "**/.svn", 
-	        "**/.svn/**",
-	        "**/CVS", 
-	        "**.*~/**", 
-	        "**/CVS/**", 
-	        "**/build/**", 
-	        "**/dist/**"
-	});
-	
+
+	private final static PatternsetMatcher DEFAULT_EXCLUDE_MATCHER = new PatternsetMatcher(
+			new String[] { "**/.svn", "**/.svn/**", "**/CVS", "**.*~/**",
+					"**/CVS/**", "**/build/**", "**/dist/**" });
+
 	/**
 	 * @param project
 	 */
@@ -297,14 +291,18 @@ public class ProjectPatternsets extends AbstractProjectAdapterType {
 				&& resource.getParent().getType() != IResource.PROJECT) {
 			returnValue = new String[2];
 			IPath path = resource.getParent().getProjectRelativePath();
-			String string = resource.getProject().getName() + "/"
-					+ path.toString() + "/";
+			/*
+			 * String string = resource.getProject().getName() + "/" +
+			 * path.toString() + "/";
+			 */
+			String string = path.toString() + "/";
 			returnValue[0] = string;
 		} else {
 			returnValue = new String[1];
 		}
 		IPath path = resource.getProjectRelativePath();
-		String string = resource.getProject().getName() + "/" + path.toString();
+		//String string = resource.getProject().getName() + "/" + path.toString();
+		String string = path.toString();
 		if (returnValue.length == 2) {
 			returnValue[1] = string;
 		} else {
@@ -518,7 +516,7 @@ public class ProjectPatternsets extends AbstractProjectAdapterType {
 				"wsresources.exclude.patternset");
 		PatternsetWriter.create(wsresourcesExcludePatternset, (String[]) list
 				.toArray(new String[list.size()]));
-		this.woappResourcesIncludeMatcher = new PatternsetMatcher(
+		this.woappResourcesExcludeMatcher = new PatternsetMatcher(
 				wsresourcesExcludePatternset);
 		try {
 			wsresourcesExcludePatternset.refreshLocal(IResource.DEPTH_ONE,
