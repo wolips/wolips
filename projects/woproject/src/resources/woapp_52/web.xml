@@ -117,4 +117,6 @@
  	<param-value>%WEBINFROOT%</param-value> 
  </context-param>
 
+@CustomContent@
+
 </web-app>
