@@ -134,13 +134,17 @@ public class WOComponentCreator implements IRunnableWithProgress {
 				apiPath = this.parentResource.getProject().getLocation();
 				break;
 			case IResource.FOLDER :
-				componentFolder = ((IFolder) this.parentResource)
+			    componentFolder = ((IFolder) this.parentResource)
 						.getFolder(this.componentName + "."
 								+ IWOLipsModel.EXT_COMPONENT);
 			componentFolderToReveal = javaProject.getSubprojectSourceFolder(
 					(IFolder) this.parentResource, true);		
 				componentJavaPath = componentFolderToReveal.getLocation();
-				apiPath = project.getParentFolderWithPBProject((IFolder)this.parentResource).getLocation();
+				apiPath = componentFolder.getParent().getLocation();
+				IFolder pbFolder = project.getParentFolderWithPBProject((IFolder)this.parentResource);
+				if(pbFolder != null) {
+				    apiPath = pbFolder.getLocation();
+				}
 				break;
 			default :
 				throw new InvocationTargetException(new Exception(
