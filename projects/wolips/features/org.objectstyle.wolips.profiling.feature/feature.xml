@@ -77,7 +77,6 @@
       <import plugin="org.eclipse.debug.core"/>
       <import plugin="org.eclipse.debug.ui"/>
       <import plugin="org.objectstyle.wolips.launching"/>
-      <import plugin="jmechanic.eclipse.profiler"/>
       <import plugin="org.eclipse.core.runtime"/>
       <import plugin="org.eclipse.jdt.launching"/>
       <import plugin="org.objectstyle.wolips.commons"/>
