@@ -58,6 +58,7 @@ import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaCore;
+import org.eclipse.jdt.internal.ui.preferences.formatter.BlankLinesTabPage;
 import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.swt.SWT;
@@ -219,7 +220,7 @@ public class ProjectNaturePage extends PropertyPage implements IAdaptable {
 		gd = new GridData(GridData.FILL_HORIZONTAL);
 		gd.grabExcessHorizontalSpace = true;
 		gd.grabExcessVerticalSpace = true;
-		gd.heightHint = 150;
+		gd.heightHint = 70;
 		// Owner text field
 		//Scrollable scrollable = new Scrollable(parent, SWT.H_SCROLL | SWT.V_SCROLL);
 		Text text = new Text(parent, SWT.MULTI | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
@@ -242,13 +243,16 @@ public class ProjectNaturePage extends PropertyPage implements IAdaptable {
 	/**
 	 * @param parent
 	 */
-	private void _addPatternSection(Composite parent) {
+	private void _addPatternSection(Composite parent, Project project) {
 		Composite group = _createLabelledComposite(parent, BUILD_PARAMS_TITLE);
 		group.setLayout(new GridLayout(2, false));
 		this.principalClass = _addTextField(group, "Principal Class");
+		this.principalClass.setText(project.getPrincipalClass());
 		this.eoAdaptorClassName = _addTextField(group, "EOAdaptorClassName");
+		this.eoAdaptorClassName.setText(project.getEOAdaptorClassName());
 		this.customInfoPListContent = _addTextArea(group,
 				"Custom Info.plist content");
+		this.customInfoPListContent.setText(project.getCustomInfoPListContent());
 	}
 
 	/**
@@ -268,13 +272,33 @@ public class ProjectNaturePage extends PropertyPage implements IAdaptable {
 				.isTargetBuilderInstalled());
 	}
 
+	/**
+	 * @param parent
+	 * @param project
+	 */
+	private void addWebXMLSection(Composite parent, Project project) {
+		Composite group = _createLabelledComposite(parent, "web.xml");
+		group.setLayout(new GridLayout(2, false));
+		this._woWebXMLCheck = new Button(group, SWT.CHECK | SWT.LEFT);
+		this._woWebXMLCheck.setText("Generate web.xml");
+		this._woWebXMLCheck.setEnabled(true);
+		this._woWebXMLCheck.setSelection(project.getWebXML());
+		Label textLabel = new Label(group, SWT.NONE);
+		textLabel.setText("");
+		this.webXMLCustomContent = _addTextArea(group,
+		"Custom web.xml content");
+		this.webXMLCustomContent.setText(project.getWebXML_CustomContent());
+	}
+
 	void enableWidgets(boolean enabled) {
+		this._woWebXMLCheck.setEnabled(enabled);
 		this._woTargetBuilderCheck.setEnabled(enabled);
 		this._woIsFrameworkButton.setEnabled(enabled);
 		this._woIsApplicationButton.setEnabled(enabled);
 		this.principalClass.setEnabled(true);
 		this.customInfoPListContent.setEnabled(true);
 		this.eoAdaptorClassName.setEnabled(true);
+		this.webXMLCustomContent.setEnabled(true);
 	}
 
 	/**
@@ -295,7 +319,7 @@ public class ProjectNaturePage extends PropertyPage implements IAdaptable {
 			// --
 			_addProjectKindSection(composite, project);
 			// --
-			_addPatternSection(composite);
+			_addPatternSection(composite, project);
 			_addTargetBuilderSection(composite, project);
 			this._woIsIncrementalButton
 					.addSelectionListener(new SelectionListener() {
@@ -309,7 +333,8 @@ public class ProjectNaturePage extends PropertyPage implements IAdaptable {
 									.getSelection());
 						}
 					});
-			setDefaults(project);
+			addWebXMLSection(composite, project);
+			//setDefaults(project);
 			enableWidgets(this._woIsIncrementalButton.getSelection());
 		} catch (CoreException exception) {
 			UIPlugin.getDefault().getPluginLogger().log(exception);
@@ -366,6 +391,8 @@ public class ProjectNaturePage extends PropertyPage implements IAdaptable {
 		if (string != null) {
 			this.eoAdaptorClassName.setText(string);
 		}
+		this.webXMLCustomContent.setText("");
+		this._woWebXMLCheck.setSelection(false);
 	}
 
 	/*
@@ -382,6 +409,9 @@ public class ProjectNaturePage extends PropertyPage implements IAdaptable {
 				project.setPrincipalClass(this.principalClass.getText());
 				project.setCustomInfoPListContent(this.customInfoPListContent
 						.getText());
+				project.setWebXML_CustomContent(this.webXMLCustomContent
+						.getText());
+				project.setWebXML(this._woWebXMLCheck.getSelection());
 				project
 						.setEOAdaptorClassName(this.eoAdaptorClassName
 								.getText());
@@ -442,6 +472,8 @@ public class ProjectNaturePage extends PropertyPage implements IAdaptable {
 		return (Project) (this._getProject()).getAdapter(Project.class);
 	}
 
+	private Button _woWebXMLCheck;
+
 	private Button _woTargetBuilderCheck;
 
 	private Button _woNatureCheck;
@@ -455,6 +487,8 @@ public class ProjectNaturePage extends PropertyPage implements IAdaptable {
 	private Text principalClass;
 
 	private Text customInfoPListContent;
+
+	private Text webXMLCustomContent;
 
 	private Text eoAdaptorClassName;
 }

@@ -44,8 +44,13 @@
     	</taskdef>
 
 		<!-- add webXML="true" to generate a web.xml file -->
-		<woapplication name="${project.name}"  stdFrameworks="false" destDir="${dest.dir}" customInfoPListContent="${customInfoPListContent}" principalClass="${principalClass}">
-   			<classes dir="${classes.dir}">
+		<woapplication name="${project.name}"  stdFrameworks="false"
+											 destDir="${dest.dir}"
+											 customInfoPListContent="${customInfoPListContent}"
+											 principalClass="${principalClass}"
+											 webXML="${webXML}"
+											 webXML_CustomContent="${webXML_CustomContent}">
+			<classes dir="${classes.dir}">
       			<patternset>
   					<includesfile name="${WOLipsContext.getAntFolderName()}/classes.include.patternset"/> 
 					<excludesfile name="${WOLipsContext.getAntFolderName()}/classes.exclude.patternset"/> 
