@@ -517,22 +517,22 @@ public class WorkbenchUtilitiesPlugin extends AbstractUIPlugin {
 
         logger.log(message, target);
 
-        if(shell == null)
-            shell = WorkbenchUtilitiesPlugin.getActiveWorkbenchShell();
-
-        if (shell == null) {
-            logger.log("No active workbench shell found handling", target);
-		} else {
-    		String title = "Error";
-    		if (target instanceof CoreException) {
-    			IStatus status = ((CoreException) target).getStatus();
-    			ErrorDialog.openError(shell, title, message, status);
-    			//WOLipsLog.log(status);
-    		} else {
-    			MessageDialog.openError(shell, title, target.getMessage());
-    			//WOLipsLog.log(target);
-    		}
-		}
+//        if(shell == null)
+//            shell = WorkbenchUtilitiesPlugin.getActiveWorkbenchShell();
+//
+//        if (shell == null) {
+//            logger.log("No active workbench shell found handling", target);
+//		} else {
+//    		String title = "Error";
+//    		if (target instanceof CoreException) {
+//    			IStatus status = ((CoreException) target).getStatus();
+//    			ErrorDialog.openError(shell, title, message, status);
+//    			//WOLipsLog.log(status);
+//    		} else {
+//    			MessageDialog.openError(shell, title, target.getMessage());
+//    			//WOLipsLog.log(target);
+//    		}
+//		}
     }
 	/**
 	 * @return Returns the pluginLogger.
