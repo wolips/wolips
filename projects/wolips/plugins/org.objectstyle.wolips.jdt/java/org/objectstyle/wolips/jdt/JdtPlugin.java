@@ -64,7 +64,7 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.objectstyle.wolips.commons.logging.PluginLogger;
 import org.objectstyle.wolips.jdt.classpath.model.ClasspathModel;
-import org.objectstyle.wolips.jdt.listener.MasterResourceChangeListener;
+import org.objectstyle.wolips.jdt.listener.ResourceChangeListener;
 import org.osgi.framework.BundleContext;
 
 /**
@@ -138,9 +138,9 @@ public class JdtPlugin extends AbstractUIPlugin {
 		this.classpathModel = new ClasspathModel();
 		// add element change listener to update project file on classpath
 		// changes
-		this.resourceChangeListener = new MasterResourceChangeListener();
+		this.resourceChangeListener = new ResourceChangeListener();
 		ResourcesPlugin.getWorkspace().addResourceChangeListener(
-				this.resourceChangeListener, IResourceChangeEvent.POST_BUILD);
+				this.resourceChangeListener, IResourceChangeEvent.POST_CHANGE);
 	}
 
 	/*

@@ -3,7 +3,7 @@
  * 
  * The ObjectStyle Group Software License, Version 1.0
  * 
- * Copyright (c) 2002 - 2004 The ObjectStyle Group and individual authors of the
+ * Copyright (c) 2002, 2004 The ObjectStyle Group and individual authors of the
  * software. All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -59,31 +59,26 @@ import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceChangeEvent;
+import org.eclipse.core.resources.IResourceChangeListener;
 import org.eclipse.core.resources.IResourceDelta;
-import org.eclipse.core.resources.WorkspaceJob;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.jdt.core.JavaCore;
 import org.objectstyle.wolips.datasets.DataSetsPlugin;
 import org.objectstyle.wolips.datasets.adaptable.JavaProject;
 import org.objectstyle.wolips.datasets.adaptable.Project;
-import org.objectstyle.wolips.datasets.project.PBProjectUpdater;
 import org.objectstyle.wolips.datasets.resources.IWOLipsModel;
 
 /**
  * Tracking changes in resources and synchronizes webobjects project file
  */
-public class ResourceChangeListener extends WorkspaceJob {
-	private IResourceChangeEvent event;
+public class ResourceChangeListener implements IResourceChangeListener {
 
 	/**
 	 * Constructor for ResourceChangeListener.
 	 */
 	public ResourceChangeListener() {
-		super("WOLips Project Files Updates (Resources)");
+		super();
 	}
 
 	/*
@@ -91,54 +86,53 @@ public class ResourceChangeListener extends WorkspaceJob {
 	 * 
 	 * @see org.eclipse.core.resources.WorkspaceJob#runInWorkspace(org.eclipse.core.runtime.IProgressMonitor)
 	 */
-	public IStatus runInWorkspace(IProgressMonitor monitor)
-			throws CoreException {
+	public final void resourceChanged(IResourceChangeEvent event) {
 		PatternsetDeltaVisitor patternsetDeltaVisitor = new PatternsetDeltaVisitor();
 		ProjectFileResourceValidator resourceValidator = new ProjectFileResourceValidator();
 		try {
-			this.event.getDelta().accept(patternsetDeltaVisitor);
-			this.event.getDelta().accept(resourceValidator);
+			event.getDelta().accept(patternsetDeltaVisitor);
+			event.getDelta().accept(resourceValidator);
 		} catch (CoreException e) {
 			DataSetsPlugin.getDefault().getPluginLogger().log(e);
 		}
-		// update project files
-		IFile projectFileToUpdate;
-		PBProjectUpdater projectUpdater;
 		Object[] allAddedKeys = resourceValidator
 				.getAddedResourcesProjectDict().keySet().toArray();
-		for (int i = 0; i < allAddedKeys.length; i++) {
-			projectFileToUpdate = (IFile) allAddedKeys[i];
-			projectUpdater = PBProjectUpdater.instance(projectFileToUpdate
-					.getParent());
-			if (projectUpdater != null) {
-				if (projectFileToUpdate.getParent().getType() == IResource.PROJECT)
-					projectUpdater.syncProjectName();
-				projectUpdater.syncFilestable((HashMap) resourceValidator
-						.getAddedResourcesProjectDict()
-						.get(projectFileToUpdate), IResourceDelta.ADDED,
-						resourceValidator.getLanguages());
-			}
-		}
 		Object[] allRemovedKeys = resourceValidator
 				.getRemovedResourcesProjectDict().keySet().toArray();
-		for (int i = 0; i < allRemovedKeys.length; i++) {
-			projectFileToUpdate = (IFile) allRemovedKeys[i];
-			// ensure project file container exists
-			// if no container exists the whole project is deleted
-			if (projectFileToUpdate.getParent().exists()) {
-				projectUpdater = PBProjectUpdater.instance(projectFileToUpdate
-						.getParent());
-				if (projectUpdater != null) {
-					projectUpdater.syncFilestable((HashMap) resourceValidator
-							.getRemovedResourcesProjectDict().get(
-									projectFileToUpdate),
-							IResourceDelta.REMOVED, resourceValidator
-									.getLanguages());
-				}
-			}
+		if (allAddedKeys.length > 0 || allRemovedKeys.length > 0) {
+			UpdateProjectFileJob updateProjectFileJob = new UpdateProjectFileJob(
+					allAddedKeys, resourceValidator
+							.getAddedResourcesProjectDict(), allRemovedKeys,
+					resourceValidator.getRemovedResourcesProjectDict(),
+					resourceValidator.getLanguages());
+			updateProjectFileJob.setRule(resourceValidator.project
+					.getIProject());
+			updateProjectFileJob.schedule();
 		}
-		return new Status(IStatus.OK, DataSetsPlugin.getPluginId(), IStatus.OK,
-				"Done", null);
+		// update project files
+		/*
+		 * IFile projectFileToUpdate; PBProjectUpdater projectUpdater; for (int
+		 * i = 0; i < allAddedKeys.length; i++) { projectFileToUpdate = (IFile)
+		 * allAddedKeys[i]; projectUpdater =
+		 * PBProjectUpdater.instance(projectFileToUpdate .getParent()); if
+		 * (projectUpdater != null) { if
+		 * (projectFileToUpdate.getParent().getType() == IResource.PROJECT)
+		 * projectUpdater.syncProjectName();
+		 * projectUpdater.syncFilestable((HashMap) resourceValidator
+		 * .getAddedResourcesProjectDict() .get(projectFileToUpdate),
+		 * IResourceDelta.ADDED, resourceValidator.getLanguages()); } } Object[]
+		 * allRemovedKeys = resourceValidator
+		 * .getRemovedResourcesProjectDict().keySet().toArray(); for (int i = 0;
+		 * i < allRemovedKeys.length; i++) { projectFileToUpdate = (IFile)
+		 * allRemovedKeys[i]; // ensure project file container exists // if no
+		 * container exists the whole project is deleted if
+		 * (projectFileToUpdate.getParent().exists()) { projectUpdater =
+		 * PBProjectUpdater.instance(projectFileToUpdate .getParent()); if
+		 * (projectUpdater != null) { projectUpdater.syncFilestable((HashMap)
+		 * resourceValidator .getRemovedResourcesProjectDict().get(
+		 * projectFileToUpdate), IResourceDelta.REMOVED, resourceValidator
+		 * .getLanguages()); } } }
+		 */
 	}
 
 	private final class ProjectFileResourceValidator extends
@@ -447,14 +441,6 @@ public class ResourceChangeListener extends WorkspaceJob {
 		public final String[] getLanguages() {
 			return (String[]) languages.toArray(new String[languages.size()]);
 		}
-	}
-
-	/**
-	 * @param event
-	 *            The event to set.
-	 */
-	public void setEvent(IResourceChangeEvent event) {
-		this.event = event;
 	}
 
 }

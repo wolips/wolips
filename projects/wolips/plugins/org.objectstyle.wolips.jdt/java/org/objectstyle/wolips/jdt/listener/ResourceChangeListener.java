@@ -3,7 +3,7 @@
  * 
  * The ObjectStyle Group Software License, Version 1.0
  * 
- * Copyright (c) 2002 - 2004 The ObjectStyle Group and individual authors of the
+ * Copyright (c) 2002, 2004 The ObjectStyle Group and individual authors of the
  * software. All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -55,31 +55,22 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceChangeEvent;
+import org.eclipse.core.resources.IResourceChangeListener;
 import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.resources.IResourceDeltaVisitor;
-import org.eclipse.core.resources.WorkspaceJob;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaCore;
 import org.objectstyle.wolips.datasets.DataSetsPlugin;
 import org.objectstyle.wolips.datasets.adaptable.JavaProject;
 import org.objectstyle.wolips.datasets.adaptable.Project;
-import org.objectstyle.wolips.datasets.project.PBProjectUpdater;
 import org.objectstyle.wolips.jdt.JdtPlugin;
-import org.objectstyle.wolips.jdt.ant.UpdateFrameworkIncludeFiles;
-import org.objectstyle.wolips.jdt.ant.UpdateOtherClasspathIncludeFiles;
 
 /**
  * Tracking changes in resources and synchronizes webobjects project file
  */
-public class ResourceChangeListener extends WorkspaceJob implements
+public class ResourceChangeListener implements IResourceChangeListener,
 		IResourceDeltaVisitor {
-	private IResourceChangeEvent event;
-
-	private List frameworkNames;
 
 	private Project project;
 
@@ -87,29 +78,15 @@ public class ResourceChangeListener extends WorkspaceJob implements
 	 * Constructor for ResourceChangeListener.
 	 */
 	public ResourceChangeListener() {
-		super("WOLips Project Files Updates (Java)");
+		super();
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.core.resources.WorkspaceJob#runInWorkspace(org.eclipse.core.runtime.IProgressMonitor)
-	 */
-	public IStatus runInWorkspace(IProgressMonitor monitor)
-			throws CoreException {
+	public final void resourceChanged(IResourceChangeEvent event) {
 		try {
-			this.event.getDelta().accept(this);
+			event.getDelta().accept(this);
 		} catch (CoreException e) {
 			JdtPlugin.getDefault().getPluginLogger().log(e);
 		}
-		if (frameworkNames != null) {
-			PBProjectUpdater projectUpdater = PBProjectUpdater
-					.instance(this.project.getIProject());
-			if (projectUpdater != null)
-				projectUpdater.setFrameworks(this.frameworkNames);
-		}
-		return new Status(IStatus.OK, DataSetsPlugin.getPluginId(), IStatus.OK,
-				"Done", null);
 	}
 
 	/**
@@ -163,29 +140,24 @@ public class ResourceChangeListener extends WorkspaceJob implements
 			return false;
 		case IResource.FILE:
 			if (resource.getName().equals(".classpath")) {
-				UpdateOtherClasspathIncludeFiles updateOtherClasspathIncludeFiles = new UpdateOtherClasspathIncludeFiles();
-				updateOtherClasspathIncludeFiles.setIProject(this.project
-						.getIProject());
-				updateOtherClasspathIncludeFiles.execute();
-				UpdateFrameworkIncludeFiles updateFrameworkIncludeFiles = new UpdateFrameworkIncludeFiles();
-				updateFrameworkIncludeFiles.setIProject(this.project
-						.getIProject());
-				updateFrameworkIncludeFiles.execute();
+				UpdateIncludeFilesJob updateIncludeFilesJob = new UpdateIncludeFilesJob(
+						this.project.getIProject());
+				updateIncludeFilesJob.setRule(this.project.getIProject());
+				updateIncludeFilesJob.schedule();
 				IJavaProject iJavaProject = JavaCore.create(this.project
 						.getIProject());
-				JavaProject javaProject = (JavaProject)iJavaProject.getAdapter(JavaProject.class);
-				frameworkNames = javaProject.getFrameworkNames();
+				JavaProject javaProject = (JavaProject) iJavaProject
+						.getAdapter(JavaProject.class);
+				List frameworkNames = javaProject.getFrameworkNames();
+
+				if (frameworkNames != null) {
+					UpdateFrameworkNamesJob updateFrameworkNamesJob = new UpdateFrameworkNamesJob(
+							frameworkNames, this.project.getIProject());
+					updateFrameworkNamesJob.setRule(this.project.getIProject());
+					updateFrameworkNamesJob.schedule();
+				}
 			}
 		}
 		return false;
 	}
-
-	/**
-	 * @param event
-	 *            The event to set.
-	 */
-	public void setEvent(IResourceChangeEvent event) {
-		this.event = event;
-	}
-
 }

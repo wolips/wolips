@@ -70,7 +70,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.objectstyle.wolips.commons.logging.PluginLogger;
 import org.objectstyle.wolips.datasets.adaptable.AdapterCache;
 import org.objectstyle.wolips.datasets.internal.Api;
-import org.objectstyle.wolips.datasets.listener.MasterResourceChangeListener;
+import org.objectstyle.wolips.datasets.listener.ResourceChangeListener;
 import org.osgi.framework.BundleContext;
 /**
  * The main plugin class to be used in the desktop.
@@ -237,9 +237,9 @@ public class DataSetsPlugin extends Plugin implements IDataSetTypes {
 		this.adapterCache = new AdapterCache();
 		//add resource change listener to update project file on resource
 		// changes
-		this.resourceChangeListener = new MasterResourceChangeListener();
+		this.resourceChangeListener = new ResourceChangeListener();
 		ResourcesPlugin.getWorkspace().addResourceChangeListener(
-				this.resourceChangeListener, IResourceChangeEvent.POST_BUILD);
+				this.resourceChangeListener, IResourceChangeEvent.POST_CHANGE);
 	}
 
 	/*
