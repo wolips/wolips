@@ -127,13 +127,12 @@ public class WOLocalJavaApplicationTabGroup extends AbstractLaunchConfigurationT
 		setTabs(tabs);
 	}
 
-  /* (non-Javadoc)
+	/* (non-Javadoc)
 	 * @see org.eclipse.debug.ui.AbstractLaunchConfigurationTabGroup#setDefaults(org.eclipse.debug.core.ILaunchConfigurationWorkingCopy)
 	 */
 	public void setDefaults(ILaunchConfigurationWorkingCopy wc) {
-    WOJavaLocalApplicationLaunchConfigurationDelegate.initConfiguration(wc);
-
-		super.setDefaults(wc);
+	    WOJavaLocalApplicationLaunchConfigurationDelegate.initConfiguration(wc);
+	    super.setDefaults(wc);
 	}
-
+	
 }

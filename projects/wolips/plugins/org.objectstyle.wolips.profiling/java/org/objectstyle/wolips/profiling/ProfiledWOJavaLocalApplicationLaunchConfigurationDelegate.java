@@ -67,38 +67,27 @@ public class ProfiledWOJavaLocalApplicationLaunchConfigurationDelegate
 	 *      org.eclipse.debug.core.ILaunch, java.lang.String)
 	 */
 	protected StringBuffer addVMArguments(
-		StringBuffer vmArgs,
-		ILaunchConfiguration configuration,
-		ILaunch launch,
-		String mode) {
-		vmArgs = super.addVMArguments(vmArgs, configuration, launch, mode);
-		// Set things up for profiling only if this is
-		// debug mode
-		// Set things up for profiling
-		int hprofPort;
-		try {
-			hprofPort =
-				ProfilingLaunchSupport.getProfilerPortNumber(configuration);
-		} catch (CoreException e) {
-			ProfilingPlugin.getDefault().getPluginLogger().log(e);
-			return vmArgs;
-		}
-		if (hprofPort != -1) {
-			try {
-				// Calculate the arguments
-				vmArgs.append(
-					ProfilingLaunchSupport.getHProfVMArguments(
-						configuration,
-						hprofPort));
-			} catch (CoreException e) {
-				ProfilingPlugin.getDefault().getPluginLogger().log(e);
-				return vmArgs;
-			}
-
-			// Fire up the listener thread
-			ProfilingLaunchSupport.launchHprofListener(launch, hprofPort);
-		}
-		return vmArgs;
+	        StringBuffer vmArgs,
+	        ILaunchConfiguration configuration,
+	        ILaunch launch,
+	        String mode) {
+	    vmArgs = super.addVMArguments(vmArgs, configuration, launch, mode);
+	    // Set things up for profiling only if this is
+	    // debug mode
+	    // Set things up for profiling
+	    try {
+	        int hprofPort =
+	            ProfilingLaunchSupport.getProfilerPortNumber(configuration);
+	        if (hprofPort != -1) {
+	            String args = ProfilingLaunchSupport.getHProfVMArguments(configuration, hprofPort);
+	            // Fire up the listener thread
+	            ProfilingLaunchSupport.launchHprofListener(launch, hprofPort);
+	            vmArgs.append(args);
+	        }
+	    } catch (CoreException e) {
+	        ProfilingPlugin.getDefault().getPluginLogger().log(e);
+	    }
+	    return vmArgs;
 	}
 
 }

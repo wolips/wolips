@@ -105,7 +105,6 @@ public class WORuntimeClasspathProvider extends StandardClasspathProvider {
 		// we start tinkering with things ourselves
 
 		entries = super.resolveClasspath(entries, configuration);
-
 		// resolve WO framework/application projects ourselves, let super do the rest
 		for (int i = 0; i < entries.length; ++i) {
 			IRuntimeClasspathEntry entry = entries[i];

@@ -293,6 +293,7 @@ public class WOJavaLocalApplicationLaunchConfigurationDelegate
 
 		return wdFile;
 	}
+	
 	protected StringBuffer addVMArguments(
 		StringBuffer vmArgs,
 		ILaunchConfiguration configuration,
@@ -300,5 +301,4 @@ public class WOJavaLocalApplicationLaunchConfigurationDelegate
 		String mode) {
 		return vmArgs;
 	}
-
 }
