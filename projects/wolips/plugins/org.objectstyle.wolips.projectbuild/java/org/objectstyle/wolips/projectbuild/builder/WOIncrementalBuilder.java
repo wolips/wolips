@@ -74,6 +74,7 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.resources.IResourceDeltaVisitor;
 import org.eclipse.core.resources.IResourceVisitor;
+import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -133,11 +134,11 @@ public class WOIncrementalBuilder extends AbstractIncrementalProjectBuilder {
 			monitor = new NullProgressMonitor();
 		}
 		monitor = new SubProgressMonitor (monitor, 100*1000);
-//		if (!projectNeedsAnUpdate()
-//					&& kind != IncrementalProjectBuilder.FULL_BUILD) {
-//				monitor.done();
-//				return new IProject[0];
-//		}	
+		if (!projectNeedsAnUpdate()
+					&& kind != IncrementalProjectBuilder.FULL_BUILD) {
+				monitor.done();
+				return new IProject[0];
+		}	
 		_getLogger().debug("<incremental build>");
 		monitor.beginTask("building WebObjects layout ...", 100);
 		try {
