@@ -90,14 +90,14 @@ public class ActionOnIResource implements IObjectActionDelegate {
 	/**
 	 * @return Returns the IProject
 	 */
-	protected IProject getIProject() {
+	public IProject getIProject() {
 		return this.project;
 	}
 
 	/**
 	 * @return Returns the IResource the action was invoked on
 	 */
-	protected IResource getActionResource() {
+	public IResource getActionResource() {
 		return this.actionResource;
 	}
 
