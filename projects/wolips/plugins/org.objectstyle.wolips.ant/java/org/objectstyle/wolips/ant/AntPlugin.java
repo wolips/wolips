@@ -56,9 +56,17 @@
 
 package org.objectstyle.wolips.ant;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
+import org.eclipse.ant.internal.ui.launchConfigurations.IAntLaunchConfigurationConstants;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.debug.core.DebugPlugin;
+import org.eclipse.debug.core.ILaunchConfiguration;
+import org.eclipse.debug.core.ILaunchConfigurationType;
+import org.eclipse.debug.core.ILaunchManager;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.objectstyle.wolips.commons.logging.PluginLogger;
 import org.osgi.framework.BundleContext;
@@ -129,6 +137,26 @@ public class AntPlugin extends AbstractUIPlugin {
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
 		this.pluginLogger = new PluginLogger(AntPlugin.PLUGIN_ID, false);
+		ILaunchManager manager = DebugPlugin.getDefault().getLaunchManager();
+		ILaunchConfigurationType type = manager.getLaunchConfigurationType(IAntLaunchConfigurationConstants.ID_ANT_LAUNCH_CONFIGURATION_TYPE);
+		List validConfigs= new ArrayList();
+		if (type != null) {
+			ILaunchConfiguration[] configs = null;
+			try {
+				configs = manager.getLaunchConfigurations(type);
+			} catch (CoreException e) {
+				this.pluginLogger.log(e);
+			}
+			if (configs != null && configs.length > 0) {
+				for(int i = 0; i < configs.length; i++) {
+					ILaunchConfiguration launchConfiguration = configs[i];
+					String name = launchConfiguration.getName();
+					if(name != null && name.indexOf("(WOLips)") != -1) {
+						launchConfiguration.delete();
+					}
+				}
+			}
+		}
 	}
 
 	/*

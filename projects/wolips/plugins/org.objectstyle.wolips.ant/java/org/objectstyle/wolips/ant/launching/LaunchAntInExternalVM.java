@@ -83,16 +83,19 @@ public class LaunchAntInExternalVM {
 	public static void launchAntInExternalVM(IFile buildFile, IProgressMonitor monitor, boolean captureOutput, String targets)
 			throws CoreException {
 		ILaunchConfiguration config = null;
+		ILaunchConfigurationWorkingCopy workingCopy = null;
 		try {
 			//config = this.createDefaultLaunchConfiguration(buildFile,
 			// monitor);
-			config = LaunchAntInExternalVM.createDefaultLaunchConfiguration(buildFile,captureOutput, targets);
-			ILaunch launch = config.launch(ILaunchManager.RUN_MODE, new SubProgressMonitor(monitor, 1));
+			workingCopy = LaunchAntInExternalVM.createDefaultLaunchConfiguration(buildFile,captureOutput, targets);
+			//config = workingCopy.doSave();
+			ILaunch launch = workingCopy.launch(ILaunchManager.RUN_MODE, new SubProgressMonitor(monitor, 1));
 			if (!captureOutput) {
 				ILaunchManager manager = DebugPlugin.getDefault()
 						.getLaunchManager();
 				manager.removeLaunch(launch);
 			}
+			//config.setAttribute(IExternalToolConstants.ATTR_LOCATION, null);
 		} finally {
 			config = null;
 		}
@@ -105,7 +108,7 @@ public class LaunchAntInExternalVM {
 	 * @return default launch configuration
 	 * @throws CoreException
 	 */
-	private static ILaunchConfiguration createDefaultLaunchConfiguration(
+	private static ILaunchConfigurationWorkingCopy createDefaultLaunchConfiguration(
 			IFile file, boolean captureOutput, String targets) throws CoreException {
 		ILaunchManager manager = DebugPlugin.getDefault().getLaunchManager();
 		ILaunchConfigurationType type = manager
@@ -175,7 +178,7 @@ public class LaunchAntInExternalVM {
 				IJavaLaunchConfigurationConstants.ATTR_PROJECT_NAME, file
 						.getProject().getName());
 		workingCopy.setAttribute(IAntLaunchConfigurationConstants.ATTR_ANT_TARGETS, targets);
-		return workingCopy.doSave();
+		return workingCopy;
 	}
 
 }
