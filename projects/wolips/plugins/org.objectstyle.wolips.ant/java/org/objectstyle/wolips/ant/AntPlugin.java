@@ -90,15 +90,16 @@ public class AntPlugin extends AbstractUIPlugin {
 }
 
 	/**
-	 * Returns the shared instance.
+	 * @return Returns the shared instance.
 	 */
 	public static AntPlugin getDefault() {
 		return plugin;
 	}
 
 	/**
-	 * Returns the string from the plugin's resource bundle,
-	 * or 'key' if not found.
+	 * @param key
+	 * @return Returns the string from the plugin's resource bundle,
+	 * or 'key' if not found. 
 	 */
 	public static String getResourceString(String key) {
 		ResourceBundle bundle = AntPlugin.getDefault().getResourceBundle();
@@ -110,7 +111,7 @@ public class AntPlugin extends AbstractUIPlugin {
 	}
 
 	/**
-	 * Returns the plugin's resource bundle,
+	 * @return Returns the plugin's resource bundle
 	 */
 	public ResourceBundle getResourceBundle() {
 		return resourceBundle;
