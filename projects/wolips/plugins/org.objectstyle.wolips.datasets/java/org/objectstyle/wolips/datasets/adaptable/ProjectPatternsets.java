@@ -120,7 +120,7 @@ public class ProjectPatternsets extends AbstractProjectAdapterType {
 	 * Creates the folder "ant" within the project if it does not exist.
 	 */
 	public void createAntFolder() {
-		if(this.getAntFolder().exists()) {
+		if (this.getAntFolder().exists()) {
 			return;
 		}
 		IWorkspaceRunnable operation = new IWorkspaceRunnable() {
@@ -158,6 +158,50 @@ public class ProjectPatternsets extends AbstractProjectAdapterType {
 		return folder;
 	}
 
+	private void run(IProject rule,
+			PatternsetWorkspaceRunnable patternsetWorkspaceRunnable) {
+		try {
+			ResourcesPlugin.getWorkspace().run(patternsetWorkspaceRunnable,
+					rule, IResource.NONE, null);
+		} catch (CoreException e) {
+			DataSetsPlugin.getDefault().getPluginLogger().log(e);
+		}
+	}
+
+	class PatternsetWorkspaceRunnable implements IWorkspaceRunnable {
+		private IFile patternset;
+
+		private PatternsetMatcher matcher;
+
+		private String[] defaultPattern;
+
+		public PatternsetWorkspaceRunnable(IFile patternset,
+				String[] defaultPattern) {
+			super();
+			this.patternset = patternset;
+			this.defaultPattern = defaultPattern;
+
+		}
+
+		public void run(IProgressMonitor pm) throws CoreException {
+			if (!patternset.exists()) {
+				PatternsetWriter.create(patternset, defaultPattern);
+				try {
+					patternset.refreshLocal(IResource.DEPTH_ONE,
+							new NullProgressMonitor());
+				} catch (CoreException e) {
+					DataSetsPlugin.getDefault().getPluginLogger().log(e);
+				}
+			}
+			this.matcher = new PatternsetMatcher(patternset);
+
+		}
+
+		public PatternsetMatcher getMatcher() {
+			return matcher;
+		}
+	};
+
 	/**
 	 * @return Returns the classesExcludeMatcher.
 	 */
@@ -168,17 +212,10 @@ public class ProjectPatternsets extends AbstractProjectAdapterType {
 		this.createAntFolder();
 		IFile classesExcludePatternset = this.getAntFolder().getFile(
 				"classes.exclude.patternset");
-		if (!classesExcludePatternset.exists())
-			PatternsetWriter.create(classesExcludePatternset,
-					new String[] { "build.properties" });
-		this.classesExcludeMatcher = new PatternsetMatcher(
-				classesExcludePatternset);
-		try {
-			classesExcludePatternset.refreshLocal(IResource.DEPTH_ONE,
-					new NullProgressMonitor());
-		} catch (CoreException e) {
-			DataSetsPlugin.getDefault().getPluginLogger().log(e);
-		}
+		PatternsetWorkspaceRunnable patternsetWorkspaceRunnable = new PatternsetWorkspaceRunnable(
+				classesExcludePatternset, new String[] { "build.properties" });
+		this.run(this.getIProject(), patternsetWorkspaceRunnable);
+		this.classesExcludeMatcher = patternsetWorkspaceRunnable.getMatcher();
 		return this.classesExcludeMatcher;
 	}
 
@@ -192,17 +229,11 @@ public class ProjectPatternsets extends AbstractProjectAdapterType {
 		this.createAntFolder();
 		IFile classesIncludePatternset = this.getAntFolder().getFile(
 				"classes.include.patternset");
-		if (!classesIncludePatternset.exists())
-			PatternsetWriter.create(classesIncludePatternset, new String[] {
-					"**/*.class", "*.properties" });
-		this.classesIncludeMatcher = new PatternsetMatcher(
-				classesIncludePatternset);
-		try {
-			classesIncludePatternset.refreshLocal(IResource.DEPTH_ONE,
-					new NullProgressMonitor());
-		} catch (CoreException e) {
-			DataSetsPlugin.getDefault().getPluginLogger().log(e);
-		}
+		PatternsetWorkspaceRunnable patternsetWorkspaceRunnable = new PatternsetWorkspaceRunnable(
+					classesIncludePatternset,
+					new String[] { "**/*.class", "*.properties" });
+			this.run(this.getIProject(), patternsetWorkspaceRunnable);
+		this.classesIncludeMatcher = patternsetWorkspaceRunnable.getMatcher();
 		return this.classesIncludeMatcher;
 	}
 
@@ -216,17 +247,12 @@ public class ProjectPatternsets extends AbstractProjectAdapterType {
 		this.createAntFolder();
 		IFile resourcesExcludePatternset = this.getAntFolder().getFile(
 				"resources.exclude.patternset");
-		if (!resourcesExcludePatternset.exists())
-			PatternsetWriter.create(resourcesExcludePatternset, new String[] {
-					"**/*.eomodeld~/", "**/*.woa/**", "**/*.framework/**" });
-		this.resourcesExcludeMatcher = new PatternsetMatcher(
-				resourcesExcludePatternset);
-		try {
-			resourcesExcludePatternset.refreshLocal(IResource.DEPTH_ONE,
-					new NullProgressMonitor());
-		} catch (CoreException e) {
-			DataSetsPlugin.getDefault().getPluginLogger().log(e);
-		}
+		PatternsetWorkspaceRunnable patternsetWorkspaceRunnable = new PatternsetWorkspaceRunnable(
+					resourcesExcludePatternset,
+					new String[] { "**/*.eomodeld~/", "**/*.woa/**",
+							"**/*.framework/**" });
+			this.run(this.getIProject(), patternsetWorkspaceRunnable);
+		this.resourcesExcludeMatcher = patternsetWorkspaceRunnable.getMatcher();
 		return this.resourcesExcludeMatcher;
 	}
 
@@ -240,18 +266,13 @@ public class ProjectPatternsets extends AbstractProjectAdapterType {
 		this.createAntFolder();
 		IFile resourcesIncludePatternset = this.getAntFolder().getFile(
 				"resources.include.patternset");
-		if (!resourcesIncludePatternset.exists())
-			PatternsetWriter.create(resourcesIncludePatternset, new String[] {
-					"Properties", "**/*.eomodeld/", "**/*.d2wmodel",
-					"**/*.wo/", "**/*.api", "**/*.strings" });
-		this.resourcesIncludeMatcher = new PatternsetMatcher(
-				resourcesIncludePatternset);
-		try {
-			resourcesIncludePatternset.refreshLocal(IResource.DEPTH_ONE,
-					new NullProgressMonitor());
-		} catch (CoreException e) {
-			DataSetsPlugin.getDefault().getPluginLogger().log(e);
-		}
+		PatternsetWorkspaceRunnable patternsetWorkspaceRunnable = new PatternsetWorkspaceRunnable(
+					resourcesIncludePatternset,
+					new String[] { "Properties", "**/*.eomodeld/",
+							"**/*.d2wmodel", "**/*.wo/", "**/*.api",
+							"**/*.strings" });
+			this.run(this.getIProject(), patternsetWorkspaceRunnable);
+		this.resourcesIncludeMatcher = patternsetWorkspaceRunnable.getMatcher();
 		return this.resourcesIncludeMatcher;
 	}
 
@@ -265,17 +286,11 @@ public class ProjectPatternsets extends AbstractProjectAdapterType {
 		this.createAntFolder();
 		IFile wsresourcesExcludePatternset = this.getAntFolder().getFile(
 				"wsresources.exclude.patternset");
-		if (!wsresourcesExcludePatternset.exists())
-			PatternsetWriter.create(wsresourcesExcludePatternset, new String[] {
-					"**/*.woa/**", "**/*.framework/**" });
-		this.woappResourcesExcludeMatcher = new PatternsetMatcher(
-				wsresourcesExcludePatternset);
-		try {
-			wsresourcesExcludePatternset.refreshLocal(IResource.DEPTH_ONE,
-					new NullProgressMonitor());
-		} catch (CoreException e) {
-			DataSetsPlugin.getDefault().getPluginLogger().log(e);
-		}
+		PatternsetWorkspaceRunnable patternsetWorkspaceRunnable = new PatternsetWorkspaceRunnable(
+					wsresourcesExcludePatternset,
+					new String[] { "**/*.woa/**", "**/*.framework/**" });
+			this.run(this.getIProject(), patternsetWorkspaceRunnable);
+		this.woappResourcesExcludeMatcher = patternsetWorkspaceRunnable.getMatcher();
 		return this.woappResourcesExcludeMatcher;
 	}
 
@@ -289,18 +304,12 @@ public class ProjectPatternsets extends AbstractProjectAdapterType {
 		this.createAntFolder();
 		IFile wsresourcesIncludePatternset = this.getAntFolder().getFile(
 				"wsresources.include.patternset");
-		if (!wsresourcesIncludePatternset.exists())
-			PatternsetWriter.create(wsresourcesIncludePatternset, new String[] {
-					"**/*.gif", "**/*.xsl", "**/*.css", "**/*.png", "**/*.jpg",
-					"**/*.js" });
-		this.woappResourcesIncludeMatcher = new PatternsetMatcher(
-				wsresourcesIncludePatternset);
-		try {
-			wsresourcesIncludePatternset.refreshLocal(IResource.DEPTH_ONE,
-					new NullProgressMonitor());
-		} catch (CoreException e) {
-			DataSetsPlugin.getDefault().getPluginLogger().log(e);
-		}
+		PatternsetWorkspaceRunnable patternsetWorkspaceRunnable = new PatternsetWorkspaceRunnable(
+					wsresourcesIncludePatternset,
+					new String[] { "**/*.gif", "**/*.xsl", "**/*.css",
+							"**/*.png", "**/*.jpg", "**/*.js" });
+			this.run(this.getIProject(), patternsetWorkspaceRunnable);
+		this.woappResourcesIncludeMatcher = patternsetWorkspaceRunnable.getMatcher();
 		return this.woappResourcesIncludeMatcher;
 	}
 

@@ -239,7 +239,7 @@ public class DataSetsPlugin extends Plugin implements IDataSetTypes {
 		// changes
 		this.resourceChangeListener = new ResourceChangeListener();
 		ResourcesPlugin.getWorkspace().addResourceChangeListener(
-				this.resourceChangeListener, IResourceChangeEvent.POST_CHANGE);
+				this.resourceChangeListener, IResourceChangeEvent.POST_BUILD);
 	}
 
 	/*
