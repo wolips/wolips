@@ -95,6 +95,21 @@
             modes="run, debug"
             class="org.objectstyle.wolips.launching.WOJavaApplicationLaunchShortcut"
             id="org.objectstyle.wolips.launching.WOJavaApplicationLaunchShortcut">
+         <contextualLaunch>
+           <enablement>
+             <with variable="selection">
+               <count value="1"/>
+               <iterate>
+                 <or>
+                   <test property="org.eclipse.debug.ui.matchesPattern" value="*.java"/>
+                   <test property="org.eclipse.debug.ui.matchesPattern" value="*.class"/>
+                   <instanceof value="org.eclipse.jdt.core.IJavaElement"/>
+                 </or>
+                 <test property="org.eclipse.jdt.debug.ui.hasMainType"/>
+               </iterate>
+             </with>
+           </enablement>
+  		 </contextualLaunch>
          <perspective
                id="org.eclipse.jdt.ui.JavaPerspective">
          </perspective>
