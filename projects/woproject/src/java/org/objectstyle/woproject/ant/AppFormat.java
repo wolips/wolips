@@ -250,10 +250,12 @@ public class AppFormat extends ProjectFormat {
                             if(!processedFrameworks.contains(frameworkName)) {
                                 int jsize = jars.length;
                                 for (int k = 0; k < jsize; k++) {
-                                    if (!jarSet.contains(jars[k])) {
-                                        jarSet.add(jars[k]);
+                                    File jar = jars[k];
+                                    jar = fs.getDeployedFile(jar);
+                                    if (!jarSet.contains(jar)) {
+                                        jarSet.add(jar);
                                     } else {
-                                        log("Skipped " + jars[k].getPath(), Project.MSG_VERBOSE);
+                                        log("Skipped " + jar.getPath(), Project.MSG_VERBOSE);
                                     }
                                 }
                             }

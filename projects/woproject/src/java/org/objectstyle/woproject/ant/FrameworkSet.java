@@ -70,7 +70,8 @@ import org.apache.tools.ant.types.FileSet;
 public class FrameworkSet extends FileSet {
 
     protected boolean embed;
-
+    protected File deploymentDir;
+    
     protected String ifCondition = "";
 
     /**
@@ -81,6 +82,31 @@ public class FrameworkSet extends FileSet {
     }
 
     /**
+     * Sets the deployment root directory (can be different from the normal <code>root</code> specified). 
+     * The idea is that you can specify the compile time path via <code>dir=/some_binary_release_path/</code>,
+     * but still end up with <code>LOCALROOT/Library/Frameworks/Bar.framework</code> as the prefix.
+     * 
+     * @param root
+     */
+    public void setDeploymentDir(File root) {
+        this.deploymentDir = root;
+    }
+    
+    public File getDeployedFile(File file) {
+        File result = file;
+        if(this.deploymentDir != null && !getEmbed()) {
+            // maps
+            //  foo/bar/Baz.framework/Resources/Java/xxx.jar -> /System/Library/Frameworks/Baz.framework
+            String oldPath = file.getPath();
+            String newRoot = deploymentDir.getPath();
+            String newPath = oldPath.replaceFirst("(.*?)(/\\w+\\.framework/)", newRoot + "$2");
+            System.out.println(oldPath + "->" + newPath);
+            result = new File(newPath);
+        }
+        return result;
+    }
+    
+    /**
      * Sets root directory of this FileSet based on a symbolic name, that can be
      * "wo.homeroot", "wo.woroot", "wo.localroot". Throws BuildException if an
      * invalid root is specified.
@@ -88,7 +114,7 @@ public class FrameworkSet extends FileSet {
      * @deprecated since WOProject 1.1, use {@link #setDir(File)}.
      */
     public void setRoot(File root) throws BuildException {
-        super.setDir(root);
+        setDir(root);
     }
 
     public void setEmbed(boolean flag) {

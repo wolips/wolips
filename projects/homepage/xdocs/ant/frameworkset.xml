@@ -21,8 +21,22 @@
 				</tr>
 				<tr>
 					<td valign="top">dir</td>
-					<td valign="top">A base directory for the include/exclude pattern lookup.</td>
+					<td valign="top">A base directory for the include/exclude pattern lookup. When the prefix
+					for the directory matches one of <code>wo.root</code>, <code>wo.localroot</code> etc.
+					this prefix will get replaced in the final class file by <code>WOROOT</code>, <code>LOCALROOT</code> 
+					etc. and these paths in turn will get translated by the environment variables in the startup script
+					to the final path.
+					</td>
 					<td valign="top" align="center">Yes</td>
+				</tr>
+				<tr>
+					<td valign="top">deploymentDir</td>
+					<td valign="top">The base directory that is prefixed to the frameworks in the classpath files. 
+					This allows you to decouple your compile time paths from the deployment paths. Useful when you 
+					have wastly different file layouts in the development vs. the deployment server. Used only 
+					when inside a <code>woapplication</code> task.
+					</td>
+					<td valign="top" align="center">No</td>
 				</tr>
 				<tr>
 					<td valign="top">if</td>
