@@ -3,7 +3,7 @@
  * 
  * The ObjectStyle Group Software License, Version 1.0
  * 
- * Copyright (c) 2002 - 2004 The ObjectStyle Group and individual authors of the
+ * Copyright (c) 2002, 2004 The ObjectStyle Group and individual authors of the
  * software. All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -117,6 +117,9 @@ final class BuildResourceValidator extends DefaultDeltaVisitor {
 			this.project = (Project) resource.getAdapter(Project.class);
 			return true;
 		case IResource.FOLDER:
+			if(resource.getName().endsWith(".framework") || resource.getName().endsWith(".woa")) {
+				return false;
+			}
 			if (this.project.matchesResourcesPattern(resource)
 					|| this.project.matchesWOAppResourcesPattern(resource)
 					|| this.project.matchesClassesPattern(resource)) {
