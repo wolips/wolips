@@ -2,7 +2,7 @@
  * 
  * The ObjectStyle Group Software License, Version 1.0 
  *
- * Copyright (c) 2002 The ObjectStyle Group 
+ * Copyright (c) 2002, 2004 The ObjectStyle Group 
  * and individual authors of the software.  All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -61,6 +61,7 @@ import java.util.Iterator;
 import java.util.Vector;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -80,6 +81,7 @@ import org.objectstyle.wolips.variables.VariablesPlugin;
  */
 public class EOModelCreationPage extends WizardNewWOResourcePage {
 	private HashMap availableAdaptors;
+	private IResource resourceToReveal;
 	// widgets
 	//	private Button adaptorJDBCCheckbox;
 	//	private Button adaptorJDBCPatchedCheckbox;
@@ -153,14 +155,14 @@ public class EOModelCreationPage extends WizardNewWOResourcePage {
 				return false;
 			case 1 :
 				modelCreator = new EOModelCreator(actualProject, modelName,
-						adaptorName);
+						adaptorName, this);
 				break;
 			default :
 				IFolder subprojectFolder = actualProject
 						.getFolder(getContainerFullPath()
 								.removeFirstSegments(1));
 				modelCreator = new EOModelCreator(subprojectFolder, modelName,
-						adaptorName);
+						adaptorName, this);
 				break;
 		}
 		IRunnableWithProgress op = new WorkspaceModifyDelegatingOperation(
@@ -235,5 +237,13 @@ public class EOModelCreationPage extends WizardNewWOResourcePage {
 		public Vector getAdaptorNames() {
 			return adaptorNames;
 		}
+	}
+	
+	
+	public IResource getResourceToReveal() {
+		return resourceToReveal;
+	}
+	public void setResourceToReveal(IResource resourceToReveal) {
+		this.resourceToReveal = resourceToReveal;
 	}
 }

@@ -54,19 +54,30 @@
  *
  */
 package org.objectstyle.wolips.wizards;
+
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.IWizard;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.ui.IWorkbench;
+import org.eclipse.ui.part.ISetSelectionTarget;
+import org.eclipse.ui.wizards.newresource.BasicNewResourceWizard;
 import org.objectstyle.wolips.templateengine.TemplateEnginePlugin;
 import org.objectstyle.wolips.templateengine.TemplateFolder;
+import org.objectstyle.wolips.workbenchutilities.WorkbenchUtilitiesPlugin;
+
 /**
  * @author ulrich
  *  
  */
 public abstract class AbstractResourceWizard extends Wizard implements IWizard {
 	private String id;
+
 	private SelectTemplatePage selectTemplatePage;
+
+	private IWorkbench workbench;
+
 	/**
 	 * Constructor for WOProjectCreationWizard.
 	 */
@@ -74,24 +85,42 @@ public abstract class AbstractResourceWizard extends Wizard implements IWizard {
 		super();
 		id = templatesID;
 	}
-	
+
 	private boolean displayPage() {
-		if(id == null)
+		if (id == null)
 			return false;
-		TemplateFolder[] templateFolder = TemplateEnginePlugin.getTemplateFolder(id);
-		if(templateFolder.length < 2)
+		TemplateFolder[] templateFolder = TemplateEnginePlugin
+				.getTemplateFolder(id);
+		if (templateFolder.length < 2)
 			return false;
 		selectTemplatePage = new SelectTemplatePage(templateFolder);
 		return false;
 	}
-	
+
 	/**
 	 * (non-Javadoc) Method declared on INewWizard
 	 */
 	public void init(IWorkbench workbench,
 			IStructuredSelection structuredSelection) {
-		if(this.displayPage()) {
+		this.workbench = workbench;
+		if (this.displayPage()) {
 			this.addPage(selectTemplatePage);
 		}
 	}
+
+	/**
+	 * Selects and reveals the newly added resource in all parts of the active
+	 * workbench window's active page.
+	 * 
+	 * @see ISetSelectionTarget
+	 */
+	protected void selectAndReveal(IResource newResource) {
+		if (newResource != null) {
+			BasicNewResourceWizard.selectAndReveal(newResource, workbench
+					.getActiveWorkbenchWindow());
+			if (newResource.getType() == IResource.FILE)
+				WorkbenchUtilitiesPlugin.open((IFile) newResource);
+		}
+	}
+
 }

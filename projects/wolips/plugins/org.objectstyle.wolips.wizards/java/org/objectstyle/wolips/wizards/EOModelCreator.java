@@ -2,7 +2,7 @@
  * 
  * The ObjectStyle Group Software License, Version 1.0 
  *
- * Copyright (c) 2002 The ObjectStyle Group 
+ * Copyright (c) 2002, 2004 The ObjectStyle Group 
  * and individual authors of the software.  All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -81,6 +81,7 @@ public class EOModelCreator implements IRunnableWithProgress {
 	private String modelName;
 	private String adaptorName;
 	private IResource parentResource;
+	private EOModelCreationPage page;
 	/**
 	 * Constructor for EOModelCreator.
 	 * @param parentResource
@@ -88,11 +89,13 @@ public class EOModelCreator implements IRunnableWithProgress {
 	 * @param adaptorName
 	 */
 	public EOModelCreator(IResource parentResource, String modelName,
-			String adaptorName) {
+			String adaptorName, EOModelCreationPage page) {
 		this.parentResource = parentResource;
 		this.modelName = modelName;
 		this.adaptorName = adaptorName;
+		this.page = page;
 	}
+	
 	public void run(IProgressMonitor monitor) throws InvocationTargetException {
 		try {
 			createEOModel(monitor);
@@ -150,6 +153,7 @@ public class EOModelCreator implements IRunnableWithProgress {
 			throw new InvocationTargetException(e);
 		}
 		modelFolder.refreshLocal(IResource.DEPTH_INFINITE, monitor);
+		page.setResourceToReveal(modelFolder.findMember("index.eomodeld"));
 		// add adaptor framework
 		if (!"None".equals(this.adaptorName)) {
 			IJavaProject projectToUpdate = JavaCore.create(this.parentResource

@@ -2,7 +2,7 @@
  * 
  * The ObjectStyle Group Software License, Version 1.0 
  *
- * Copyright (c) 2002 - 2004 The ObjectStyle Group 
+ * Copyright (c) 2002, 2004 The ObjectStyle Group 
  * and individual authors of the software.  All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -56,6 +56,7 @@
 package org.objectstyle.wolips.wizards;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -81,6 +82,7 @@ public class WOComponentCreationPage extends WizardNewWOResourcePage {
 	private Button bodyCheckbox;
 	private Button wooCheckbox;
 	private Button apiCheckbox;
+	private IResource resourceToReveal;
 	/**
 	 * Creates the page for the wocomponent creation wizard.
 	 * 
@@ -157,7 +159,7 @@ public class WOComponentCreationPage extends WizardNewWOResourcePage {
 			case 1 :
 				componentCreator = new WOComponentCreator(actualProject,
 						componentName, bodyCheckbox.getSelection(), apiCheckbox
-								.getSelection(), wooCheckbox.getSelection());
+								.getSelection(), wooCheckbox.getSelection(), this);
 				break;
 			default :
 				// determine parent resource for component creator by removing
@@ -167,7 +169,7 @@ public class WOComponentCreationPage extends WizardNewWOResourcePage {
 								.removeFirstSegments(1));
 				componentCreator = new WOComponentCreator(subprojectFolder,
 						componentName, bodyCheckbox.getSelection(), apiCheckbox
-								.getSelection(), wooCheckbox.getSelection());
+								.getSelection(), wooCheckbox.getSelection(), this);
 				break;
 		}
 		IRunnableWithProgress op = new WorkspaceModifyDelegatingOperation(
@@ -179,5 +181,12 @@ public class WOComponentCreationPage extends WizardNewWOResourcePage {
 	 */
 	protected String getNewFileLabel() {
 		return Messages.getString("WOComponentCreationPage.newComponent.label");
+	}
+	
+	public IResource getResourceToReveal() {
+		return resourceToReveal;
+	}
+	public void setResourceToReveal(IResource resourceToReveal) {
+		this.resourceToReveal = resourceToReveal;
 	}
 }

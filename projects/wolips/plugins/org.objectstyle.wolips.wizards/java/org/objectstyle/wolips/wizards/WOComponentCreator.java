@@ -2,7 +2,7 @@
  * 
  * The ObjectStyle Group Software License, Version 1.0 
  *
- * Copyright (c) 2002 - 2004 The ObjectStyle Group 
+ * Copyright (c) 2002, 2004 The ObjectStyle Group 
  * and individual authors of the software.  All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -79,6 +79,7 @@ public class WOComponentCreator implements IRunnableWithProgress {
 	private boolean createApiFile;
 	private boolean createWooFile;
 	private IResource parentResource;
+	private WOComponentCreationPage page;
 	/**
 	 * Constructor for WOComponentCreator.
 	 * 
@@ -89,12 +90,13 @@ public class WOComponentCreator implements IRunnableWithProgress {
 	 * @param createWooFile
 	 */
 	public WOComponentCreator(IResource parentResource, String componentName,
-			boolean createBodyTag, boolean createApiFile, boolean createWooFile) {
+			boolean createBodyTag, boolean createApiFile, boolean createWooFile, WOComponentCreationPage page) {
 		this.parentResource = parentResource;
 		this.componentName = componentName;
 		this.createBodyTag = createBodyTag;
 		this.createApiFile = createApiFile;
 		this.createWooFile = createWooFile;
+		this.page = page;
 	}
 	public void run(IProgressMonitor monitor) throws InvocationTargetException {
 		try {
@@ -114,6 +116,7 @@ public class WOComponentCreator implements IRunnableWithProgress {
 			throws CoreException, InvocationTargetException {
 		IFolder componentFolder = null;
 		IPath componentJavaPath = null;
+		IFolder componentFolderToReveal = null;
 		IJavaProject iJavaProject = JavaCore.create(
 				this.parentResource.getProject());
 		JavaProject javaProject = (JavaProject) iJavaProject.getAdapter(JavaProject.class);
@@ -122,15 +125,17 @@ public class WOComponentCreator implements IRunnableWithProgress {
 				componentFolder = ((IProject) this.parentResource)
 						.getFolder(this.componentName + "."
 								+ IWOLipsModel.EXT_COMPONENT);
-				componentJavaPath = javaProject.getProjectSourceFolder()
-						.getLocation();
+			componentFolderToReveal = (IFolder)javaProject.getProjectSourceFolder();
+				componentJavaPath = 
+					componentFolderToReveal.getLocation();
 				break;
 			case IResource.FOLDER :
 				componentFolder = ((IFolder) this.parentResource)
 						.getFolder(this.componentName + "."
 								+ IWOLipsModel.EXT_COMPONENT);
-				componentJavaPath = javaProject.getSubprojectSourceFolder(
-						(IFolder) this.parentResource, true).getLocation();
+			componentFolderToReveal = javaProject.getSubprojectSourceFolder(
+					(IFolder) this.parentResource, true);		
+				componentJavaPath = componentFolderToReveal.getLocation();;
 				break;
 			default :
 				throw new InvocationTargetException(new Exception(
@@ -161,9 +166,11 @@ public class WOComponentCreator implements IRunnableWithProgress {
 			componentEngine.run(new NullProgressMonitor());
 			this.parentResource.getProject().refreshLocal(
 					IResource.DEPTH_INFINITE, monitor);
+			page.setResourceToReveal(componentFolderToReveal.findMember(this.componentName + "." + IWOLipsModel.EXT_JAVA));
 		} catch (Exception e) {
 			WizardsPlugin.getDefault().getPluginLogger().log(e);
 			throw new InvocationTargetException(e);
 		}
 	}
+	
 }
