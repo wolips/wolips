@@ -148,7 +148,7 @@
             adaptable="true"
             id="org.objectstyle.wolips.ui.actions.AddToWOAppResourcesIncludePatternsetAction">
          <action
-               label="include as wsresource"
+               label="Include as WebServerResource"
                class="org.objectstyle.wolips.ui.actions.AddToWOAppResourcesIncludePatternsetAction"
                menubarPath="org.objectstyle.wolips.ui.ResourceContributions/group3"
                enablesFor="1"
@@ -160,7 +160,7 @@
             adaptable="true"
             id="org.objectstyle.wolips.ui.actions.AddToWOAppResourcesExcludePatternsetAction">
          <action
-               label="exclude as wsresource"
+               label="Exclude as WebServerResource"
                class="org.objectstyle.wolips.ui.actions.AddToWOAppResourcesExcludePatternsetAction"
                menubarPath="org.objectstyle.wolips.ui.ResourceContributions/group3"
                enablesFor="1"
@@ -172,7 +172,7 @@
             adaptable="true"
             id="org.objectstyle.wolips.ui.actions.AddToResourcesIncludePatternsetAction">
          <action
-               label="include as resource"
+               label="Include as Resource"
                class="org.objectstyle.wolips.ui.actions.AddToResourcesIncludePatternsetAction"
                menubarPath="org.objectstyle.wolips.ui.ResourceContributions/group3"
                enablesFor="1"
@@ -184,7 +184,7 @@
             adaptable="true"
             id="org.objectstyle.wolips.ui.actions.AddToResourcesExcludePatternsetAction">
          <action
-               label="exclude as resource"
+               label="Exclude as Resource"
                class="org.objectstyle.wolips.ui.actions.AddToResourcesExcludePatternsetAction"
                menubarPath="org.objectstyle.wolips.ui.ResourceContributions/group3"
                enablesFor="1"
@@ -196,7 +196,7 @@
             adaptable="true"
             id="org.objectstyle.wolips.ui.actions.AddToClassesIncludePatternsetAction">
          <action
-               label="include as class"
+               label="Include as Class"
                class="org.objectstyle.wolips.ui.actions.AddToClassesIncludePatternsetAction"
                menubarPath="org.objectstyle.wolips.ui.ResourceContributions/group3"
                enablesFor="1"
@@ -208,7 +208,7 @@
             adaptable="true"
             id="org.objectstyle.wolips.ui.actions.AddToClassesExcludePatternsetAction">
          <action
-               label="exclude as class"
+               label="Exclude as Class"
                class="org.objectstyle.wolips.ui.actions.AddToClassesExcludePatternsetAction"
                menubarPath="org.objectstyle.wolips.ui.ResourceContributions/group3"
                enablesFor="1"
