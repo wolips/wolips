@@ -219,10 +219,8 @@ public class WOAntBuilder extends AbstractIncrementalProjectBuilder {
 	 * 
 	 * @param buildFile
 	 * @param monitor
-	 * @throws CoreException
 	 */
-	private void launchAntInExternalVM(IFile buildFile, IProgressMonitor monitor)
-			throws CoreException {
+	private void launchAntInExternalVM(IFile buildFile, IProgressMonitor monitor) {
 		try {
 			LaunchAntInExternalVM.launchAntInExternalVM(buildFile, monitor, Preferences.getPREF_CAPTURE_ANT_OUTPUT(), null);
 		} catch (CoreException e) {
