@@ -48,6 +48,7 @@
  *  
  */
 package org.objectstyle.wolips.ui.propertypages;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -72,6 +73,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Scrollable;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.dialogs.PropertyPage;
 import org.objectstyle.wolips.datasets.adaptable.Project;
@@ -86,22 +88,34 @@ import org.objectstyle.wolips.ui.UIPlugin;
  */
 public class ProjectNaturePage extends PropertyPage implements IAdaptable {
 	private static final String BUILD_STYLE_TITLE = " Build style";
+
 	private static final String BUILD_PARAMS_TITLE = " Build parameters";
+
 	private static final String PROJECT_KIND_TITLE = " Project kind";
+
 	private static final String PROJECT_KIND_NOTE_TITLE = "Note: ";
+
 	private static final String PROJECT_KIND_NOTE = "The settings below will only affect the incremental build style.";
+
 	private static final String WO_NATURE_TITLE = "Is a WebObjects Project (options below apply only if this is checked)";
+
 	private static final String WO_IS_FRAMEWORK_TITLE = "Framework";
+
 	private static final String WO_IS_APP_TITLE = "Application";
+
 	private static final String WO_USE_INCREMENTAL_TITLE = "Incremental";
+
 	private static final String WO_USE_ANT_TITLE = "Use Ant (build.xml)";
+
 	private static final String WO_USE_TARGET_BUILDET_TITLE = "Use TargetBuilder";
+
 	/**
 	 * Constructor for WOLipsProjectNaturePage.
 	 */
 	public ProjectNaturePage() {
 		super();
 	}
+
 	/**
 	 * @param parent
 	 * @param project
@@ -119,6 +133,7 @@ public class ProjectNaturePage extends PropertyPage implements IAdaptable {
 		this._woNatureCheck.setEnabled(true);
 		this._woNatureCheck.setSelection(project.hasWOLipsNature());
 	}
+
 	/**
 	 * @param parent
 	 * @param project
@@ -157,6 +172,7 @@ public class ProjectNaturePage extends PropertyPage implements IAdaptable {
 		fd.top = new FormAttachment(this._woIsIncrementalButton, 5);
 		note.setLayoutData(fd);
 	}
+
 	/**
 	 * @param parent
 	 * @param project
@@ -182,6 +198,7 @@ public class ProjectNaturePage extends PropertyPage implements IAdaptable {
 		this._woIsFrameworkButton.setSelection(isFramework);
 		this._woIsApplicationButton.setSelection(!isFramework);
 	}
+
 	private Text _addTextField(Composite parent, String label) {
 		GridData gd = new GridData();
 		Label textLabel = new Label(parent, SWT.NONE);
@@ -194,6 +211,23 @@ public class ProjectNaturePage extends PropertyPage implements IAdaptable {
 		text.setLayoutData(gd);
 		return (text);
 	}
+
+	private Text _addTextArea(Composite parent, String label) {
+		GridData gd = new GridData();
+		Label textLabel = new Label(parent, SWT.NONE);
+		textLabel.setText(label);
+		textLabel.setLayoutData(gd);
+		gd = new GridData(GridData.FILL_HORIZONTAL);
+		gd.grabExcessHorizontalSpace = true;
+		gd.grabExcessVerticalSpace = true;
+		gd.heightHint = 150;
+		// Owner text field
+		//Scrollable scrollable = new Scrollable(parent, SWT.H_SCROLL | SWT.V_SCROLL);
+		Text text = new Text(parent, SWT.MULTI | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
+		text.setLayoutData(gd);
+		return (text);
+	}
+
 	private static String _getArg(Map values, String key, String defVal) {
 		String result = null;
 		try {
@@ -205,14 +239,19 @@ public class ProjectNaturePage extends PropertyPage implements IAdaptable {
 			result = defVal;
 		return result;
 	}
+
 	/**
 	 * @param parent
 	 */
 	private void _addPatternSection(Composite parent) {
 		Composite group = _createLabelledComposite(parent, BUILD_PARAMS_TITLE);
 		group.setLayout(new GridLayout(2, false));
-		this._principalClass = _addTextField(group, "Principal Class");
+		this.principalClass = _addTextField(group, "Principal Class");
+		this.eoAdaptorClassName = _addTextField(group, "EOAdaptorClassName");
+		this.customInfoPListContent = _addTextArea(group,
+				"Custom Info.plist context");
 	}
+
 	/**
 	 * @param parent
 	 * @param project
@@ -226,14 +265,19 @@ public class ProjectNaturePage extends PropertyPage implements IAdaptable {
 		this._woTargetBuilderCheck = new Button(group, SWT.CHECK | SWT.LEFT);
 		this._woTargetBuilderCheck.setText(WO_USE_TARGET_BUILDET_TITLE);
 		this._woTargetBuilderCheck.setEnabled(true);
-		this._woTargetBuilderCheck.setSelection(project.isTargetBuilderInstalled());
+		this._woTargetBuilderCheck.setSelection(project
+				.isTargetBuilderInstalled());
 	}
+
 	void enableWidgets(boolean enabled) {
 		this._woTargetBuilderCheck.setEnabled(enabled);
 		this._woIsFrameworkButton.setEnabled(enabled);
 		this._woIsApplicationButton.setEnabled(enabled);
-		this._principalClass.setEnabled(enabled);
+		this.principalClass.setEnabled(enabled);
+		this.customInfoPListContent.setEnabled(enabled);
+		this.eoAdaptorClassName.setEnabled(enabled);
 	}
+
 	/**
 	 * @see PreferencePage#createContents(Composite)
 	 */
@@ -257,10 +301,13 @@ public class ProjectNaturePage extends PropertyPage implements IAdaptable {
 			this._woIsIncrementalButton
 					.addSelectionListener(new SelectionListener() {
 						public void widgetSelected(SelectionEvent e) {
-							enableWidgets(ProjectNaturePage.this._woIsIncrementalButton.getSelection());
+							enableWidgets(ProjectNaturePage.this._woIsIncrementalButton
+									.getSelection());
 						}
+
 						public void widgetDefaultSelected(SelectionEvent e) {
-							enableWidgets(ProjectNaturePage.this._woIsIncrementalButton.getSelection());
+							enableWidgets(ProjectNaturePage.this._woIsIncrementalButton
+									.getSelection());
 						}
 					});
 			setDefaults(project);
@@ -270,6 +317,7 @@ public class ProjectNaturePage extends PropertyPage implements IAdaptable {
 		}
 		return composite;
 	}
+
 	private Composite _createLabelledComposite(Composite parent, String label) {
 		Group composite = new Group(parent, SWT.NULL);
 		FormLayout layout = new FormLayout();
@@ -286,6 +334,7 @@ public class ProjectNaturePage extends PropertyPage implements IAdaptable {
 		}
 		return composite;
 	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -294,15 +343,32 @@ public class ProjectNaturePage extends PropertyPage implements IAdaptable {
 	protected void performDefaults() {
 		setDefaults(getProject());
 	}
+
 	/**
 	 * @param project
 	 *  
 	 */
 	private void setDefaults(Project project) {
 		Map args = project.getBuilderArgs();
-		this._principalClass.setText(_getArg(args,
-				ProjectBuildPlugin.NS_PRINCIPAL_CLASS, ""));
+		String string = _getArg(args, ProjectBuildPlugin.NS_PRINCIPAL_CLASS, "");
+		if (string == null || string.length() == 0) {
+			string = project.getPrincipalClass();
+		}
+		if (string != null) {
+			this.principalClass.setText(string);
+		}
+		string = project.getCustomInfoPListContent();
+
+		if (string != null) {
+			this.customInfoPListContent.setText(string);
+		}
+		string = project.getEOAdaptorClassName();
+
+		if (string != null) {
+			this.eoAdaptorClassName.setText(string);
+		}
 	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -314,14 +380,19 @@ public class ProjectNaturePage extends PropertyPage implements IAdaptable {
 		try {
 			project = this.getProject();
 			if (this._woNatureCheck.getSelection()) {
+				project.setPrincipalClass(this.principalClass.getText());
+				project.setCustomInfoPListContent(this.customInfoPListContent
+						.getText());
+				project
+						.setEOAdaptorClassName(this.eoAdaptorClassName
+								.getText());
 				if (this._woIsIncrementalButton.getSelection()) {
 					Map args = new HashMap();
-					args.put(ProjectBuildPlugin.NS_PRINCIPAL_CLASS,
-							this._principalClass.getText());
 					project.setIncrementalNature(this._woIsFrameworkButton
 							.getSelection(), args);
 				} else {
-					project.setAntNature(this._woIsFrameworkButton.getSelection());
+					project.setAntNature(this._woIsFrameworkButton
+							.getSelection());
 				}
 			} else {
 				project.removeWOLipsNatures();
@@ -336,6 +407,7 @@ public class ProjectNaturePage extends PropertyPage implements IAdaptable {
 		}
 		return true;
 	}
+
 	/**
 	 * @return IJavaProject
 	 * @throws CoreException
@@ -345,6 +417,7 @@ public class ProjectNaturePage extends PropertyPage implements IAdaptable {
 				.getAdapter(IProject.class));
 		return (IJavaProject) (project.getNature(JavaCore.NATURE_ID));
 	}
+
 	/**
 	 * @return IProject
 	 */
@@ -353,6 +426,7 @@ public class ProjectNaturePage extends PropertyPage implements IAdaptable {
 				.getAdapter(IProject.class));
 		return (project);
 	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -361,16 +435,27 @@ public class ProjectNaturePage extends PropertyPage implements IAdaptable {
 	public Object getAdapter(Class theClass) {
 		return (Platform.getAdapterManager().getAdapter(this, theClass));
 	}
+
 	/**
 	 * @return Project
 	 */
 	public Project getProject() {
 		return (Project) (this._getProject()).getAdapter(Project.class);
 	}
+
 	private Button _woTargetBuilderCheck;
+
 	private Button _woNatureCheck;
+
 	Button _woIsIncrementalButton;
+
 	private Button _woIsFrameworkButton;
+
 	private Button _woIsApplicationButton;
-	private Text _principalClass;
+
+	private Text principalClass;
+
+	private Text customInfoPListContent;
+
+	private Text eoAdaptorClassName;
 }

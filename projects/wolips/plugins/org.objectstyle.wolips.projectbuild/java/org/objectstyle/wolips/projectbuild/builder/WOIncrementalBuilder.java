@@ -174,16 +174,26 @@ public class WOIncrementalBuilder extends AbstractIncrementalProjectBuilder {
 //			wird schon in projectNeedsAnUpdate() geprüft
 			//	delta.accept(new PatternsetDeltaVisitor());
 			//_getLogger().debug(delta);
-			boolean fullBuild = (null != delta) && (kind == FULL_BUILD);
+			Project project = (Project)this.getProject().getAdapter(Project.class);
+			boolean fullBuild = (null != delta) && (kind == FULL_BUILD || project.fullBuildRequired);
+			project.fullBuildRequired = false;
 			if (null != _buildVisitor) {
 				fullBuild = _buildVisitor.setBuildArgs(args) || fullBuild;
 			} else {
 				fullBuild = true;
 			}
-			_principalClass = _getArg(args, ProjectBuildPlugin.NS_PRINCIPAL_CLASS, "");
-			if (_principalClass.length() == 0) {
-				_principalClass = null;
+			String oldPrincipalClass = _getArg(args, ProjectBuildPlugin.NS_PRINCIPAL_CLASS, "");
+			if (oldPrincipalClass.length() == 0) {
+				oldPrincipalClass = null;
 			}
+			_principalClass = project.getPrincipalClass();
+			if(_principalClass == null && oldPrincipalClass != null) {
+				_principalClass = oldPrincipalClass;
+				project.setPrincipalClass(_principalClass);
+			}
+			customInfoPListContent = project.getCustomInfoPListContent();
+			eoAdaptorClassName = project.getEOAdaptorClassName();
+			if(oldPrincipalClass != null)
 			if ((null != _buildVisitor) && !fullBuild) {
 				monitor.subTask("checking directory structure ...");
 				if (!_buildVisitor._checkDirs()) {
@@ -321,6 +331,28 @@ public class WOIncrementalBuilder extends AbstractIncrementalProjectBuilder {
 					+ "  <string>" + principalClass + "</string>" + "\r\n";
 			infoPlist = StringUtilities.replace(infoPlist,
 					"$$principalclass$$", principal);
+		}
+		else {
+			infoPlist = StringUtilities.replace(infoPlist,
+					"$$principalclass$$", "");
+		}
+		if (customInfoPListContent != null) {
+		infoPlist = StringUtilities.replace(infoPlist,
+				"$$customInfoPListContent$$", customInfoPListContent);
+		}
+		else {
+			infoPlist = StringUtilities.replace(infoPlist,
+					"$$customInfoPListContent$$", "");
+		}
+		if (project.isFramework() && eoAdaptorClassName != null) {
+			String string = "  <key>EOAdaptorClassName</key>" + "\r\n"
+					+ "  <string>" + eoAdaptorClassName + "</string>" + "\r\n";
+			infoPlist = StringUtilities.replace(infoPlist,
+					"$$EOAdaptorClassName$$", string);
+		}
+		else {
+			infoPlist = StringUtilities.replace(infoPlist,
+					"$$EOAdaptorClassName$$", "");
 		}
 		IPath infoPath = nature.getInfoPath().append("Info.plist");
 		IFile resFile = getProject().getWorkspace().getRoot().getFile(infoPath);
@@ -881,6 +913,8 @@ public class WOIncrementalBuilder extends AbstractIncrementalProjectBuilder {
 		private Project adaptedProject = null;
 	}
 	String _principalClass = null;
+	String customInfoPListContent = null;
+	String eoAdaptorClassName = null;
 	static final String INFO_PLIST_APPLICATION = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
 			+ "\r\n"
 			//+"<!DOCTYPE plist SYSTEM
@@ -958,7 +992,10 @@ public class WOIncrementalBuilder extends AbstractIncrementalProjectBuilder {
 			+ "\r\n"
 			+ "  <string>Contents/WebServerResources/Java</string>"
 			+ "\r\n"
-			+ "$$principalclass$$" + "</dict>" + "\r\n" + "</plist>" + "\r\n";
+			+ "$$principalclass$$"
+			+ "$$customInfoPListContent$$"
+			+ "\r\n"
+			+ "</dict>" + "\r\n" + "</plist>" + "\r\n";
 	static final String INFO_PLIST_FRAMEWORK = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
 			+ "\r\n"
 			+ "<plist version=\"0.9\">"
@@ -1042,5 +1079,8 @@ public class WOIncrementalBuilder extends AbstractIncrementalProjectBuilder {
 			+ "  <string>$$type$$</string>"
 			+ "\r\n"
 			+ "$$principalclass$$"
+			+ "$$customInfoPListContent$$"
+			+ "$$EOAdaptorClassName$$"
+			+ "\r\n"
 			+ "</dict>" + "\r\n" + "</plist>" + "\r\n";
 }

@@ -55,6 +55,10 @@
  */
 package org.objectstyle.wolips.datasets.adaptable;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -62,12 +66,15 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 import org.eclipse.core.resources.ICommand;
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jdt.core.JavaCore;
 import org.objectstyle.wolips.datasets.DataSetsPlugin;
 
@@ -89,6 +96,7 @@ public class ProjectBuilder extends ProjectFiles {
 
 	private static final String ANT_BUILDER_ID = "org.objectstyle.wolips.antbuilder";
 
+	public boolean fullBuildRequired = false;
 	/**
 	 * @param project
 	 */
@@ -455,5 +463,143 @@ public class ProjectBuilder extends ProjectFiles {
 		}
 		path = path.append(this.getIProject().getName() + ".woa");
 		return path;
+	}
+
+	private Properties getBuildProperties() throws CoreException, IOException {
+		IFile file = this.getIProject().getFile("build.properties");
+		InputStream inputStream = file.getContents();
+		Properties properties = new Properties();
+		properties.load(inputStream);
+		return properties;
+	}
+
+	private void setBuildProperties(Properties properties)
+			throws CoreException, IOException {
+		IFile file = this.getIProject().getFile("build.properties");
+		ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+		properties.store(byteArrayOutputStream, null);
+		ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(
+				byteArrayOutputStream.toByteArray());
+		file.setContents(byteArrayInputStream, true, true,
+				new NullProgressMonitor());
+		fullBuildRequired = true;
+	}
+
+	/**
+	 * Method getPrincipalClass.
+	 * 
+	 * @return String
+	 * @throws IOException
+	 * @throws CoreException
+	 */
+	public String getPrincipalClass() {
+		try {
+			return (String) this.getBuildProperties().get("principalClass");
+		} catch (CoreException e) {
+			DataSetsPlugin.getDefault().getPluginLogger().log(e);
+		} catch (IOException e) {
+			DataSetsPlugin.getDefault().getPluginLogger().log(e);
+		}
+		return null;
+	}
+
+	/**
+	 * Method setPrincipalClass.
+	 * 
+	 * @param principalClass
+	 * @throws IOException
+	 * @throws CoreException
+	 */
+	public void setPrincipalClass(String principalClass) {
+		try {
+			Properties properties = this.getBuildProperties();
+			if (principalClass == null || principalClass.length() == 0) {
+				properties.remove("principalClass");
+			} else {
+				properties.put("principalClass", principalClass);
+			}
+			this.setBuildProperties(properties);
+		} catch (CoreException e) {
+			DataSetsPlugin.getDefault().getPluginLogger().log(e);
+		} catch (IOException e) {
+			DataSetsPlugin.getDefault().getPluginLogger().log(e);
+		}
+	}
+
+	/**
+	 * @return The CustomContent for the Info.plist
+	 * @throws IOException
+	 * @throws CoreException
+	 */
+	public String getCustomInfoPListContent() {
+		try {
+			return (String) this.getBuildProperties().get(
+					"customInfoPListContent");
+		} catch (CoreException e) {
+			DataSetsPlugin.getDefault().getPluginLogger().log(e);
+		} catch (IOException e) {
+			DataSetsPlugin.getDefault().getPluginLogger().log(e);
+		}
+		return null;
+	}
+
+	/**
+	 * @return The CustomContent for the Info.plist
+	 * @throws IOException
+	 * @throws CoreException
+	 */
+	public void setCustomInfoPListContent(String customInfoPListContent) {
+		try {
+			Properties properties = this.getBuildProperties();
+			if (customInfoPListContent == null
+					|| customInfoPListContent.length() == 0) {
+				properties.remove("customInfoPListContent");
+			} else {
+				properties
+						.put("customInfoPListContent", customInfoPListContent);
+			}
+			this.setBuildProperties(properties);
+		} catch (CoreException e) {
+			DataSetsPlugin.getDefault().getPluginLogger().log(e);
+		} catch (IOException e) {
+			DataSetsPlugin.getDefault().getPluginLogger().log(e);
+		}
+	}
+
+	/**
+	 * @return The CustomContent for the Info.plist
+	 * @throws IOException
+	 * @throws CoreException
+	 */
+	public String getEOAdaptorClassName() {
+		try {
+			return (String) this.getBuildProperties().get("eoAdaptorClassName");
+		} catch (CoreException e) {
+			DataSetsPlugin.getDefault().getPluginLogger().log(e);
+		} catch (IOException e) {
+			DataSetsPlugin.getDefault().getPluginLogger().log(e);
+		}
+		return null;
+	}
+
+	/**
+	 * @return The CustomContent for the Info.plist
+	 * @throws IOException
+	 * @throws CoreException
+	 */
+	public void setEOAdaptorClassName(String eoAdaptorClassName) {
+		try {
+			Properties properties = this.getBuildProperties();
+			if (eoAdaptorClassName == null || eoAdaptorClassName.length() == 0) {
+				properties.remove("eoAdaptorClassName");
+			} else {
+				properties.put("eoAdaptorClassName", eoAdaptorClassName);
+			}
+			this.setBuildProperties(properties);
+		} catch (CoreException e) {
+			DataSetsPlugin.getDefault().getPluginLogger().log(e);
+		} catch (IOException e) {
+			DataSetsPlugin.getDefault().getPluginLogger().log(e);
+		}
 	}
 }
