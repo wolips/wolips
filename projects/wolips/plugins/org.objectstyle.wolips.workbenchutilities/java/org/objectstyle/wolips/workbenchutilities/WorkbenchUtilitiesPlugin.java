@@ -77,6 +77,7 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
+import org.objectstyle.wolips.commons.logging.ILogger;
 import org.objectstyle.wolips.commons.logging.PluginLogger;
 /**
  * The main plugin class to be used in the desktop.
@@ -87,7 +88,7 @@ public class WorkbenchUtilitiesPlugin extends AbstractUIPlugin {
 	private static WorkbenchUtilitiesPlugin plugin;
 	//Resource bundle.
 	private ResourceBundle resourceBundle;
-	private PluginLogger pluginLogger = new PluginLogger(
+	private ILogger pluginLogger = new PluginLogger(
 			WorkbenchUtilitiesPlugin.PLUGIN_ID, false);
 	/**
 	 * The constructor.
@@ -508,7 +509,7 @@ public class WorkbenchUtilitiesPlugin extends AbstractUIPlugin {
 	public static void handleException(Shell shell, Throwable target,
 			String message
     ) {
-        PluginLogger logger = WorkbenchUtilitiesPlugin.getDefault().getPluginLogger();
+        ILogger logger = WorkbenchUtilitiesPlugin.getDefault().getPluginLogger();
 
         if (message == null) {
           message = target.getMessage();
@@ -536,7 +537,7 @@ public class WorkbenchUtilitiesPlugin extends AbstractUIPlugin {
 	/**
 	 * @return Returns the pluginLogger.
 	 */
-	public PluginLogger getPluginLogger() {
+	public ILogger getPluginLogger() {
 		return this.pluginLogger;
 	}
 }

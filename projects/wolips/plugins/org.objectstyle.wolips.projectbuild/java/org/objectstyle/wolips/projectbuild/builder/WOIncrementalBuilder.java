@@ -54,11 +54,12 @@
  *
  */
 package org.objectstyle.wolips.projectbuild.builder;
-
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -73,7 +74,6 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.resources.IResourceDeltaVisitor;
 import org.eclipse.core.resources.IResourceVisitor;
-import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -84,7 +84,7 @@ import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaCore;
 import org.objectstyle.cayenne.wocompat.PropertyListSerialization;
-import org.objectstyle.wolips.commons.logging.PluginLogger;
+import org.objectstyle.wolips.commons.logging.ILogger;
 import org.objectstyle.wolips.datasets.adaptable.Project;
 import org.objectstyle.wolips.datasets.pattern.IStringMatcher;
 import org.objectstyle.wolips.datasets.pattern.PatternsetMatcher;
@@ -92,7 +92,6 @@ import org.objectstyle.wolips.datasets.pattern.StringUtilities;
 import org.objectstyle.wolips.projectbuild.ProjectBuildPlugin;
 import org.objectstyle.wolips.projectbuild.natures.IncrementalNature;
 import org.objectstyle.wolips.projectbuild.util.ResourceUtilities;
-
 /**
  * @author Harald Niesche
  * 
@@ -101,87 +100,12 @@ import org.objectstyle.wolips.projectbuild.util.ResourceUtilities;
  * structure needed to run a WebObjects application or use a framework
  */
 public class WOIncrementalBuilder extends AbstractIncrementalProjectBuilder {
-	private static interface ILogger {
-		void log(String s);
-
-		void log(Throwable t);
-
-		void log(String s, Throwable t);
-
-		void debug(String s);
-
-		void debug(Throwable t);
-
-		void debug(String s, Throwable t);
-	}
-
-	private static class ConsoleLogger implements ILogger {
-		public void log(String s) {
-			System.out.println(s);
-		}
-
-		public void log(Throwable t) {
-			t.printStackTrace(System.out);
-		}
-
-		public void log(String s, Throwable t) {
-			System.out.print(s);
-			t.printStackTrace(System.out);
-		}
-
-		public void debug(String s) {
-			System.out.println(s);
-		}
-
-		public void debug(Throwable t) {
-			t.printStackTrace(System.out);
-		}
-
-		public void debug(String s, Throwable t) {
-			System.out.print(s);
-			t.printStackTrace(System.out);
-		}
-	}
-
-	private static class StandardLogger implements ILogger {
-		StandardLogger(PluginLogger logger) {
-			_log = logger;
-		}
-
-		public void log(String s) {
-			_log.log(s);
-		}
-
-		public void log(Throwable t) {
-			_log.log(t);
-		}
-
-		public void log(String s, Throwable t) {
-			_log.log(s, t);
-		}
-
-		public void debug(String s) {
-			_log.debug(s);
-		}
-
-		public void debug(Throwable t) {
-			_log.debug(t);
-		}
-
-		public void debug(String s, Throwable t) {
-			_log.debug(s, t);
-		}
-
-		PluginLogger _log;
-	}
-
-	/**
+    /**
 	 * Constructor for WOProjectBuilder.
 	 */
 	public WOIncrementalBuilder() {
 		super();
 	}
-
 	/*
 	 * this is duplicated from ProjectNaturePage, couldn't find a good place for
 	 * now
@@ -203,29 +127,28 @@ public class WOIncrementalBuilder extends AbstractIncrementalProjectBuilder {
 	 *      IProgressMonitor)
 	 */
 	protected IProject[] build(int kind, Map args, IProgressMonitor monitor)
-			throws CoreException {
+	  throws CoreException 
+    {
 		if (null == monitor) {
 			monitor = new NullProgressMonitor();
 		}
-		monitor = new SubProgressMonitor(monitor, 100 * 1000);
-		if (!projectNeedsAnUpdate()
-				&& kind != IncrementalProjectBuilder.FULL_BUILD) {
-			monitor.done();
-			return new IProject[0];
-		}
+		monitor = new SubProgressMonitor (monitor, 100*1000);
+//		if (!projectNeedsAnUpdate()
+//					&& kind != IncrementalProjectBuilder.FULL_BUILD) {
+//				monitor.done();
+//				return new IProject[0];
+//		}	
 		_getLogger().debug("<incremental build>");
 		monitor.beginTask("building WebObjects layout ...", 100);
 		try {
 			IResourceDelta delta = getDelta(getProject());
 			//if(delta != null)
-			//			wird schon in projectNeedsAnUpdate() geprüft
+//			wird schon in projectNeedsAnUpdate() geprüft
 			//	delta.accept(new PatternsetDeltaVisitor());
 			//_getLogger().debug(delta);
 			Project project = (Project) this.getProject().getAdapter(
 					Project.class);
-			boolean fullBuild = (null != delta)
-					&& (kind == FULL_BUILD || project.fullBuildRequired);
-			project.fullBuildRequired = false;
+			boolean fullBuild = (null != delta) && (kind == FULL_BUILD);
 			if (null != _buildVisitor) {
 				fullBuild = _buildVisitor.setBuildArgs(args) || fullBuild;
 			} else {
@@ -263,23 +186,20 @@ public class WOIncrementalBuilder extends AbstractIncrementalProjectBuilder {
 				monitor.subTask("scrubbing build folder ...");
 				buildFolder.refreshLocal(IResource.DEPTH_INFINITE, null);
 				monitor.worked(1);
-				_getLogger().debug(
-						"refresh build folder took: "
-								+ (System.currentTimeMillis() - t0) + " ms");
+				_getLogger().debug("refresh build folder took: "
+						+ (System.currentTimeMillis() - t0) + " ms");
 				t0 = System.currentTimeMillis();
 				buildFolder.delete(true, false, null);
 				monitor.worked(2);
-				_getLogger().debug(
-						"scrubbing build folder took: "
-								+ (System.currentTimeMillis() - t0) + " ms");
+				_getLogger().debug("scrubbing build folder took: "
+						+ (System.currentTimeMillis() - t0) + " ms");
 				t0 = System.currentTimeMillis();
 				buildFolder.refreshLocal(IResource.DEPTH_INFINITE, null);
 				monitor.subTask("re-creating structure ...");
 				_buildVisitor._checkDirs();
 				monitor.worked(2);
-				_getLogger().debug(
-						"re-creating build folder took: "
-								+ (System.currentTimeMillis() - t0) + " ms");
+				_getLogger().debug("re-creating build folder took: "
+						+ (System.currentTimeMillis() - t0) + " ms");
 			}
 			monitor.subTask("creating Info.plist");
 			_createInfoPlist();
@@ -290,10 +210,9 @@ public class WOIncrementalBuilder extends AbstractIncrementalProjectBuilder {
 				long t0 = System.currentTimeMillis();
 				_buildVisitor.resetCount();
 				delta.accept(_buildVisitor, IResourceDelta.ALL_WITH_PHANTOMS);
-				_getLogger().debug(
-						"delta.accept with " + _buildVisitor.count
-								+ " delta nodes took: "
-								+ (System.currentTimeMillis() - t0) + " ms");
+				_getLogger().debug("delta.accept with " + _buildVisitor.count
+						+ " delta nodes took: "
+						+ (System.currentTimeMillis() - t0) + " ms");
 				_getLogger().debug("</partial build>");
 				monitor.worked(12);
 			} else {
@@ -303,24 +222,20 @@ public class WOIncrementalBuilder extends AbstractIncrementalProjectBuilder {
 				t0 = System.currentTimeMillis();
 				_buildVisitor.resetCount();
 				getProject().accept(_buildVisitor);
-				_getLogger().debug(
-						"preparing with " + _buildVisitor.count
-								+ " project nodes took: "
-								+ (System.currentTimeMillis() - t0) + " ms");
+				_getLogger().debug("preparing with " + _buildVisitor.count
+						+ " project nodes took: "
+						+ (System.currentTimeMillis() - t0) + " ms");
 				_getLogger().debug("</full build>");
 				monitor.worked(12);
 			}
 			long t0 = System.currentTimeMillis();
 			_buildVisitor.executeTasks(monitor);
-			_getLogger().debug(
-					"building structure took: "
-							+ (System.currentTimeMillis() - t0) + " ms");
+			_getLogger().debug("building structure took: "
+					+ (System.currentTimeMillis() - t0) + " ms");
 			t0 = System.currentTimeMillis();
 			monitor.subTask("copying classes");
 			_jarBuild(delta, monitor);
-			_getLogger().debug(
-					"copying classes took: "
-							+ (System.currentTimeMillis() - t0) + " ms");
+			_getLogger().debug("copying classes took: "+(System.currentTimeMillis()-t0)+" ms");
 			monitor.done();
 		} catch (RuntimeException up) {
 			_getLogger().log(up);
@@ -332,34 +247,35 @@ public class WOIncrementalBuilder extends AbstractIncrementalProjectBuilder {
 		_getLogger().debug("</incremental build>");
 		return new IProject[0];
 	}
-
 	private void _createInfoPlist() throws CoreException {
 		Project project = (Project) (getProject()).getAdapter(Project.class);
-		IncrementalNature nature = (IncrementalNature) project
-				.getIncrementalNature();
+		IncrementalNature nature = (IncrementalNature) project.getIncrementalNature();
 		HashMap customInfo = null;
 		IFile cipl = getProject().getFile("CustomInfo.plist");
 		if (cipl.exists()) {
 			try {
-				Object o = PropertyListSerialization.propertyListFromFile(cipl
-						.getLocation().toFile());
+				Object o = PropertyListSerialization.propertyListFromFile (
+                    cipl.getLocation().toFile()
+                );
 				if (o instanceof HashMap) {
 					customInfo = (HashMap) o;
-					ResourceUtilities.unmarkResource(cipl,
-							ProjectBuildPlugin.MARKER_BUILD_PROBLEM);
+					ResourceUtilities.unmarkResource(
+                        cipl, ProjectBuildPlugin.MARKER_BUILD_PROBLEM
+                    );
 				} else {
-					ResourceUtilities.markResource(cipl,
-							ProjectBuildPlugin.MARKER_BUILD_PROBLEM,
-							IMarker.SEVERITY_WARNING,
-							"Cayenne parser can't parse this file "
-									+ "(comments are not supported for now)",
-							"unknown");
+					ResourceUtilities.markResource(
+						cipl,
+						ProjectBuildPlugin.MARKER_BUILD_PROBLEM,
+						IMarker.SEVERITY_WARNING,
+						"Cayenne parser can't parse this file " +
+                        "(comments are not supported for now)",
+						"unknown"
+                    );
 				}
 			} catch (Throwable up) {
 				_getLogger().debug("parsing CustomInfo.plist:");
 				_getLogger().log(up);
-				ResourceUtilities.markResource(cipl,
-						ProjectBuildPlugin.MARKER_BUILD_PROBLEM,
+				ResourceUtilities.markResource(cipl, ProjectBuildPlugin.MARKER_BUILD_PROBLEM,
 						IMarker.SEVERITY_WARNING, up.getMessage(), "unknown");
 			}
 		}
@@ -379,62 +295,105 @@ public class WOIncrementalBuilder extends AbstractIncrementalProjectBuilder {
 				.getWebResourceName().toString());
 		infoPlist = StringUtilities.replace(infoPlist, "$$type$$", nature
 				.isFramework() ? "FMWK" : "APPL");
-		String principalClass = (_principalClass == null && customInfo != null) ? (String) customInfo
-				.get("NSPrincipalClass")
+		String principalClass = (_principalClass == null && customInfo != null)
+				? (String) customInfo.get("NSPrincipalClass")
 				: _principalClass;
 		if (principalClass != null) {
-			String principal = "  <key>NSPrincipalClass</key>" + "\r\n"
-					+ "  <string>" + principalClass + "</string>" + "\r\n";
+			String principal = 
+			    "  <key>NSPrincipalClass</key>" + "\r\n"
+				+ "  <string>" + principalClass + "</string>" 
+				+ "\r\n";
 			infoPlist = StringUtilities.replace(infoPlist,
 					"$$principalclass$$", principal);
-		} else {
-			infoPlist = StringUtilities.replace(infoPlist,
-					"$$principalclass$$", "");
 		}
-		if (customInfoPListContent != null) {
-			infoPlist = StringUtilities.replace(infoPlist,
-					"$$customInfoPListContent$$", customInfoPListContent);
-		} else {
-			infoPlist = StringUtilities.replace(infoPlist,
-					"$$customInfoPListContent$$", "");
-		}
-		if (project.isFramework() && eoAdaptorClassName != null) {
-			String string = "  <key>EOAdaptorClassName</key>" + "\r\n"
-					+ "  <string>" + eoAdaptorClassName + "</string>" + "\r\n";
-			infoPlist = StringUtilities.replace(infoPlist,
-					"$$EOAdaptorClassName$$", string);
-		} else {
-			infoPlist = StringUtilities.replace(infoPlist,
-					"$$EOAdaptorClassName$$", "");
-		}
-		IPath infoPath = nature.getInfoPath().append("Info.plist");
+        String adaptor = "";
+        if (null != customInfo) {
+          String tmp =  (String)customInfo.get ("EOAdaptorClassName");
+          if (null != tmp) {
+            adaptor = 
+              "  <key>EOAdaptorClassName</key>" 
+              + "\r\n"
+              + "  <string>" + tmp + "</string>" 
+              + "\r\n";
+          }
+        }
+        infoPlist = StringUtilities.replace (infoPlist, "$$eoadaptorclass$$", adaptor);
+		
+        IPath infoPath = nature.getInfoPath().append("Info.plist");
 		IFile resFile = getProject().getWorkspace().getRoot().getFile(infoPath);
-		resFile.delete(true, false, null);
+		
+		byte newBytes[];
 		try {
-			InputStream is = new ByteArrayInputStream(infoPlist
-					.getBytes("UTF-8"));
-			resFile.create(is, true, null);
-			resFile.setDerived(true);
+		  newBytes = infoPlist.getBytes("UTF-8");
 		} catch (UnsupportedEncodingException uee) {
-			// shouldn't happen anyway, since utf8 must be supported by every
-			// JVM
-			_getLogger().log(uee);
+          // shouldn't happen anyway, since utf8 must be supported by every
+          // JVM
+          _getLogger().log(uee);
+		  return;
+		}
+
+		boolean changed = true;
+		if (resFile.exists()) {
+		  boolean retry = true;
+		  while (retry) {
+		    try {
+		      InputStream oldContent = resFile.getContents(false);
+              InputStream newContent = new ByteArrayInputStream(newBytes);
+              changed = _streamsAreDifferent(oldContent, newContent);
+		    } catch (CoreException up) {
+		      resFile.refreshLocal(1, null);
+		    }
+            retry = false;
+		  }
+		}
+		if (changed) {
+          resFile.delete(true, false, null);
+          InputStream is = new ByteArrayInputStream(newBytes);
+          resFile.create(is, true, null);
+          resFile.setDerived(true);
 		}
 	}
-
-	private static ILogger _logger = null;
-
-	private static ILogger _getLogger() {
-		if (null == _logger) {
-			_logger = new StandardLogger(ProjectBuildPlugin.getDefault()
-					.getPluginLogger());
-			//        _logger = new ConsoleLogger();
-		}
-		return _logger;
+  
+	boolean _streamsAreDifferent(InputStream is1, InputStream is2) {
+      byte buffer1[] = new byte[1024];
+      byte buffer2[] = new byte[1024];
+	  int r1 = 0;
+      int r2 = 0;
+      try {
+        do {
+          r1 = is1.read(buffer1);
+          r2 = is2.read(buffer2);
+          if (r1 != r2) {
+            return true;
+          }
+          if (r1 > -1) {
+            if (r1 < buffer1.length) {
+              Arrays.fill(buffer1, r1, buffer1.length, (byte)0);
+              Arrays.fill(buffer2, r2, buffer2.length, (byte)0);
+            }
+            if (!Arrays.equals(buffer1, buffer2)) {
+              return true;
+            }
+          }
+        } while (r1 == r2 && r1 > 0);
+      } catch (IOException up) {
+        return true;
+      }
+      return false;
 	}
 
-	private void _jarBuild(IResourceDelta delta, IProgressMonitor m)
-			throws CoreException {
+    private static ILogger _logger = null;
+    private static ILogger _getLogger() {
+      if (null == _logger) {
+        _logger = ProjectBuildPlugin.getDefault().getPluginLogger();
+//        _logger = new ConsoleLogger();
+      }
+      return _logger;
+	}
+
+    private void _jarBuild(IResourceDelta delta, IProgressMonitor m)
+	    throws CoreException 
+    {
 		_getLogger().debug("<jar build>");
 		WOJarBuilder jarBuilder = new WOJarBuilder(m, getProject());
 		long t0 = System.currentTimeMillis();
@@ -448,19 +407,17 @@ public class WOIncrementalBuilder extends AbstractIncrementalProjectBuilder {
 			}
 			output.accept(jarBuilder);
 		}
-		_getLogger().debug(
-				"prepare jar copy took " + (System.currentTimeMillis() - t0)
-						+ " ms");
+		_getLogger().debug("prepare jar copy took "
+				+ (System.currentTimeMillis() - t0) + " ms");
 		m.worked(10);
 		t0 = System.currentTimeMillis();
 		jarBuilder.executeTasks(m);
-		_getLogger().debug(
-				"executing jar copy took " + (System.currentTimeMillis() - t0)
-						+ " ms");
+		_getLogger().debug("executing jar copy took "
+				+ (System.currentTimeMillis() - t0) + " ms");
 		_getLogger().debug("</jar build>");
 	}
 
-	private IJavaProject getJavaProject() {
+    private IJavaProject getJavaProject() {
 		try {
 			return ((IJavaProject) (getProject().getNature(JavaCore.NATURE_ID)));
 		} catch (CoreException up) {
@@ -468,44 +425,41 @@ public class WOIncrementalBuilder extends AbstractIncrementalProjectBuilder {
 		return null;
 	}
 
-	/**
+    /**
 	 * @see org.eclipse.core.resources.IncrementalProjectBuilder#startupOnInitialize()
 	 */
 	protected void startupOnInitialize() {
 		//try {
-		//IJavaProject javaProject = getJavaProject();
-		//_getLogger().debug(javaProject.getOutputLocation());
+			//IJavaProject javaProject = getJavaProject();
+			//_getLogger().debug(javaProject.getOutputLocation());
 		//} catch (Throwable up) {
 		//}
 		//super.startupOnInitialize();
 	}
-
 	WOBuildVisitor _buildVisitor = null;
-
-	static abstract class WOBuildHelper extends ResourceUtilities implements
-			IResourceDeltaVisitor, IResourceVisitor {
+	static abstract class WOBuildHelper 
+	    extends ResourceUtilities
+	    implements IResourceDeltaVisitor, IResourceVisitor 
+    {
 		/**
 		 * @author Harald Niesche
 		 * 
-		 * A single resource-related task (copy or delete a resource, see
-		 * subclasses)
+         * A single resource-related task (copy or delete a resource, see subclasses)
 		 */
 		public static interface Buildtask {
 			/**
 			 * @return
 			 */
 			public int amountOfWork();
-
 			/**
 			 * @param m
 			 * @throws CoreException
 			 */
 			public void doWork(IProgressMonitor m) throws CoreException;
 		}
-
 		/**
 		 * @author Harald Niesche
-		 *  
+		 * 
 		 */
 		public static abstract class BuildtaskAbstract implements Buildtask {
 			/*
@@ -519,13 +473,11 @@ public class WOIncrementalBuilder extends AbstractIncrementalProjectBuilder {
 			public int amountOfWork() {
 				return (_workAmount);
 			}
-
 			protected int _workAmount = 1000;
 		}
-
 		/**
 		 * @author Harald Niesche
-		 *  
+		 * 
 		 */
 		public static class CopyTask extends BuildtaskAbstract {
 			/**
@@ -547,7 +499,6 @@ public class WOIncrementalBuilder extends AbstractIncrementalProjectBuilder {
 				//          }
 				//        }
 			}
-
 			/*
 			 * (non-Javadoc)
 			 * 
@@ -563,12 +514,12 @@ public class WOIncrementalBuilder extends AbstractIncrementalProjectBuilder {
 					}
 					m.subTask("create " + dstShortened);
 					ResourceUtilities.copyDerived(_res, _dest, m);
-					_getLogger().debug("copy " + _res + " -> " + _dest);
+					_getLogger().debug("copy "+_res+" -> "+_dest);
 
 				} catch (CoreException up) {
 					error = " *failed* to copy resource " + _res + " -> "
 							+ _dest + " (" + up.getMessage() + ")";
-					_getLogger().debug(_msgPrefix + error, up);
+					_getLogger().debug(_msgPrefix+error, up);
 					//          up.printStackTrace();
 					//          m.setCanceled(true);
 					//throw up;
@@ -581,21 +532,16 @@ public class WOIncrementalBuilder extends AbstractIncrementalProjectBuilder {
 				}
 				if (null == error) {
 					//_res.deleteMarkers(IMarker.PROBLEM, true, 1);
-					_res.deleteMarkers(ProjectBuildPlugin.MARKER_BUILD_PROBLEM,
-							true, 0);
+					_res.deleteMarkers(ProjectBuildPlugin.MARKER_BUILD_PROBLEM, true, 0);
 				} else {
 					markResource(_res, ProjectBuildPlugin.MARKER_BUILD_PROBLEM,
 							IMarker.SEVERITY_ERROR, error, _dest.toString());
 				}
 			}
-
 			IResource _res;
-
 			IPath _dest;
-
 			String _msgPrefix;
 		}
-
 		/**
 		 * @author Harald Niesche
 		 * 
@@ -612,7 +558,6 @@ public class WOIncrementalBuilder extends AbstractIncrementalProjectBuilder {
 				_path = path;
 				_msgPrefix = msgPrefix;
 			}
-
 			/*
 			 * (non-Javadoc)
 			 * 
@@ -631,11 +576,13 @@ public class WOIncrementalBuilder extends AbstractIncrementalProjectBuilder {
 				IFile theFile = getWorkspaceRoot().getFile(_path);
 				IContainer theFolder = getWorkspaceRoot().getFolder(_path);
 				if (null != theFile) {
-					_getLogger().debug(_msgPrefix + " delete " + _path);
+					_getLogger().debug (_msgPrefix+" delete "+_path);
 					m.subTask("delete " + _path);
 					theFile.delete(true, true, null);
-				} else if ((null != theFolder)
-						&& (theFolder instanceof IFolder)) {
+				} else if (
+				    (null != theFolder)
+					&& (theFolder instanceof IFolder)
+				) {
 					_getLogger().debug(_msgPrefix + " delete " + _path);
 					m.subTask("delete " + _path);
 					((IFolder) theFolder).delete(true, true, null);
@@ -652,12 +599,9 @@ public class WOIncrementalBuilder extends AbstractIncrementalProjectBuilder {
 				 * //_getLogger().debug (_msgPrefix+" delete (not) "+_path); }
 				 */
 			}
-
 			IPath _path;
-
 			String _msgPrefix;
 		}
-
 		/**
 		 * @param monitor
 		 * @param project
@@ -668,40 +612,43 @@ public class WOIncrementalBuilder extends AbstractIncrementalProjectBuilder {
 			_monitor = monitor;
 			_project = project;
 			Project wolipsProject = (Project) (project)
-					.getAdapter(Project.class);
-			_woNature = (IncrementalNature) wolipsProject
-					.getIncrementalNature();
+			.getAdapter(Project.class);
+			_woNature = (IncrementalNature) wolipsProject.getIncrementalNature();
 			_buildPath = _woNature.getBuildPath();
 			_distPath = new Path("dist");
-			_defaultExcludeMatcher = new PatternsetMatcher(new String[] {
-					"**/CVS", "*.woa", "*.framework" });
+			_defaultExcludeMatcher = new PatternsetMatcher(
+				new String[] {
+					"**/CVS",
+					"*.woa", 
+					"*.framework"
+				}
+			);
 		}
-
 		/**
 		 * @see org.eclipse.core.resources.IResourceDeltaVisitor#visit(IResourceDelta)
 		 */
 		public boolean visit(IResourceDelta delta) throws CoreException {
 			return _visitResource(delta.getResource(), delta);
 		}
-
 		/**
 		 * @see org.eclipse.core.resources.IResourceVisitor#visit(IResource)
 		 */
 		public boolean visit(IResource resource) throws CoreException {
 			return _visitResource(resource, null);
 		}
-
 		private boolean _visitResource(IResource res, IResourceDelta delta)
 				throws CoreException {
 			IPath resPath = res.getProjectRelativePath();
-			if (_buildPath.isPrefixOf(resPath) || _distPath.isPrefixOf(resPath)
-					|| _defaultExcludeMatcher.match(resPath.toString())) {
+			if (
+				_buildPath.isPrefixOf(resPath) 
+				|| _distPath.isPrefixOf(resPath)
+				|| _defaultExcludeMatcher.match(resPath.toString())
+			) {
 				return false;
 			}
 			handleResource(res, delta);
 			return true;
 		}
-
 		/**
 		 * @param task
 		 */
@@ -709,7 +656,6 @@ public class WOIncrementalBuilder extends AbstractIncrementalProjectBuilder {
 			_buildTasks.add(task);
 			_buildWork += task.amountOfWork();
 		}
-
 		/**
 		 * @param m
 		 * @throws CoreException
@@ -736,27 +682,17 @@ public class WOIncrementalBuilder extends AbstractIncrementalProjectBuilder {
 			}
 			m.done();
 		}
-
 		abstract void handleResource(IResource res, IResourceDelta delta)
 				throws CoreException;
-
 		protected IProgressMonitor _monitor;
-
 		protected IProject _project;
-
 		protected IPath _buildPath;
-
 		protected IPath _distPath;
-
 		protected IStringMatcher _defaultExcludeMatcher;
-
 		protected IncrementalNature _woNature = null;
-
 		private List _buildTasks = new ArrayList();
-
 		private int _buildWork = 0;
 	}
-
 	static class WOJarBuilder extends WOBuildHelper {
 		/**
 		 * @param monitor
@@ -770,7 +706,6 @@ public class WOIncrementalBuilder extends AbstractIncrementalProjectBuilder {
 			_compilerOutPath = _woNature.getJavaProject().getOutputLocation();
 			_baseSegments = _compilerOutPath.segmentCount();
 		}
-
 		/*
 		 * (non-Javadoc)
 		 * 
@@ -784,8 +719,7 @@ public class WOIncrementalBuilder extends AbstractIncrementalProjectBuilder {
 		 */
 		public void handleResource(IResource resource, IResourceDelta delta)
 				throws CoreException {
-			Project adaptedProject = (Project) resource.getProject()
-					.getAdapter(Project.class);
+			Project adaptedProject = (Project) resource.getProject().getAdapter(Project.class);
 			if (adaptedProject.matchesClassesPattern(resource)) {
 				IPath path = resource.getFullPath();
 				if (_compilerOutPath.isPrefixOf(path)
@@ -795,25 +729,22 @@ public class WOIncrementalBuilder extends AbstractIncrementalProjectBuilder {
 					if ((null != delta)
 							&& (delta.getKind() == IResourceDelta.REMOVED)) {
 						addTask(new DeleteTask(path, "jar"));
-						_getLogger().debug("delete: " + path.toString());
+						_getLogger().debug("delete: "+path.toString());
 					} else {
 						addTask(new CopyTask(resource, path, "jar"));
-						_getLogger().debug("copy: " + path.toString());
+						_getLogger().debug("copy: "+path.toString());
 					}
 				}
 			}
 		}
-
 		int _baseSegments;
-
 		IPath _outPath;
-
 		IPath _compilerOutPath;
 	}
-
 	static class WOBuildVisitor extends WOBuildHelper {
 		WOBuildVisitor(IProgressMonitor monitor, IProject project, Map args)
-				throws CoreException {
+				throws CoreException 
+        {
 			super(monitor, project);
 			adaptedProject = (Project) project.getAdapter(Project.class);
 			try {
@@ -825,7 +756,6 @@ public class WOIncrementalBuilder extends AbstractIncrementalProjectBuilder {
 			}
 			setBuildArgs(args);
 		}
-
 		/**
 		 * @param args
 		 * @return true if new args, false if args were not changed
@@ -837,30 +767,28 @@ public class WOIncrementalBuilder extends AbstractIncrementalProjectBuilder {
 			}
 			return false;
 		}
-
 		/**
 		 *  
 		 */
 		public void reset() {
 			_destinations.clear();
 		}
-
 		/**
 		 *  
 		 */
 		public void resetCount() {
 			count = 0;
 		}
-
 		/**
 		 * @param res
 		 * @param delta
 		 * @param copyToPath
-		 * @return
+		 * @return 
 		 * @throws CoreException
 		 */
 		public boolean _checkResource(IResource res, IResourceDelta delta,
-				IPath copyToPath) throws CoreException {
+				IPath copyToPath) throws CoreException 
+        {
 			boolean result;
 			if (null == copyToPath) {
 				unmarkResource(res, ProjectBuildPlugin.MARKER_BUILD_DUPLICATE);
@@ -885,8 +813,7 @@ public class WOIncrementalBuilder extends AbstractIncrementalProjectBuilder {
 					String message = "duplicate resource for destination .../"
 							+ shortened.toString();
 					//_getLogger().debug("** " + message);
-					markResource(res,
-							ProjectBuildPlugin.MARKER_BUILD_DUPLICATE,
+					markResource(res, ProjectBuildPlugin.MARKER_BUILD_DUPLICATE,
 							IMarker.SEVERITY_ERROR, message, src.getFullPath()
 									.toString());
 					result = false; // ignore this one, it's a duplicate
@@ -899,7 +826,6 @@ public class WOIncrementalBuilder extends AbstractIncrementalProjectBuilder {
 			}
 			return result;
 		}
-
 		boolean _checkDirs() throws CoreException {
 			IPath buildPath = _woNature.getBuildPath();
 			IPath resPath = _woNature.getResourceOutputPath();
@@ -912,7 +838,6 @@ public class WOIncrementalBuilder extends AbstractIncrementalProjectBuilder {
 			_buildPath = buildPath;
 			return (result);
 		}
-
 		/*
 		 * (non-Javadoc)
 		 * 
@@ -920,7 +845,8 @@ public class WOIncrementalBuilder extends AbstractIncrementalProjectBuilder {
 		 *      org.eclipse.core.resources.IResourceDelta)
 		 */
 		public void handleResource(IResource res, IResourceDelta delta)
-				throws CoreException {
+			throws CoreException 
+        {
 			++count;
 			IPath fullPath = res.getFullPath();
 			boolean ignore = false;
@@ -944,7 +870,7 @@ public class WOIncrementalBuilder extends AbstractIncrementalProjectBuilder {
 						handled = true;
 					}
 				} else if (res.toString().indexOf("/Resources/") != -1) {
-					//					_getLogger().debug("ignoring probable resource! "+res);
+//					_getLogger().debug("ignoring probable resource! "+res);
 				}
 				if (adaptedProject.matchesWOAppResourcesPattern(res)) {
 					IPath dest = _woNature.asWebResourcePath(res.getFullPath(),
@@ -957,20 +883,23 @@ public class WOIncrementalBuilder extends AbstractIncrementalProjectBuilder {
 				}
 			}
 			if (!handled) {
-				_getLogger().debug("//not a (ws)resource: " + res);
+				_getLogger().debug("//not a (ws)resource: "+res);
 				unmarkResource(res, ProjectBuildPlugin.MARKER_BUILD_DUPLICATE);
 			}
 		}
-
 		/**
 		 * @param res
 		 * @param delta
 		 * @param copyToPath
-		 * @return
-		 * @throws CoreException
+		 * @return @throws
+		 *         CoreException
 		 */
-		public boolean _handleResource(IResource res, IResourceDelta delta,
-				IPath copyToPath) throws CoreException {
+		public boolean _handleResource(
+		    IResource res, IResourceDelta delta,
+			IPath copyToPath
+		) 
+		    throws CoreException 
+        {
 			if (null == copyToPath)
 				return false;
 
@@ -979,30 +908,23 @@ public class WOIncrementalBuilder extends AbstractIncrementalProjectBuilder {
 				addTask(new DeleteTask(copyToPath, "build"));
 				handled = true;
 			} else {
-				if (!res.isTeamPrivateMember()) {
-					addTask(new CopyTask(res, copyToPath, "build"));
-					handled = true;
-				}
+			    if (!res.isTeamPrivateMember()) {
+			      addTask(new CopyTask(res, copyToPath, "build"));
+			      handled = true;
+			    }
 			}
 			return handled;
 		}
-
+    
 		IPath _outputPath = null;
-
 		IPath _buildPath = null;
-
 		boolean _checkJavaOutputPath = false;
-
 		Map _buildArgs = null;
-
 		int count = 0;
-
 		// key: IPath/destination, value: IResource/source
 		private Map _destinations = new HashMap();
-
 		private Project adaptedProject = null;
 	}
-
 	String _principalClass = null;
 
 	String customInfoPListContent = null;
@@ -1086,11 +1008,7 @@ public class WOIncrementalBuilder extends AbstractIncrementalProjectBuilder {
 			+ "\r\n"
 			+ "  <string>Contents/WebServerResources/Java</string>"
 			+ "\r\n"
-			+ "$$principalclass$$"
-			+ "$$customInfoPListContent$$"
-			+ "\r\n"
-			+ "</dict>" + "\r\n" + "</plist>" + "\r\n";
-
+			+ "$$principalclass$$" + "</dict>" + "\r\n" + "</plist>" + "\r\n";
 	static final String INFO_PLIST_FRAMEWORK = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
 			+ "\r\n"
 			+ "<plist version=\"0.9\">"
@@ -1174,8 +1092,6 @@ public class WOIncrementalBuilder extends AbstractIncrementalProjectBuilder {
 			+ "  <string>$$type$$</string>"
 			+ "\r\n"
 			+ "$$principalclass$$"
-			+ "$$customInfoPListContent$$"
-			+ "$$EOAdaptorClassName$$"
-			+ "\r\n"
+			+ "$$eoadaptorclass$$"
 			+ "</dict>" + "\r\n" + "</plist>" + "\r\n";
 }

@@ -48,88 +48,17 @@
  *  
  */
 package org.objectstyle.wolips.commons.logging;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
-import org.objectstyle.wolips.commons.CommonsPlugin;
-/**
- * @author uli
- * @author mnolte
- */
-public class PluginLogger implements ILogger {
-	private String pluginID = null;
-	private boolean debug;
-	/**
-	 * @param pluginID
-	 * @param debug
-	 */
-	public PluginLogger(String pluginID, boolean debug) {
-		this.pluginID = pluginID;
-		this.debug = debug;
-	}
-	/**
-	 * Prints an IStatus.
-	 * 
-	 * @param status
-	 */
-	public void log(IStatus status) {
-		CommonsPlugin.getDefault().getLog().log(status);
-	}
-	/**
-	 * Prints a message.
-	 * 
-	 * @param message
-	 */
-	public void log(Object message) {
-		this.log(new Status(IStatus.ERROR, this.pluginID, IStatus.ERROR, ""+message,
-				null));
-	}
-	/**
-	 * Prints a Throwable.
-	 * 
-	 * @param e
-	 */
-	public void log(Throwable e) {
-		this.log(new Status(IStatus.ERROR, this.pluginID, IStatus.ERROR,
-				"Internal Error", e)); //$NON-NLS-1$
-	}
-	/**
-	 * Prints a Throwable.
-	 * @param message
-	 * @param e
-	 */
-	public void log(Object message, Throwable e) {
-		this.log(new Status(IStatus.ERROR, this.pluginID, IStatus.ERROR,
-				""+message, e)); //$NON-NLS-1$
-	}
 
-	/**
-	 * If debug is true this method prints an Exception to the log.
-	 * 
-	 * @param aThrowable
-	 */
-	public void debug(Throwable aThrowable) {
-		if (this.debug) {
-            this.log(new Status(IStatus.WARNING, this.pluginID, IStatus.WARNING,
-              aThrowable.getMessage(), aThrowable)); //$NON-NLS-1$
-		}
-	}
-	/**
-	 * @param message
-	 * @param t
-	 */
-	public void debug(Object message, Throwable t) {
-		if (this.debug) {
-			this.log(new Status(IStatus.WARNING, this.pluginID, IStatus.WARNING,
-					""+message, t)); //$NON-NLS-1$
-		}
-	}
-	/**
-	 * @param message
-	 */
-	public void debug(Object message) {
-		if (this.debug) {
-			this.log(new Status(IStatus.WARNING, this.pluginID, IStatus.WARNING,
-					""+message, null)); //$NON-NLS-1$
-		}
-	}
+/**
+ * 
+ * @author hn3000
+ *
+ */
+class ConsoleLogger implements ILogger {
+  public void log(Object msg)                { System.out.println(msg); }
+  public void log(Throwable t)               { t.printStackTrace(System.out); }
+  public void log(Object msg, Throwable t)   { System.out.print(msg); t.printStackTrace(System.out); } 
+  public void debug(Object msg)              { System.out.println(msg); }
+  public void debug(Throwable t)             { t.printStackTrace(System.out); }
+  public void debug(Object msg, Throwable t) { System.out.print(msg); t.printStackTrace(System.out); }
 }
