@@ -85,9 +85,16 @@ public class PatternsetDeltaVisitor extends DefaultDeltaVisitor {
 			Project project = (Project)iProject.getAdapter(Project.class);
 			project.releasePatternsetCache();
 			this.needsFurtherInvestigation = false;
+			project.fullBuildRequired = true;
 			return false;
 		}
 		return false;
 	}
 
+	/**
+	 * 
+	 */
+	public void reset() {
+		needsFurtherInvestigation = true;
+	}
 }
