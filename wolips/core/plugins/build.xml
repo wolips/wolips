@@ -15,12 +15,12 @@
 		<ant dir="org.objectstyle.wolips.preferences" target="all" />
 		<ant dir="org.objectstyle.wolips.locate" target="all" />
 		<ant dir="org.objectstyle.wolips" target="all" />
+		<ant dir="org.objectstyle.wolips.refactoring" target="all" />
 		<ant dir="org.objectstyle.wolips.jdt" target="all" />
 		<ant dir="org.objectstyle.wolips.bindings" target="all" />
 		<ant dir="org.objectstyle.wolips.datasets" target="all" />
 		<ant dir="org.objectstyle.wolips.ant" target="all" />
 		<ant dir="org.objectstyle.wolips.documentation" target="all" />
-		<ant dir="org.objectstyle.wolips.refactoring" target="all" />
 		<ant dir="org.objectstyle.wolips.pbserver" target="all" />
 		<ant dir="org.objectstyle.wolips.builder" target="all" />
 		<ant dir="org.objectstyle.wolips.ui" target="all" />
@@ -62,6 +62,7 @@
 		<ant dir="org.objectstyle.wolips.preferences" target="dist" />
 		<ant dir="org.objectstyle.wolips.locate" target="dist" />
 		<ant dir="org.objectstyle.wolips" target="dist" />
+		<ant dir="org.objectstyle.wolips.refactoring" target="dist" />
 		<ant dir="org.objectstyle.wolips.jdt" target="dist" />
 		<ant dir="org.objectstyle.wolips.bindings" target="dist" />
 		<ant dir="org.objectstyle.wolips.datasets" target="dist" />
@@ -71,7 +72,6 @@
 		<ant dir="org.objectstyle.wolips.ui" target="dist" />
 		<ant dir="org.objectstyle.wolips.deployment.ui" target="dist" />
 		<ant dir="org.objectstyle.wolips.launching" target="dist" />
-		<ant dir="org.objectstyle.wolips.refactoring" target="dist" />
 		<ant dir="org.objectstyle.wolips.targetbuilder" target="dist" />
 		<ant dir="org.objectstyle.wolips.team" target="dist" />
 		<ant dir="org.objectstyle.wolips.templateengine" target="dist" />
