@@ -6,7 +6,7 @@ Bundle-Version: 1.0.6
 Bundle-ClassPath: lib/woproject.jar,
  .
 Bundle-Vendor: objectstyle.org
-Eclipse-LazyStart: true
+Bundle-ActivationPolicy: lazy
 Export-Package: org.objectstyle.woenvironment.env,
  org.objectstyle.woenvironment.frameworks,
  org.objectstyle.woenvironment.pb,
