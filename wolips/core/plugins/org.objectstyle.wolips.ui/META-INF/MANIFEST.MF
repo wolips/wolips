@@ -1,0 +1,27 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: WOLips UI Plug-in
+Bundle-SymbolicName: org.objectstyle.wolips.ui; singleton:=true
+Bundle-Version: 1.0.6
+Bundle-Activator: org.objectstyle.wolips.ui.UIPlugin
+Bundle-Vendor: objectstyle.org
+Require-Bundle: org.eclipse.search,
+ org.eclipse.ui.console,
+ org.eclipse.debug.ui,
+ org.eclipse.jdt.ui,
+ org.eclipse.jdt.core,
+ org.objectstyle.wolips.preferences,
+ org.objectstyle.wolips.workbenchutilities,
+ org.objectstyle.wolips.datasets,
+ org.objectstyle.wolips,
+ org.objectstyle.wolips.builder,
+ org.objectstyle.wolips.baseforuiplugins,
+ org.objectstyle.wolips.targetbuilder,
+ org.objectstyle.wolips.jdt;bundle-version="1.0.6"
+Eclipse-LazyStart: true
+Export-Package: org.objectstyle.wolips.ui,
+ org.objectstyle.wolips.ui.actions,
+ org.objectstyle.wolips.ui.labeldecorator,
+ org.objectstyle.wolips.ui.preferences,
+ org.objectstyle.wolips.ui.propertypages,
+ org.objectstyle.wolips.ui.view

@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+
+<dict>
+	<key>CFBundleExecutable</key>
+		<string>Entity Modeler</string>
+	<key>CFBundleGetInfoString</key>
+		<string>Entity Modeler, Copyright (c) 2008 The ObjectStyle Group, and individual authors of the software.</string>
+	<key>CFBundleIconFile</key>
+		<string>EntityModeler.icns</string>
+	<key>CFBundleIdentifier</key>
+		<string>org.objectstyle.wolips.entityModeler</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+		<string>6.0</string>
+	<key>CFBundleName</key>
+		<string>Entity Modeler</string>
+	<key>CFBundlePackageType</key>
+		<string>APPL</string>
+	<key>CFBundleShortVersionString</key>
+		<string>1.0</string>
+	<key>CFBundleSignature</key>
+		<string>eomd</string>
+	<key>CFBundleVersion</key>
+		<string>1.0.7</string>
+
+  <key>CFBundleDocumentTypes</key>
+	  <array>
+	    <dict>
+	      <key>CFBundleTypeExtensions</key>
+		      <array>
+		        <string>eomodel</string>
+		        <string>eomodeld</string>
+		      </array>
+	      <key>CFBundleTypeIconFile</key>
+		      <string>EOModel.icns</string>
+	      <key>CFBundleTypeName</key>
+		      <string>Apple EOModel File</string>
+	      <key>CFBundleTypeRole</key>
+	  	    <string>Editor</string>
+	      <key>LSIsAppleDefaultForType</key>
+	    	  <true/>
+	      <key>LSTypeIsPackage</key>
+	      	<true/>
+	    </dict>
+	  </array>
+
+	<key>Eclipse</key>
+		<array>
+			<string>-vm</string><string>/System/Library/Frameworks/JavaVM.framework/Versions/1.5/Commands/java</string>
+			<string>--launcher.library</string>
+			<string>$APP_PACKAGE/Contents/Resources/plugins/org.eclipse.equinox.launcher.carbon.macosx_1.0.100.v20080509-1800/eclipse_1114.so</string>
+			<string>-startup</string>
+			<string>$APP_PACKAGE/Contents/Resources/plugins/org.eclipse.equinox.launcher_1.0.100.v20080509-1800.jar</string>
+			<string>-keyring</string><string>~/.eclipse_keyring</string>
+			<string>-consoleLog</string>
+			<string>-showlocation</string>
+			<string>-vmargs</string>
+			<string>-Xdock:icon=../Resources/Entity Modeler.icns</string>
+			<string>-XX:MaxPermSize=256m</string>
+			<string>-Xmx256m</string>
+			<string>-Dorg.eclipse.swt.internal.carbon.smallFonts</string>
+		</array>
+</dict>
+
+</plist>

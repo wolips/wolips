@@ -1,0 +1,12 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: WOLips Workbenchutilities Plug-in
+Bundle-SymbolicName: org.objectstyle.wolips.workbenchutilities; singleton:=true
+Bundle-Version: 1.0.6
+Bundle-Activator: org.objectstyle.wolips.workbenchutilities.WorkbenchUtilitiesPlugin
+Bundle-Vendor: objectstyle.org
+Require-Bundle: org.eclipse.jdt.core,
+ org.objectstyle.wolips.baseforuiplugins
+Eclipse-LazyStart: true
+Export-Package: org.objectstyle.wolips.workbenchutilities,
+ org.objectstyle.wolips.workbenchutilities.actions

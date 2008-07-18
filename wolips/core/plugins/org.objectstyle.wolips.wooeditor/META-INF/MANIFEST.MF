@@ -1,0 +1,22 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: WOLips Woo Editor Plug-in
+Bundle-SymbolicName: org.objectstyle.wolips.wooeditor;singleton:=true
+Bundle-Version: 1.0.6
+Bundle-Activator: org.objectstyle.wolips.wooeditor.WooeditorPlugin
+Bundle-Vendor: objectstyle.org
+Require-Bundle: org.eclipse.core.filesystem,
+ org.eclipse.jface.databinding,
+ org.eclipse.core.databinding,
+ org.eclipse.core.databinding.beans,
+ org.eclipse.ui.forms,
+ org.eclipse.ui.editors,
+ org.eclipse.jdt.core,
+ org.eclipse.jdt.ui,
+ org.objectstyle.wolips.baseforuiplugins,
+ org.objectstyle.wolips.bindings,
+ org.objectstyle.wolips.eomodeler.core,
+ org.objectstyle.wolips.wodclipse.core
+Eclipse-LazyStart: true
+Export-Package: org.objectstyle.wolips.wooeditor,
+ org.objectstyle.wolips.wooeditor.editor
