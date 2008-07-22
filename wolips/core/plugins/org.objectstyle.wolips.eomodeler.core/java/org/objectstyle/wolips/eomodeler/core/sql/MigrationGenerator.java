@@ -1,5 +1,6 @@
 package org.objectstyle.wolips.eomodeler.core.sql;
 
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -7,6 +8,7 @@ import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.objectstyle.wolips.eomodeler.core.Activator;
 import org.objectstyle.wolips.eomodeler.core.model.EOEntity;
+import org.objectstyle.wolips.eomodeler.core.model.EOEntityComparator;
 import org.objectstyle.wolips.eomodeler.core.model.EOModel;
 import org.objectstyle.wolips.thirdparty.velocity.WOLipsVelocityUtils;
 import org.objectstyle.wolips.thirdparty.velocity.resourceloader.ResourceLoader;
@@ -24,6 +26,7 @@ public class MigrationGenerator {
 		} else {
 			generateEntities = entities;
 		}
+		Collections.sort(generateEntities, new EOEntityComparator());
 		
 		VelocityEngine velocityEngine = WOLipsVelocityUtils.createVelocityEngine("EOGenerator", Activator.getDefault().getBundle(), null, null, true, ResourceLoader.class);
 		VelocityContext context = new VelocityContext();
