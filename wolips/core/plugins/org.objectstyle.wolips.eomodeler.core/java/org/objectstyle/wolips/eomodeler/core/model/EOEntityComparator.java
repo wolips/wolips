@@ -27,8 +27,11 @@ public class EOEntityComparator implements Comparator<EOEntity> {
 					comparison = 1;
 				}
 			}
-			else {
+			else if (referencedEntities2.contains(e1)) {
 				comparison = -1;
+			}
+			else {
+				comparison = 0;
 			}
 		}
 		return comparison;

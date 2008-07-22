@@ -37,10 +37,18 @@ public class MigrationGenerator {
 			String entityMigration = WOLipsVelocityUtils.writeTemplateToString(velocityEngine, context, "EntityMigration0.java");
 			entityMigrations.add(entityMigration);
 		}
+
+		List<String> foreignKeyMigrations = new LinkedList<String>();
+		for (EOEntity entity : generateEntities) {
+			context.put("entity", entity);
+			String foreignKeyMigration = WOLipsVelocityUtils.writeTemplateToString(velocityEngine, context, "ForeignKeyMigration0.java");
+			foreignKeyMigrations.add(foreignKeyMigration);
+		}
 		
 		context.remove("entity");
 		context.put("model", model);
 		context.put("entityMigrations", entityMigrations);
+		context.put("foreignKeyMigrations", foreignKeyMigrations);
 		String modelMigration = WOLipsVelocityUtils.writeTemplateToString(velocityEngine, context, "Migration0.java");
 		return modelMigration;
 	}
