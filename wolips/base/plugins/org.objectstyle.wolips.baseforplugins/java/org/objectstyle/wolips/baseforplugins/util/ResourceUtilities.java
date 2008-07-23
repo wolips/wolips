@@ -19,7 +19,7 @@ public class ResourceUtilities {
 	public static String getFileNameWithoutExtension(IResource resource) {
 		String fileName = null;
 		if (resource != null) {
-			fileName = ResourceUtilities.getFileNameWithoutExtension(fileName);
+			fileName = ResourceUtilities.getFileNameWithoutExtension(resource.getName());
 		}
 		return fileName;
 	}
