@@ -71,9 +71,11 @@ public class EOModelDocGenerator {
 				if (entityURLTemplate != null) {
 					String className = entity.getClassName();
 					if (className != null && className.length() > 0) {
-						String entityURL = entityURLTemplate;
 						StringWriter entityURLWriter = new StringWriter();
-						Velocity.evaluate(context, entityURLWriter, "entityURL", entityURL);
+						VelocityContext entityURLContext = new VelocityContext();
+						entityURLContext.put("entity", entity);
+						entityURLContext.put("model", model);
+						Velocity.evaluate(entityURLContext, entityURLWriter, "entityURL", entityURLTemplate);
 						context.put("entityURL", entityURLWriter.toString());
 					}
 				}
