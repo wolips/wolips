@@ -69,9 +69,8 @@ public class EOModelDocGenerator {
 				System.out.println("Generating " + model.getName() + "." + entity.getName() + " ...");
 				context.put("entity", entity);
 				if (entityURLTemplate != null) {
-					String classNamePath = entity.getClassName();
-					if (classNamePath != null && classNamePath.length() > 0) {
-						classNamePath = classNamePath.replace('.', '/');
+					String className = entity.getClassName();
+					if (className != null && className.length() > 0) {
 						String entityURL = entityURLTemplate;
 						StringWriter entityURLWriter = new StringWriter();
 						Velocity.evaluate(context, entityURLWriter, "entityURL", entityURL);
