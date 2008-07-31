@@ -55,6 +55,7 @@
  */
 package org.objectstyle.wolips.builder.internal;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -76,6 +77,7 @@ import org.eclipse.jdt.core.JavaCore;
 import org.objectstyle.woenvironment.pb.PBXProject;
 import org.objectstyle.woenvironment.pb.XcodeProjProject;
 import org.objectstyle.woenvironment.pb.XcodeProject;
+import org.objectstyle.wolips.baseforplugins.plist.PropertyListParserException;
 import org.objectstyle.wolips.builder.BuilderPlugin;
 import org.objectstyle.wolips.core.resources.builder.IFullBuilder;
 import org.objectstyle.wolips.core.resources.builder.IIncrementalBuilder;
@@ -194,7 +196,7 @@ public class DotXcodeBuilder implements IIncrementalBuilder, IFullBuilder {
 			if (myXcodeProject != null) {
 				try {
 					writeXcodeProject(monitor, project, myXcodeProject, project.getName() + ".xcode");
-				} catch (CoreException e) {
+				} catch (Exception e) {
 					BuilderPlugin.getDefault().log(e);
 				}
 			}
@@ -203,7 +205,7 @@ public class DotXcodeBuilder implements IIncrementalBuilder, IFullBuilder {
 			if (myXcodeProjProject != null) {
 				try {
 					writeXcodeProject(monitor, project, myXcodeProjProject, project.getName() + ".xcodeproj");
-				} catch (CoreException e) {
+				} catch (Exception e) {
 					BuilderPlugin.getDefault().log(e);
 				}
 			}
@@ -211,7 +213,7 @@ public class DotXcodeBuilder implements IIncrementalBuilder, IFullBuilder {
 		return false;
 	}
 
-	protected void writeXcodeProject(IProgressMonitor monitor, IProject project, PBXProject xcodeProject, String projectFolderName) throws CoreException {
+	protected void writeXcodeProject(IProgressMonitor monitor, IProject project, PBXProject xcodeProject, String projectFolderName) throws CoreException, PropertyListParserException, IOException {
 		ProjectFrameworkAdapter projectAdapter = (ProjectFrameworkAdapter) project.getAdapter(ProjectFrameworkAdapter.class);
 		List frameworkPaths = projectAdapter.getFrameworkPaths();
 		//System.out.println("DotXcodeBuilder.writeXcodeProject: Writing " + project.getName() + " " + xcodeProject);
