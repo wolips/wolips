@@ -61,23 +61,27 @@ public class EclipseProjectEOModelGroupFactory extends AbstractManifestEOModelGr
 		}
 		System.out.println("EclipseProjectEOModelGroupFactory.processEclipseProject: Project folder '" + eclipseProjectFolder + "' ...");
 
-		File buildFolder = new File(eclipseProjectFolder, "build");
-		if (buildFolder.exists()) {
-			File buildResourcesFolder;
-			File frameworkResourcesFolder = new File(buildFolder, eclipseProjectFolder.getName() + ".framework" + File.separator + "Resources");
-			if (frameworkResourcesFolder.exists()) {
-				buildResourcesFolder = frameworkResourcesFolder;
-			} else {
-				File woaResourcesFolder = new File(buildFolder, eclipseProjectFolder.getName() + ".woa" + File.separator + "Contents" + File.separator + "Resources");
-				if (woaResourcesFolder.exists()) {
-					buildResourcesFolder = woaResourcesFolder;
+		String[] buildFolderNames = new String[] { "build", "dist" };
+		for (String buildFolderName : buildFolderNames) {
+			File buildFolder = new File(eclipseProjectFolder, buildFolderName);
+			if (buildFolder.exists()) {
+				File buildResourcesFolder;
+				File frameworkResourcesFolder = new File(buildFolder, eclipseProjectFolder.getName() + ".framework" + File.separator + "Resources");
+				if (frameworkResourcesFolder.exists()) {
+					buildResourcesFolder = frameworkResourcesFolder;
 				} else {
-					buildResourcesFolder = buildFolder;
+					File woaResourcesFolder = new File(buildFolder, eclipseProjectFolder.getName() + ".woa" + File.separator + "Contents" + File.separator + "Resources");
+					if (woaResourcesFolder.exists()) {
+						buildResourcesFolder = woaResourcesFolder;
+					} else {
+						buildResourcesFolder = buildFolder;
+					}
 				}
+				// We're cheating some here and forcing project build resources
+				// folders to the front of the line ...
+				searchFolders.add(0, new ManifestSearchFolder(buildResourcesFolder));
+				break;
 			}
-			// We're cheating some here and forcing project build resources
-			// folders to the front of the line ...
-			searchFolders.add(0, new ManifestSearchFolder(buildResourcesFolder));
 		}
 		visitedProjects.add(eclipseProjectFolder);
 
