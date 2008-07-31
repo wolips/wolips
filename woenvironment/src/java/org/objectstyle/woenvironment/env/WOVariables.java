@@ -177,12 +177,18 @@ public class WOVariables {
     }
 
     try {
-      FileOutputStream wolipsPropertiesStream = new FileOutputStream(this.wolipsPropertiesFile);
-      try {
-        this.wolipsProperties.store(wolipsPropertiesStream, null);
+      File wolipsPropertiesFolder = this.wolipsPropertiesFile.getParentFile(); 
+      if (!wolipsPropertiesFolder.exists()) {
+        wolipsPropertiesFolder.mkdirs();
       }
-      finally {
-        wolipsPropertiesStream.close();
+      if (wolipsPropertiesFolder.canWrite()) {
+        FileOutputStream wolipsPropertiesStream = new FileOutputStream(this.wolipsPropertiesFile);
+        try {
+          this.wolipsProperties.store(wolipsPropertiesStream, null);
+        }
+        finally {
+          wolipsPropertiesStream.close();
+        }
       }
     }
     catch (IOException e) {
