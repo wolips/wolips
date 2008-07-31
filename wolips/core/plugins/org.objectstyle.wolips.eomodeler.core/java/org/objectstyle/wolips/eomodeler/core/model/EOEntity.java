@@ -985,6 +985,14 @@ public class EOEntity extends UserInfoableEOModelObject<EOModel> implements IEOE
 	public String getClassName() {
 		return myClassName;
 	}
+	
+	public String getClassNamePath() {
+		String classNamePath = getClassName();
+		if (classNamePath != null && classNamePath.length() > 0) {
+			classNamePath = classNamePath.replace('.', '/');
+		}
+		return classNamePath;
+	}
 
 	public void guessClassNameInModel(EOModel model) {
 		String className = getName();
