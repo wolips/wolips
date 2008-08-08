@@ -173,7 +173,7 @@ public class WOVariables {
       this.wolipsProperties.setProperty(WOVariables.LOCAL_ROOT, "/Library/Frameworks");
       this.wolipsProperties.setProperty(WOVariables.SYSTEM_ROOT, "/System/Library/Frameworks");
       this.wolipsProperties.setProperty(WOVariables.NETWORK_ROOT, "/Network/Library/Frameworks");
-      this.wolipsProperties.setProperty(WOVariables.USER_ROOT, "/Users/mschrag/Library/Frameworks");
+      this.wolipsProperties.setProperty(WOVariables.USER_ROOT, "/Users/" + System.getProperty("user.name") + "/Library/Frameworks");
     }
 
     try {
