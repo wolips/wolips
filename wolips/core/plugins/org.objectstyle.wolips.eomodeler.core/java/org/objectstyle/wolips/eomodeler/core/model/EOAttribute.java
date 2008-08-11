@@ -1077,7 +1077,7 @@ public class EOAttribute extends AbstractEOArgument<EOEntity> implements IEOAttr
 	}
 
 	public boolean getSqlGenerationCreateProperty() {
-		return (getEntity().isHorizontalInheritance() || !isInherited()) || getEntity().getSqlGenerationCreateInheritedProperties();
+		return !isInherited() || getEntity().getSqlGenerationCreateInheritedProperties();
 	}
 
 	public String toString() {
