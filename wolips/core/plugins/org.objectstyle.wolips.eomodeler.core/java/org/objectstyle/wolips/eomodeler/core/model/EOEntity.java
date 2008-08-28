@@ -680,7 +680,7 @@ public class EOEntity extends UserInfoableEOModelObject<EOModel> implements IEOE
 			attribute = new EOAttribute(newAttributeName);
 			attribute.setUsedForLocking(Boolean.TRUE);
 			attribute.synchronizeNameChange(newAttributeName, newAttributeName);
-			//attribute.guessColumnNameInEntity(this);
+			attribute.guessColumnNameInEntity(this);
 			attribute.setClassProperty(Boolean.TRUE);
 			addAttribute(attribute);
 		}

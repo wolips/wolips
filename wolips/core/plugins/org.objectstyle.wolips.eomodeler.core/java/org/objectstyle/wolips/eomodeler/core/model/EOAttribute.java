@@ -175,6 +175,14 @@ public class EOAttribute extends AbstractEOArgument<EOEntity> implements IEOAttr
 		return equals;
 	}
 
+	public void guessColumnNameInEntity(EOEntity entity) {
+		String columnName = getName();
+		if (entity != null) {
+			columnName = entity.getModel().getAttributeNamingConvention().format(columnName);
+		}
+		setColumnName(columnName);
+	}
+
 	public void guessPrototype(boolean _skipIfAlreadyPrototyped) {
 		if (!_skipIfAlreadyPrototyped || getPrototype() == null) {
 			boolean probablyBooleanString = new Integer(5).equals(getWidth()) && ("S".equals(getValueType()) || "c".equals(getValueType()));
