@@ -251,7 +251,6 @@ public class WOJavaLocalApplicationLaunchConfigurationDelegate extends JavaLaunc
 			launchArgument.append(debugGroups);
 			launchArgument.append(")\"");
 		}
-		System.out.println("WOJavaLocalApplicationLaunchConfigurationDelegate.getProgramArguments: " + launchArgument);
 		return launchArgument.toString();
 	}
 
