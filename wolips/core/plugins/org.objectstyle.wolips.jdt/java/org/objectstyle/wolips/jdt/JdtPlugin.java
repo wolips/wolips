@@ -59,15 +59,11 @@ import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IResourceChangeEvent;
-import org.eclipse.core.resources.IResourceChangeListener;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.objectstyle.woenvironment.frameworks.FrameworkModel;
 import org.objectstyle.wolips.baseforplugins.logging.PluginLogger;
 import org.objectstyle.wolips.jdt.classpath.model.EclipseFrameworkModel;
 import org.objectstyle.wolips.jdt.classpath.model.IEclipseFramework;
-import org.objectstyle.wolips.jdt.listener.ResourceChangeListener;
 import org.osgi.framework.BundleContext;
 
 /**
@@ -85,8 +81,6 @@ public class JdtPlugin extends AbstractUIPlugin {
 	private PluginLogger pluginLogger = null;
 
 	private FrameworkModel<IEclipseFramework> frameworkModel;
-
-	private IResourceChangeListener resourceChangeListener;
 
 	/**
 	 * The constructor.
@@ -137,10 +131,6 @@ public class JdtPlugin extends AbstractUIPlugin {
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
 		this.pluginLogger = new PluginLogger(JdtPlugin.PLUGIN_ID, false);
-		// add element change listener to update project file on classpath
-		// changes
-		this.resourceChangeListener = new ResourceChangeListener();
-		ResourcesPlugin.getWorkspace().addResourceChangeListener(this.resourceChangeListener, IResourceChangeEvent.POST_CHANGE);
 	}
 
 	/*
@@ -149,7 +139,6 @@ public class JdtPlugin extends AbstractUIPlugin {
 	 * @see org.osgi.framework.BundleActivator#stop(org.osgi.framework.BundleContext)
 	 */
 	public void stop(BundleContext context) throws Exception {
-		ResourcesPlugin.getWorkspace().removeResourceChangeListener(this.resourceChangeListener);
 		super.stop(context);
 		this.frameworkModel = null;
 		this.pluginLogger = null;
