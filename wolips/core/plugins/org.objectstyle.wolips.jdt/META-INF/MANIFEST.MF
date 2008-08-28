@@ -21,7 +21,8 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.jface.text,
  org.eclipse.ltk.core.refactoring,
  org.eclipse.ltk.ui.refactoring,
- org.objectstyle.wolips.refactoring
+ org.objectstyle.wolips.refactoring,
+ org.eclipse.jdt.launching;bundle-version="3.4.0"
 Eclipse-LazyStart: true
 Export-Package: org.objectstyle.wolips.jdt,
  org.objectstyle.wolips.jdt.classpath,
