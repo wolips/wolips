@@ -150,11 +150,11 @@
       </filter>
       <filter
             targetId="org.objectstyle.wolips.jdt.ui.WOPackageExplorer"
-            id="org.objectstyle.wolips.ui.javaelementfilters.build"
-            name="build (WOLips)"
+      	   	id="org.objectstyle.wolips.ui.javaelementfilters.build"
+            name="Build Folder (WOLips)"
             enabled="true"
             description="Hide all build files"
-            pattern="build">
+            class="org.objectstyle.wolips.jdt.javaelementfilters.BuildFolderFilter">
       </filter>
       <filter
             targetId="org.objectstyle.wolips.jdt.ui.WOPackageExplorer"
@@ -171,6 +171,14 @@
             enabled="false"
             description="Hide all WOComponents"
             class="org.objectstyle.wolips.jdt.javaelementfilters.ComponentFilter">
+      </filter>
+      <filter
+            targetId="org.objectstyle.wolips.jdt.ui.WOPackageExplorer"
+      	   	id="org.objectstyle.wolips.ui.javaelementfilters.framework"
+            name="WO Framework"
+            enabled="true"
+            description="Hide referenced WO Frameworks"
+            class="org.objectstyle.wolips.jdt.javaelementfilters.WOFrameworkFilter">
       </filter>
       <filter
             targetId="org.objectstyle.wolips.jdt.ui.WOPackageExplorer"
