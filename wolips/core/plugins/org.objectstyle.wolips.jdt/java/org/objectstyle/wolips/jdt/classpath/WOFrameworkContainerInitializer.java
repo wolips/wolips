@@ -61,6 +61,7 @@
 package org.objectstyle.wolips.jdt.classpath;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -213,8 +214,7 @@ public class WOFrameworkContainerInitializer extends ClasspathContainerInitializ
 			}
 			frameworkNames.add(frameworkName);
 			added = true;
-		}
-		else if (index != -1) {
+		} else if (index != -1) {
 			newClasspathEntries.remove(index);
 		}
 		return added;
@@ -223,14 +223,12 @@ public class WOFrameworkContainerInitializer extends ClasspathContainerInitializ
 	protected void convertProjectReferencesToFrameworkReferences(List<IClasspathEntry> newClasspathEntries, FrameworkModel<IEclipseFramework> frameworkModel, Set<String> frameworkNames) {
 		for (int classpathEntryNum = newClasspathEntries.size() - 1; classpathEntryNum >= 0; classpathEntryNum--) {
 			IClasspathEntry newClasspathEntry = newClasspathEntries.get(classpathEntryNum);
-			System.out.println("WOFrameworkContainerInitializer.convertOldClasspathContainer: " + newClasspathEntry);
 			if (newClasspathEntry.getEntryKind() == IClasspathEntry.CPE_PROJECT) {
 				String projectName = newClasspathEntry.getPath().segment(0);
 				// NTS: LOOKUP FRAMEWORK NAME FOR PROJECT NAME
 				String frameworkName = projectName;
 				IEclipseFramework framework = frameworkModel.getFrameworkWithName(frameworkName);
 				if (framework != null) {
-					System.out.println("WOFrameworkContainerInitializer.convertOldClasspathContainer: removing " + projectName);
 					addFrameworkNamed(frameworkName, frameworkNames, newClasspathEntries, frameworkModel, classpathEntryNum);
 				}
 			}
@@ -240,7 +238,9 @@ public class WOFrameworkContainerInitializer extends ClasspathContainerInitializ
 	protected void updateRawClasspath(final IJavaProject javaProject, final List<IClasspathEntry> newClasspathEntries) {
 		final IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
 			public void run(IProgressMonitor monitor) throws CoreException {
-				javaProject.setRawClasspath(newClasspathEntries.toArray(new IClasspathEntry[newClasspathEntries.size()]), monitor);
+				IClasspathEntry[] newClasspathEntriesArray = newClasspathEntries.toArray(new IClasspathEntry[newClasspathEntries.size()]);
+				Arrays.sort(newClasspathEntriesArray, new WOFrameworkClasspathComparator(newClasspathEntriesArray));
+				javaProject.setRawClasspath(newClasspathEntriesArray, monitor);
 			}
 		};
 		Display.getDefault().asyncExec(new Runnable() {
@@ -315,7 +315,7 @@ public class WOFrameworkContainerInitializer extends ClasspathContainerInitializ
 				if (resource instanceof IProject) {
 					if ((resourceDelta.getFlags() & IResourceDelta.OPEN) != 0) {
 						IProject project = (IProject) resource;
-						System.out.println("WOFrameworkContainerInitializer.resourceChanged: opened or closed " + project);
+						//System.out.println("WOFrameworkContainerInitializer.resourceChanged: opened or closed " + project);
 						try {
 							woFrameworkChanged(frameworkNameForProject(project));
 						} catch (CoreException e) {
@@ -323,7 +323,7 @@ public class WOFrameworkContainerInitializer extends ClasspathContainerInitializ
 						}
 					} else if (resourceDelta.getKind() == IResourceDelta.REMOVED) {
 						IProject project = (IProject) resource;
-						System.out.println("WOFrameworkContainerInitializer.resourceChanged: removed " + project);
+						//System.out.println("WOFrameworkContainerInitializer.resourceChanged: removed " + project);
 						try {
 							woFrameworkChanged(frameworkNameForProject(project));
 						} catch (CoreException e) {
@@ -331,7 +331,7 @@ public class WOFrameworkContainerInitializer extends ClasspathContainerInitializ
 						}
 					} else if (resourceDelta.getKind() == IResourceDelta.ADDED) {
 						IProject project = (IProject) resource;
-						System.out.println("WOFrameworkContainerInitializer.resourceChanged: added " + project);
+						//System.out.println("WOFrameworkContainerInitializer.resourceChanged: added " + project);
 						try {
 							woFrameworkChanged(frameworkNameForProject(project));
 						} catch (CoreException e) {
