@@ -86,7 +86,7 @@ public class EclipseProjectFramework extends Framework implements IEclipseFramew
 
 	public IFramework resolveFramework() {
 		IPath buildPath = this.project.getLocation().append("build");
-		AbstractFolderFramework pathFramework = new EclipsePathFramework(new EclipseFolderRoot(Root.PROJECT_ROOT, "Built Project Framework", buildPath.toFile()), buildPath.append(getName() + ".framework").toFile());
+		AbstractFolderFramework pathFramework = new EclipsePathFramework(new EclipseFolderRoot(Root.PROJECT_ROOT, "Built Project Framework", buildPath.toFile(), buildPath.toFile()), buildPath.append(getName() + ".framework").toFile());
 		return pathFramework;
 	}
 

@@ -58,8 +58,8 @@ package org.objectstyle.woenvironment.frameworks;
 import java.io.File;
 
 public class ExternalFolderRoot extends AbstractFolderRoot<IFramework> {
-	public ExternalFolderRoot(String shortName, String name, File frameworksFolder) {
-		super(shortName, name, frameworksFolder);
+	public ExternalFolderRoot(String shortName, String name, File rootFolder, File frameworksFolder) {
+		super(shortName, name, rootFolder, frameworksFolder);
 	}
 
 	@Override

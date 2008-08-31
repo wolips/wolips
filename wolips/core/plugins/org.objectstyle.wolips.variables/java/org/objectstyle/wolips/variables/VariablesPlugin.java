@@ -122,10 +122,24 @@ public class VariablesPlugin extends AbstractBaseActivator implements IStartup {
 	}
 
 	/**
+	 * @return the path to the local root
+	 */
+	public IPath getLocalFrameworkPatb() {
+		return this.fixMissingSeparatorAfterDevice(this.getWOEnvironment().getWOVariables().localFrameworkPath());
+	}
+
+	/**
 	 * @return the path to the system root
 	 */
 	public IPath getSystemRoot() {
 		return this.fixMissingSeparatorAfterDevice(this.getWOEnvironment().getWOVariables().systemRoot());
+	}
+
+	/**
+	 * @return the path to the system root
+	 */
+	public IPath getSystemFrameworkPath() {
+		return this.fixMissingSeparatorAfterDevice(this.getWOEnvironment().getWOVariables().systemFrameworkPath());
 	}
 
 	/**
@@ -136,10 +150,24 @@ public class VariablesPlugin extends AbstractBaseActivator implements IStartup {
 	}
 
 	/**
+	 * @return the path to the network root
+	 */
+	public IPath getNetworkFrameworkPath() {
+		return this.fixMissingSeparatorAfterDevice(this.getWOEnvironment().getWOVariables().networkFrameworkPath());
+	}
+
+	/**
 	 * @return the path to the user home
 	 */
 	public IPath getUserRoot() {
 		return this.fixMissingSeparatorAfterDevice(this.getWOVariables().userRoot());
+	}
+
+	/**
+	 * @return the path to the user home
+	 */
+	public IPath getUserFrameworkPath() {
+		return this.fixMissingSeparatorAfterDevice(this.getWOVariables().userFrameworkPath());
 	}
 
 	/**
@@ -175,6 +203,18 @@ public class VariablesPlugin extends AbstractBaseActivator implements IStartup {
 	 */
 	public IPath getExternalBuildRoot() {
 		String root = this.getWOVariables().externalBuildRoot();
+		if (root != null) {
+			IPath result = this.fixMissingSeparatorAfterDevice(root);
+			return result;
+		}
+		return null;
+	}
+
+	/**
+	 * @return the path to external build root
+	 */
+	public IPath getExternalBuildFrameworkPath() {
+		String root = this.getWOVariables().externalBuildFrameworkPath();
 		if (root != null) {
 			IPath result = this.fixMissingSeparatorAfterDevice(root);
 			return result;

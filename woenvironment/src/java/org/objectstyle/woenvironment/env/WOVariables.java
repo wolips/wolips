@@ -69,19 +69,29 @@ import org.objectstyle.woenvironment.util.FileStringScanner;
  * 
  */
 public class WOVariables {
-  private static final String USER_ROOT = "wo.userroot";
+  private static final String USER_ROOT = "wo.user.root";
 
-  private static final String LOCAL_ROOT = "wo.localroot";
+  private static final String USER_FRAMEWORKS = "wo.user.frameworks";
 
-  private static final String SYSTEM_ROOT = "wo.systemroot";
+  private static final String LOCAL_ROOT = "wo.local.root";
 
-  private static final String NETWORK_ROOT = "wo.networkroot";
+  private static final String LOCAL_FRAMEWORKS = "wo.local.frameworks";
 
-  private static final String EXTERNAL_BUILD_ROOT = "wo.externalbuildroot";
+  private static final String SYSTEM_ROOT = "wo.system.root";
 
-  private static final String APPS_ROOT = "wo.appsroot";
+  private static final String SYSTEM_FRAMEWORKS = "wo.system.frameworks";
 
-  private static final String API_ROOT_KEY = "wo.apiroot";
+  private static final String NETWORK_ROOT = "wo.network.root";
+
+  private static final String NETWORK_FRAMEWORKS = "wo.network.frameworks";
+
+  private static final String EXTERNAL_BUILD_ROOT = "wo.external.root";
+
+  private static final String EXTERNAL_BUILD_FRAMEWORKS = "wo.external.frameworks";
+
+  private static final String APPS_ROOT = "wo.apps.root";
+
+  private static final String API_ROOT_KEY = "wo.api.root";
 
   private static final String BOOTSTRAP_JAR_KEY = "wo.bootstrapjar";
 
@@ -161,19 +171,27 @@ public class WOVariables {
       this.wolipsProperties.setProperty(WOVariables.API_ROOT_KEY, "/Developer/ADC%20Reference%20Library/documentation/WebObjects/Reference/API/");
       this.wolipsProperties.setProperty(WOVariables.APPS_ROOT, "C:\\Apple\\Applications");
       this.wolipsProperties.setProperty(WOVariables.BOOTSTRAP_JAR_KEY, "C:\\Apple\\Library\\Application\\wotaskd.woa\\WOBootstrap.jar");
-      this.wolipsProperties.setProperty(WOVariables.LOCAL_ROOT, "C:\\Apple\\Local\\Library\\Frameworks");
-      this.wolipsProperties.setProperty(WOVariables.SYSTEM_ROOT, "C:\\Apple\\Library\\Frameworks");
-      this.wolipsProperties.setProperty(WOVariables.NETWORK_ROOT, "C:\\Apple\\Network\\Library\\Frameworks");
-      this.wolipsProperties.setProperty(WOVariables.USER_ROOT, "C:\\Documents and Settings\\" + System.getProperty("user.name") + "\\Library\\Frameworks");
+      this.wolipsProperties.setProperty(WOVariables.LOCAL_ROOT, "C:\\Apple\\Local");
+      this.wolipsProperties.setProperty(WOVariables.LOCAL_FRAMEWORKS, "C:\\Apple\\Local\\Library\\Frameworks");
+      this.wolipsProperties.setProperty(WOVariables.SYSTEM_ROOT, "C:\\Apple");
+      this.wolipsProperties.setProperty(WOVariables.SYSTEM_FRAMEWORKS, "C:\\Apple\\Library\\Frameworks");
+      this.wolipsProperties.setProperty(WOVariables.NETWORK_ROOT, "C:\\Apple\\Network");
+      this.wolipsProperties.setProperty(WOVariables.NETWORK_FRAMEWORKS, "C:\\Apple\\Network\\Library\\Frameworks");
+      this.wolipsProperties.setProperty(WOVariables.USER_ROOT, "C:\\Documents and Settings\\" + System.getProperty("user.name"));
+      this.wolipsProperties.setProperty(WOVariables.USER_FRAMEWORKS, "C:\\Documents and Settings\\" + System.getProperty("user.name") + "\\Library\\Frameworks");
     }
     else {
       this.wolipsProperties.setProperty(WOVariables.API_ROOT_KEY, "/Developer/ADC%20Reference%20Library/documentation/WebObjects/Reference/API/");
       this.wolipsProperties.setProperty(WOVariables.APPS_ROOT, "/Library/WebObjects/Applications");
       this.wolipsProperties.setProperty(WOVariables.BOOTSTRAP_JAR_KEY, "/System/Library/WebObjects/JavaApplications/wotaskd.woa/WOBootstrap.jar");
-      this.wolipsProperties.setProperty(WOVariables.LOCAL_ROOT, "/Library/Frameworks");
-      this.wolipsProperties.setProperty(WOVariables.SYSTEM_ROOT, "/System/Library/Frameworks");
-      this.wolipsProperties.setProperty(WOVariables.NETWORK_ROOT, "/Network/Library/Frameworks");
-      this.wolipsProperties.setProperty(WOVariables.USER_ROOT, "/Users/" + System.getProperty("user.name") + "/Library/Frameworks");
+      this.wolipsProperties.setProperty(WOVariables.LOCAL_ROOT, "");
+      this.wolipsProperties.setProperty(WOVariables.LOCAL_FRAMEWORKS, "/Library/Frameworks");
+      this.wolipsProperties.setProperty(WOVariables.SYSTEM_ROOT, "/System");
+      this.wolipsProperties.setProperty(WOVariables.SYSTEM_FRAMEWORKS, "/System/Library/Frameworks");
+      this.wolipsProperties.setProperty(WOVariables.NETWORK_ROOT, "/Network");
+      this.wolipsProperties.setProperty(WOVariables.NETWORK_FRAMEWORKS, "/Network/Library/Frameworks");
+      this.wolipsProperties.setProperty(WOVariables.USER_ROOT, "/Users/" + System.getProperty("user.name"));
+      this.wolipsProperties.setProperty(WOVariables.USER_FRAMEWORKS, "/Users/" + System.getProperty("user.name") + "/Library/Frameworks");
     }
 
     try {
@@ -212,17 +230,33 @@ public class WOVariables {
   public String externalBuildRoot() {
     return this.wolipsProperties.getProperty(WOVariables.EXTERNAL_BUILD_ROOT);
   }
+  
+  public String externalBuildFrameworkPath() {
+    return this.wolipsProperties.getProperty(WOVariables.EXTERNAL_BUILD_FRAMEWORKS);
+  }
 
   public String localRoot() {
     return this.wolipsProperties.getProperty(WOVariables.LOCAL_ROOT);
+  }
+
+  public String localFrameworkPath() {
+    return this.wolipsProperties.getProperty(WOVariables.LOCAL_FRAMEWORKS);
   }
 
   public String systemRoot() {
     return this.wolipsProperties.getProperty(WOVariables.SYSTEM_ROOT);
   }
 
+  public String systemFrameworkPath() {
+    return this.wolipsProperties.getProperty(WOVariables.SYSTEM_FRAMEWORKS);
+  }
+
   public String networkRoot() {
     return this.wolipsProperties.getProperty(WOVariables.NETWORK_ROOT);
+  }
+
+  public String networkFrameworkPath() {
+    return this.wolipsProperties.getProperty(WOVariables.NETWORK_FRAMEWORKS);
   }
 
   public String appsRoot() {
@@ -250,6 +284,15 @@ public class WOVariables {
    */
   public String userRoot() {
     return this.wolipsProperties.getProperty(WOVariables.USER_ROOT);
+  }
+
+  /**
+   * Method userHome
+   * 
+   * @return String
+   */
+  public String userFrameworkPath() {
+    return this.wolipsProperties.getProperty(WOVariables.USER_FRAMEWORKS);
   }
 
   /**

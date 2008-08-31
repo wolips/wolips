@@ -89,7 +89,7 @@ public class PrincipalClassRenameParticipant extends RenameParticipant {
 	public Change createChange(IProgressMonitor _pm) throws CoreException, OperationCanceledException {
 		Change change = null;
 		if (myProject != null) {
-			String principalClass = myProject.getPrincipalClass(true);
+			String principalClass = myProject.getBuildProperties().getPrincipalClass(true);
 			int nameIndex = principalClass.lastIndexOf('$');
 			if (nameIndex == -1) {
 				nameIndex = principalClass.lastIndexOf('.');

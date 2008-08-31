@@ -60,8 +60,8 @@ import java.io.File;
 import org.objectstyle.woenvironment.frameworks.AbstractFolderRoot;
 
 public class EclipseFolderRoot extends AbstractFolderRoot<IEclipseFramework> {
-	public EclipseFolderRoot(String shortName, String name, File path) {
-		super(shortName, name, path);
+	public EclipseFolderRoot(String shortName, String name, File rootFolder, File frameworkFolder) {
+		super(shortName, name, rootFolder, frameworkFolder);
 	}
 
 	@Override

@@ -103,37 +103,35 @@ public class ExternalFrameworkModel extends FrameworkModel<IFramework> {
   protected synchronized List<Root<IFramework>> createRoots() {
     List<Root<IFramework>> roots = new LinkedList<Root<IFramework>>();
     //roots.add(new EclipseProjectRoot(Root.PROJECT_ROOT, "Project Frameworks", ResourcesPlugin.getWorkspace().getRoot()));
-    
+
     String projectLocalFrameworksFolder = this.environment.getWOVariables().getProperty("projectFrameworkFolder");
     if (projectLocalFrameworksFolder != null) {
       File projectLocalRoot = new File(projectLocalFrameworksFolder);
-      roots.add(new ExternalFolderRoot(Root.PROJECT_LOCAL_ROOT, "Project Local Frameworks", projectLocalRoot));
+      roots.add(new ExternalFolderRoot(Root.PROJECT_LOCAL_ROOT, "Project Local Frameworks", projectLocalRoot, projectLocalRoot));
+    }
+    else {
+      roots.add(new ExternalFolderRoot(Root.PROJECT_LOCAL_ROOT, "Project Local Frameworks", null, null));
     }
 
     File externalBuildRootPath = fixMissingSeparatorAfterDevice(this.environment.getWOVariables().externalBuildRoot());
-    if (externalBuildRootPath != null) {
-      roots.add(new ExternalFolderRoot(Root.EXTERNAL_ROOT, "External Build Root", externalBuildRootPath));
-    }
-    
+    File externalBuildFrameworkPath = fixMissingSeparatorAfterDevice(this.environment.getWOVariables().externalBuildFrameworkPath());
+    roots.add(new ExternalFolderRoot(Root.EXTERNAL_ROOT, "External Build Root", externalBuildRootPath, externalBuildFrameworkPath));
+
     File userRoot = fixMissingSeparatorAfterDevice(this.environment.getWOVariables().userRoot());
-    if (userRoot != null) {
-      roots.add(new ExternalFolderRoot(Root.USER_ROOT, "User Frameworks", userRoot));
-    }
-    
+    File userFrameworksPath = fixMissingSeparatorAfterDevice(this.environment.getWOVariables().userFrameworkPath());
+    roots.add(new ExternalFolderRoot(Root.USER_ROOT, "User Frameworks", userRoot, userFrameworksPath));
+
     File localRoot = fixMissingSeparatorAfterDevice(this.environment.getWOVariables().localRoot());
-    if (localRoot != null) {
-    roots.add(new ExternalFolderRoot(Root.LOCAL_ROOT, "Local Frameworks", localRoot));
-    }
-    
+    File localFrameworksPath = fixMissingSeparatorAfterDevice(this.environment.getWOVariables().localFrameworkPath());
+    roots.add(new ExternalFolderRoot(Root.LOCAL_ROOT, "Local Frameworks", localRoot, localFrameworksPath));
+
     File systemRoot = fixMissingSeparatorAfterDevice(this.environment.getWOVariables().systemRoot());
-    if (systemRoot != null) {
-      roots.add(new ExternalFolderRoot(Root.SYSTEM_ROOT, "System Frameworks", systemRoot));
-    }
-    
+    File systemFrameworksPath = fixMissingSeparatorAfterDevice(this.environment.getWOVariables().systemFrameworkPath());
+    roots.add(new ExternalFolderRoot(Root.SYSTEM_ROOT, "System Frameworks", systemRoot, systemFrameworksPath));
+
     File networkRoot = fixMissingSeparatorAfterDevice(this.environment.getWOVariables().networkRoot());
-    if (networkRoot != null) {
-      roots.add(new ExternalFolderRoot(Root.NETWORK_ROOT, "Network Frameworks", networkRoot));
-    }
+    File networkFrameworksPath = fixMissingSeparatorAfterDevice(this.environment.getWOVariables().networkFrameworkPath());
+    roots.add(new ExternalFolderRoot(Root.NETWORK_ROOT, "Network Frameworks", networkRoot, networkFrameworksPath));
     return roots;
   }
 }

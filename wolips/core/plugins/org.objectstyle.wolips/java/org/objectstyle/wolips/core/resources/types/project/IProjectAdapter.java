@@ -58,6 +58,7 @@ package org.objectstyle.wolips.core.resources.types.project;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
+import org.objectstyle.wolips.core.resources.internal.types.project.BuildProperties;
 import org.objectstyle.wolips.core.resources.types.IPBDotProjectOwner;
 import org.objectstyle.wolips.core.resources.types.IResourceType;
 import org.objectstyle.wolips.core.resources.types.folder.IBuildAdapter;
@@ -67,40 +68,37 @@ import org.objectstyle.wolips.core.resources.types.folder.IProductAdapter;
 import org.objectstyle.wolips.core.resources.types.folder.IWoprojectAdapter;
 
 public interface IProjectAdapter extends IResourceType, IPBDotProjectOwner {
+	public IProject getUnderlyingProject();
 
-	public abstract String getProjectFrameworkFolder();
-	
-	public abstract IProject getUnderlyingProject();
+	public boolean isFramework();
 
-	public abstract boolean isFramework();
+	public boolean isApplication();
 
-	public abstract boolean isApplication();
+	public IBuildAdapter getBuildAdapter();
 
-	public abstract IBuildAdapter getBuildAdapter();
+	public IDotApplicationAdapter getDotApplicationAdapter();
 
-	public abstract IDotApplicationAdapter getDotApplicationAdapter();
+	public IDotFrameworkAdapter getDotFrameworkAdapter();
 
-	public abstract IDotFrameworkAdapter getDotFrameworkAdapter();
+	public IProductAdapter getProductAdapter();
 
-	public abstract IProductAdapter getProductAdapter();
-
-	public abstract IWoprojectAdapter getWoprojectAdapter();
+	public IWoprojectAdapter getWoprojectAdapter();
 
 	/**
 	 * Installs the ant builder.
 	 * 
 	 * @throws CoreException
 	 */
-	public abstract void installAntBuilder() throws CoreException;
+	public void installAntBuilder() throws CoreException;
 
 	/**
 	 * Removes the ant builder.
 	 * 
 	 * @throws CoreException
 	 */
-	public abstract void removeAntBuilder() throws CoreException;
+	public void removeAntBuilder() throws CoreException;
+
+	public IPath getWOJavaArchive() throws CoreException;
 	
-	public abstract String getPrincipalClass(boolean convertNullValueToEmptyString);
-	public abstract void setPrincipalClass(String principalClass);
-	public abstract IPath getWOJavaArchive() throws CoreException;
+	public BuildProperties getBuildProperties();
 }

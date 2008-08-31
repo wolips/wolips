@@ -48,6 +48,7 @@ package org.objectstyle.woenvironment.frameworks;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -61,6 +62,7 @@ public abstract class DependencyOrdering<T extends Dependency> {
   // We need to track the name of the framework that contained each entry so we can
   // look it back up when we're building the final classpath
   private Map<T, String> dependencyFramework;
+  private Map<String, List<T>> frameworkDependencies;
 
   // We also need to keep track of the location of the framework, so we only load
   // jars from the first framework we come across 
@@ -74,7 +76,8 @@ public abstract class DependencyOrdering<T extends Dependency> {
   protected void initialize() {
     projectFrameworkNames = new HashSet<String>();
     dependencyFramework = new HashMap<T, String>();
-    addedFrameworkPaths = new HashMap<String, String>();
+    frameworkDependencies = new HashMap<String, List<T>>();
+    addedFrameworkPaths = new LinkedHashMap<String, String>();
     pendingResult = new LinkedList<T>();
   }
   
@@ -83,7 +86,7 @@ public abstract class DependencyOrdering<T extends Dependency> {
 
     for (T dependency : dependencies) {
       String dependencyRawPath = dependency.getRawPath();
-      String[] dependencyRawSegments = dependencyRawPath.split("/");
+      String[] dependencyRawSegments = dependencyRawPath.split("[\\/]");
 
       // rewrite the raw path from its segments to normalize it against
       // other paths we will make (just makes sure they're all consistent)
@@ -98,7 +101,7 @@ public abstract class DependencyOrdering<T extends Dependency> {
         // prevents /Library/Framework versions of the framework from loading later on 
         // in the classpath.
         if (dependency.isProject()) {
-          frameworkName = dependency.getFrameworkName();
+          frameworkName = dependency.getProjectFrameworkName();
           addedFrameworkPaths.put(frameworkName, dependencyRawPath);
           projectFrameworkNames.add(frameworkName);
         }
@@ -126,6 +129,12 @@ public abstract class DependencyOrdering<T extends Dependency> {
       if (addDependency) {
         if (frameworkName != null) {
           dependencyFramework.put(dependency, frameworkName);
+          List<T> thisFrameworkDependencies = frameworkDependencies.get(frameworkName);
+          if (thisFrameworkDependencies == null) {
+            thisFrameworkDependencies = new LinkedList<T>();
+            frameworkDependencies.put(frameworkName, thisFrameworkDependencies);
+          }
+          thisFrameworkDependencies.add(dependency);
         }
         // MS: We need to get the build/BuiltFramework.framework folder from
         // a project and add that instead of the bin folder ...
@@ -139,35 +148,44 @@ public abstract class DependencyOrdering<T extends Dependency> {
     }
 
     // sort classpath: project in front, then frameworks, then apple frameworks, then the rest
-    List<T> otherJars = new ArrayList<T>();
-    List<T> noAppleJars = new ArrayList<T>();
-    List<T> appleJars = new ArrayList<T>();
-    List<T> projects = new ArrayList<T>();
-    List<T> woa = new ArrayList<T>();
+    List<T> processedDeps = new LinkedList<T>();
+    List<T> otherDeps = new LinkedList<T>();
+    List<T> nonAppleDeps = new LinkedList<T>();
+    List<T> appleDeps = new LinkedList<T>();
+    List<T> projectDeps = new LinkedList<T>();
+    List<T> woaDeps = new LinkedList<T>();
     for (T dependency : pendingResult) {
-      String frameworkName = dependencyFramework.get(dependency);
-      if (dependency.isProject()) {
-        projects.add(dependency);
-      }
-      // If the framework was added as a project, don't add it as a /Frameworks
-      // folder framework.  This is cleaning up from the case where we got, for
-      // instance /Library/Frameworks/WOOgnl.framework AND WOOgnl project.  We
-      // want the project to win.
-      else if (!projectFrameworkNames.contains(frameworkName)) {
-        if (dependency.isAppleProvided()) {
-          appleJars.add(dependency);
+      if (!processedDeps.contains(dependency)) {
+        String frameworkName = dependencyFramework.get(dependency);
+        if (dependency.isProject()) {
+          projectDeps.add(dependency);
         }
-        else if (dependency.isFrameworkJar()) {
-          noAppleJars.add(dependency);
-        }
-        else if (dependency.isBuildProject()) {
-          noAppleJars.add(dependency);
-        }
-        else if (dependency.isWoa()) {
-          woa.add(dependency);
-        }
-        else {
-          otherJars.add(dependency);
+        // If the framework was added as a project, don't add it as a /Frameworks
+        // folder framework.  This is cleaning up from the case where we got, for
+        // instance /Library/Frameworks/WOOgnl.framework AND WOOgnl project.  We
+        // want the project to win.
+        else if (!projectFrameworkNames.contains(frameworkName)) {
+          System.out.println("DependencyOrdering.orderDependencies: " + dependency.getLocation());
+          if (dependency.isAppleProvided()) {
+            System.out.println("DependencyOrdering.orderDependencies:   is apple");
+            addDependencies(dependency, frameworkName, appleDeps, processedDeps);
+          }
+          else if (dependency.isFrameworkJar()) {
+            System.out.println("DependencyOrdering.orderDependencies:   is framework jar");
+            addDependencies(dependency, frameworkName, nonAppleDeps, processedDeps);
+          }
+          else if (dependency.isBuildProject()) {
+            System.out.println("DependencyOrdering.orderDependencies:   is build project");
+            addDependencies(dependency, frameworkName, nonAppleDeps, processedDeps);
+          }
+          else if (dependency.isWoa()) {
+            System.out.println("DependencyOrdering.orderDependencies:   is woa");
+            addDependencies(dependency, frameworkName, woaDeps, processedDeps);
+          }
+          else {
+            System.out.println("DependencyOrdering.orderDependencies:   is other");
+            addDependencies(dependency, frameworkName, otherDeps, processedDeps);
+          }
         }
       }
 //			else {
@@ -176,26 +194,49 @@ public abstract class DependencyOrdering<T extends Dependency> {
     }
 
     List<T> sortedDependencies = new ArrayList<T>();
-    if (woa.size() > 0) {
-      sortedDependencies.addAll(woa);
+    if (woaDeps.size() > 0) {
+      sortedDependencies.addAll(woaDeps);
     }
-    if (projects.size() > 0) {
-      sortedDependencies.addAll(projects);
+    if (projectDeps.size() > 0) {
+      sortedDependencies.addAll(projectDeps);
     }
-    if (noAppleJars.size() > 0) {
-      sortedDependencies.addAll(noAppleJars);
+    if (nonAppleDeps.size() > 0) {
+      sortedDependencies.addAll(nonAppleDeps);
     }
-    if (appleJars.size() > 0) {
-      sortedDependencies.addAll(appleJars);
+    if (appleDeps.size() > 0) {
+      sortedDependencies.addAll(appleDeps);
     }
-    if (otherJars.size() > 0) {
-      sortedDependencies.addAll(otherJars);
+    if (otherDeps.size() > 0) {
+      sortedDependencies.addAll(otherDeps);
     }
 //		for (IRuntimeClasspathEntry entry : sortedEntries) {
 //			System.out.println("WORuntimeClasspathProvider.resolveClasspath: final = " + entry);
 //		}
+    
+    System.out.println("DependencyOrdering.orderDependencies: ordered");
+    for (T dep : sortedDependencies) {
+      System.out.println("DependencyOrdering.orderDependencies:   " + dep.getLocation());
+    }
 
     return sortedDependencies;
+  }
+  
+  protected void addDependencies(T dependency, String frameworkName, List<T> categorizedDeps, List<T> processedDeps) {
+    if (frameworkName == null) {
+      categorizedDeps.add(dependency);
+      processedDeps.add(dependency);
+    }
+    else {
+      List<T> thisFrameworkDeps = frameworkDependencies.get(frameworkName);
+      if (thisFrameworkDeps == null) {
+        categorizedDeps.add(dependency);
+        processedDeps.add(dependency);
+      }
+      else {
+        categorizedDeps.addAll(thisFrameworkDeps);
+        processedDeps.addAll(thisFrameworkDeps);
+      }
+    }
   }
 
   protected abstract void addWOProject(T dependency);

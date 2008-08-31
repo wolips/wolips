@@ -60,38 +60,44 @@ import java.util.Set;
 import java.util.TreeSet;
 
 public abstract class AbstractFolderRoot<T extends IFramework> extends Root<T> {
-	private File frameworksFolder;
+  private File rootFolder;
+  private File frameworksFolder;
 
-	public AbstractFolderRoot(String shortName, String name, File frameworksFolder) {
-		super(shortName, name);
-		this.frameworksFolder = frameworksFolder;
-	}
-	
-	public File getFrameworksFolder() {
+  public AbstractFolderRoot(String shortName, String name, File rootFolder, File frameworksFolder) {
+    super(shortName, name);
+    this.rootFolder = rootFolder;
+    this.frameworksFolder = frameworksFolder;
+  }
+
+  public File getRootFolder() {
+    return rootFolder;
+  }
+  
+  public File getFrameworksFolder() {
     return frameworksFolder;
   }
 
-	protected abstract T createFramework(File frameworkFolder);
+  protected abstract T createFramework(File frameworkFolder);
 
-	@Override
-	public Set<T> getFrameworks() {
-		Set<T> frameworks = new TreeSet<T>();
-		if (this.frameworksFolder.exists()) {
-			File[] frameworkFolders = this.frameworksFolder.listFiles();
-			if (frameworkFolders != null) {
-				for (File frameworkFolder : frameworkFolders) {
-					String frameworkFolderName = frameworkFolder.getName();
-					if (frameworkFolderName.endsWith(".framework") && new File(frameworkFolder, "Resources/Java").exists()) {
-						frameworks.add(createFramework(frameworkFolder));
-					}
-				}
-			}
-		}
-		return frameworks;
-	}
-	
-	@Override
-	public String toString() {
-	  return "[Root: name = " + getName() + "; folder = " + this.frameworksFolder + "]";
-	}
+  @Override
+  public Set<T> getFrameworks() {
+    Set<T> frameworks = new TreeSet<T>();
+    if (this.frameworksFolder != null && this.frameworksFolder.exists()) {
+      File[] frameworkFolders = this.frameworksFolder.listFiles();
+      if (frameworkFolders != null) {
+        for (File frameworkFolder : frameworkFolders) {
+          String frameworkFolderName = frameworkFolder.getName();
+          if (frameworkFolderName.endsWith(".framework") && new File(frameworkFolder, "Resources/Java").exists()) {
+            frameworks.add(createFramework(frameworkFolder));
+          }
+        }
+      }
+    }
+    return frameworks;
+  }
+
+  @Override
+  public String toString() {
+    return "[Root: name = " + getName() + "; folder = " + this.frameworksFolder + "]";
+  }
 }

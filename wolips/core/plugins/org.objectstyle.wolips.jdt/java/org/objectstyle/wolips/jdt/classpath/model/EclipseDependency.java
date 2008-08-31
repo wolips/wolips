@@ -35,7 +35,7 @@ public class EclipseDependency extends Dependency {
 	// MS: This is a total hack ... It should use
 	// the WOLips API to framework name.  For most, I think it works
 	// out, and in particular, for Wonder it does. 
-	public String getFrameworkName() {
+	public String getProjectFrameworkName() {
 		IProject project = (IProject) _classpathEntry.getResource();
 		String frameworkName = project.getName() + ".framework";
 		return frameworkName;

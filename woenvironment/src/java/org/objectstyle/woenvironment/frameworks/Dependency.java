@@ -3,7 +3,7 @@ package org.objectstyle.woenvironment.frameworks;
 import java.io.File;
 
 public abstract class Dependency {
-  public abstract String getFrameworkName();
+  public abstract String getProjectFrameworkName();
   
   public abstract boolean isProject();
 
@@ -65,7 +65,7 @@ public abstract class Dependency {
   public boolean isFrameworkJar() {
     String location = getLocation();
     if (location != null) {
-      String pattern = "(?i).*?/(\\w+)\\.framework/Resources/Java/\\1.jar";
+      String pattern = "(?i).*?/(\\w+)\\.framework/Resources/Java/.*.jar";
       if (location.replace('\\', '/').matches(pattern)) {
         return true;
       }

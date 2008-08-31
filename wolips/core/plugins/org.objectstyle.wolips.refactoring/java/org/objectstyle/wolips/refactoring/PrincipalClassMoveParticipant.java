@@ -132,7 +132,7 @@ public class PrincipalClassMoveParticipant extends MoveParticipant {
 			if (_element instanceof IType) {
 				IType sourceType = (IType) _element;
 				IProjectAdapter project = (IProjectAdapter) sourceType.getJavaProject().getProject().getAdapter(IProjectAdapter.class);
-				String principalClass = project.getPrincipalClass(true);
+				String principalClass = project.getBuildProperties().getPrincipalClass(true);
 				String fullyQualifiedName = sourceType.getFullyQualifiedName();
 				if (principalClass != null && principalClass.equals(fullyQualifiedName)) {
 					initializedProject = project;

@@ -59,7 +59,7 @@ import java.util.Set;
 
 public abstract class Root<T extends IFramework> {
   public static final String PROJECT_ROOT = "Project";
-  public static final String PROJECT_LOCAL_ROOT = "Project Local";
+  public static final String PROJECT_LOCAL_ROOT = "ProjectLocal";
   public static final String EXTERNAL_ROOT = "External";
   public static final String USER_ROOT = "User";
   public static final String NETWORK_ROOT = "Network";

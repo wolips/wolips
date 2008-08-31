@@ -1,9 +1,9 @@
 <project name="${WOLipsContext.getProjectName()}" default="build" basedir=".">
-	<target name="build" depends="init.properties,init.build,build.woapp,ssdd,war" />
+	<target name="build" depends="init.properties,init.build,build.woapp,javaclient,ssdd,war" />
 
-	<target name="compileAndBuild" depends="init.properties,init.build,compile,build.woapp,ssdd,war" />
+	<target name="compileAndBuild" depends="init.properties,init.build,compile,build.woapp,javaclient,ssdd,war" />
 
-	<target name="install" depends="init.properties,init.install,build.woapp,ssdd,war" />
+	<target name="install" depends="init.properties,init.install,build.woapp,javaclient,ssdd,war" />
 
 	<target name="clean" depends="init.properties">
 		<delete dir="dist" />
@@ -12,26 +12,26 @@
 	<!-- property determination  -->
 	<target name="init.properties">
 		<property file="build.properties" />
-		
+
 		<property name="wolips.properties" value="${user.home}${file.separator}Library${file.separator}Application Support${file.separator}WOLips${file.separator}wolips.properties" />
 		<property file="${wolips.properties}" />
 		<condition property="wo.properties.check.failed">
 			<not>
 				<and>
-					<isset property="wo.systemroot" />
-					<isset property="wo.localroot" />
+					<isset property="wo.system.frameworks" />
+					<isset property="wo.local.frameworks" />
 				</and>
 			</not>
 		</condition>
-		<fail message="The properties 'wo.systemroot' and 'wo.localroot' must be set. Check that your ${wolips.properties} is correct." if="wo.properties.check.failed" />
-		
-		<property name="wo.installroot" value="/Library/WebObjects/Applications" />
+		<fail message="The properties 'wo.system.frameworks' and 'wo.local.frameworks' must be set. Check that your ${wolips.properties} is correct." if="wo.properties.check.failed" />
+
+		<property name="wo.install.root" value="${wo.apps.root}" />
 	</target>
 
 	<!-- basic initializations  -->
 	<target name="init.install">
 		<tstamp />
-		<property name="dest.dir" value="${install.dir}" />
+		<property name="dest.dir" value="${wo.install.root}" />
 	</target>
 
 	<target name="init.build">
@@ -43,53 +43,41 @@
 	<target name="build.woapp">
 		<taskdef name="woapplication" classname="org.objectstyle.woproject.ant.WOApplication"/>
 
-		<woapplication name="${project.name}" stdFrameworks="false" destDir="${dest.dir}" customInfoPListContent="${customInfoPListContent}" principalClass="${principalClass}" webXML="${webXML}" webXML_CustomContent="${webXML_CustomContent}" servletAdaptor="er.extensions.jspservlet.ERXServletAdaptor">
+		<woapplication name="${project.name}" destDir="${dest.dir}" customInfoPListContent="${customInfoPListContent}" principalClass="${principalClass}" webXML="${webXML}" webXML_CustomContent="${webXML_CustomContent}" servletAdaptor="er.extensions.jspservlet.ERXServletAdaptor">
 			<classes dir="${classes.dir}">
-				<patternset>
-					<includesfile name="woproject/classes.include.patternset" />
-					<excludesfile name="woproject/classes.exclude.patternset" />
-				</patternset>
+				<includesfile name="woproject/classes.include.patternset" />
+				<excludesfile name="woproject/classes.exclude.patternset" />
 			</classes>
-			
-			<wsresources dir="WebServerResources">
-				<patternset>
-					<include name="**/*" />
-					<exclude name="CVS" />
-					<exclude name=".svn" />
-					<excludesfile name="woproject/wsresources.exclude.patternset" />
-				</patternset>
+
+			<wsresources dir=".">
+				<includesfile name="woproject/wsresources.include.patternset" />
+				<excludesfile name="woproject/wsresources.exclude.patternset" />
 			</wsresources>
-			
-			<resources dir="Resources">
-				<patternset>
-					<include name="**/*" />
-					<exclude name="CVS" />
-					<exclude name=".svn" />
-					<excludesfile name="woproject/resources.exclude.patternset" />
-				</patternset>
-			</resources>
-			
-			<resources dir="Components">
-				<patternset>
-					<include name="**/*" />
-					<exclude name="CVS" />
-					<exclude name=".svn" />
-					<excludesfile name="woproject/resources.exclude.patternset" />
-				</patternset>
+
+			<resources dir=".">
+				<includesfile name="woproject/resources.include.patternset" />
+				<excludesfile name="woproject/resources.exclude.patternset" />
 			</resources>
 
-			<frameworks root="Project Local" embed="${servletDeployment}" eclipse="true" />
-			<frameworks root="External" embed="${servletDeployment}" eclipse="true" />
-			<frameworks root="Local" embed="${servletDeployment}" eclipse="true" />
-			<frameworks root="User" embed="${servletDeployment}" eclipse="true" />
-			<frameworks root="System" embed="${servletDeployment}" eclipse="true" />
-			<frameworks root="Network" embed="${servletDeployment}" eclipse="true" />
+			<frameworks root="ProjectLocal" embed="${embed.ProjectLocal}" eclipse="true" />
+			<frameworks root="External" embed="${embed.External}" eclipse="true" />
+			<frameworks root="Local" embed="${embed.Local}" eclipse="true" />
+			<frameworks root="User" embed="${embed.User}" eclipse="true" />
+			<frameworks root="System" embed="${embed.System}" eclipse="true" />
+			<frameworks root="Network" embed="${embed.Network}" eclipse="true" />
 
 			<lib dir="Libraries">
 				<include name="*.jar" />
-				<exclude name="**/*.woa/**" />
 			</lib>
 		</woapplication>
+	</target>
+	
+	<target name="javaclient" if="javaClient">
+		<mkdir dir="${dest.dir}/${project.name}.woa/Contents/WebServerResources/Java" />
+		<jar basedir="${classes.dir}" includes="**/client/**/*.class,**/common/**/*.class" jarfile="${dest.dir}/${project.name}.woa/Contents/WebServerResources/Java/${project.name}.jar"/>
+
+		<!-- project user.d2wmodel file (D2JC only) -->
+		<copy file="user.d2wmodel" tofile="${dest.dir}/${project.name}.woa/Contents/Resources/user.d2wmodel"/>
 	</target>
 
 	<target name="war" if="servletDeployment" depends="ssdd">
@@ -142,13 +130,14 @@
 		</copy>
 
 		<!--  Get the necessary Frameworks from the webobjects system root instead of the project wrapper -->
-		<copy todir="${dest.dir}/${project.name}/WEB-INF/lib" file="${wo.wosystemroot}/Library/Frameworks/JavaWOJSPServlet.framework/WebServerResources/Java/JavaWOJSPServlet_client.jar" />
+		<copy todir="${dest.dir}/${project.name}/WEB-INF/lib" file="${wo.system.frameworks}/JavaWOJSPServlet.framework/WebServerResources/Java/JavaWOJSPServlet_client.jar" />
 
 		<copy todir="${dest.dir}/${project.name}/WEB-INF/tlds">
-			<fileset dir="${wo.wosystemroot}/Library/Frameworks/JavaWOJSPServlet.framework/Resources/">
+			<fileset dir="${wo.system.frameworks}/JavaWOJSPServlet.framework/Resources/">
 				<include name="WOtaglib_1_0.tld" />
 			</fileset>
 		</copy>
+
 		<!-- the WebObject Extensions -->
 		<copy todir="${dest.dir}/${project.name}/WEB-INF/lib">
 			<fileset dir="/Library/WebObjects/Extensions/">
@@ -157,7 +146,15 @@
 			</fileset>
 			<mapper type="flatten" />
 		</copy>
-
+		
+		<!-- the Java Client Client-Side Classes 	  -->
+		<copy todir="${dest.dir}/${project.name}/WEB-INF/${project.name}.woa/Contents/WebServerResources/Java">
+			<fileset dir="${wo.local.frameworks}"> 
+				<include name="**/WebServerResources/Java/*.jar"/> 
+			</fileset> 
+			<mapper type="flatten"/>
+		</copy>
+		
 		<!-- fix the Macos*ClassPath.txt files  -->
 		<replaceregexp file="${dest.dir}/${project.name}/WEB-INF/${project.name}.woa/Contents/MacOS/MacOSClassPath.txt" match="APPROOT/Resources/Java/${project.name.lowercase}.jar" replace="APPROOT/${project.name}.woa/Contents/Resources/Java/${project.name.lowercase}.jar" byline="true" />
 		<replaceregexp file="${dest.dir}/${project.name}/WEB-INF/${project.name}.woa/Contents/MacOS/MacOSXServerClassPath.txt" match="APPROOT/Resources/Java/${project.name.lowercase}.jar" replace="APPROOT/${project.name}.woa/Contents/Resources/Java/${project.name.lowercase}.jar" byline="true" />
@@ -171,7 +168,7 @@
 
 	<target name="compile" depends="init.properties,init.build">
 		<taskdef name="wocompile" classname="org.objectstyle.woproject.ant.WOCompile" />
-		
+
 		<mkdir dir="bin" />
 		<wocompile srcdir="Sources" destdir="bin">
 			<frameworks root="Project Local" embed="false" eclipse="true" />
@@ -183,7 +180,6 @@
 			<classpath>
 				<fileset dir="Libraries">
 					<include name="*.jar" />
-					<exclude name="**/*.woa/**" />
 				</fileset>
 			</classpath>
 		</wocompile>

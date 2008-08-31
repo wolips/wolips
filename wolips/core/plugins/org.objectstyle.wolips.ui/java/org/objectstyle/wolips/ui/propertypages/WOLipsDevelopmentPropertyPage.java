@@ -51,41 +51,28 @@ package org.objectstyle.wolips.ui.propertypages;
 
 import java.util.Map;
 
-import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IResource;
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.core.runtime.Platform;
-import org.eclipse.jdt.core.IJavaProject;
-import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
-import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Group;
-import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.ui.dialogs.PropertyPage;
 import org.objectstyle.wolips.builder.BuilderPlugin;
 import org.objectstyle.wolips.core.resources.internal.build.Nature;
+import org.objectstyle.wolips.core.resources.internal.types.project.BuildProperties;
 import org.objectstyle.wolips.core.resources.internal.types.project.ProjectAdapter;
-import org.objectstyle.wolips.core.resources.types.project.IProjectAdapter;
-import org.objectstyle.wolips.jdt.ProjectFrameworkAdapter;
 import org.objectstyle.wolips.ui.UIPlugin;
 
 /**
  * @author ulrich
  * @author mschrag
  */
-public class ProjectNaturePage extends PropertyPage implements IAdaptable {
+public class WOLipsDevelopmentPropertyPage extends WOLipsPropertyPage {
 	private static final String BUILD_STYLE_TITLE = "Build Style";
 
 	private static final String PROJECT_KIND_TITLE = "Bundle Settings";
@@ -102,10 +89,6 @@ public class ProjectNaturePage extends PropertyPage implements IAdaptable {
 
 	private static final String WO_USE_TARGET_BUILDER_TITLE = "Use Target Builder for JavaClient";
 
-	private Button _servletDeploymentCheck;
-
-	private Button _generateWebXMLCheck;
-
 	private Button _useTargetBuilderCheck;
 
 	private Button _webObjectsProjectCheck;
@@ -120,10 +103,6 @@ public class ProjectNaturePage extends PropertyPage implements IAdaptable {
 
 	private Text _principalClassText;
 
-	private Text _customInfoPListText;
-
-	private Text _customWebXMLText;
-
 	private Text _eoAdaptorClassText;
 
 	private Text _projectFrameworkFolderText;
@@ -131,7 +110,7 @@ public class ProjectNaturePage extends PropertyPage implements IAdaptable {
 	/**
 	 * Constructor for WOLipsProjectNaturePage.
 	 */
-	public ProjectNaturePage() {
+	public WOLipsDevelopmentPropertyPage() {
 		super();
 	}
 
@@ -147,7 +126,7 @@ public class ProjectNaturePage extends PropertyPage implements IAdaptable {
 
 		_webObjectsProjectCheck.addSelectionListener(new SelectionListener() {
 			public void widgetSelected(SelectionEvent e) {
-				ProjectNaturePage.this.enableWidgets();
+				WOLipsDevelopmentPropertyPage.this.enableWidgets();
 			}
 
 			public void widgetDefaultSelected(SelectionEvent e) {
@@ -168,7 +147,7 @@ public class ProjectNaturePage extends PropertyPage implements IAdaptable {
 		_buildStyleIncrementalButton.setLayoutData(incrementalLayoutData);
 		_buildStyleIncrementalButton.addSelectionListener(new SelectionListener() {
 			public void widgetSelected(SelectionEvent e) {
-				ProjectNaturePage.this.enableWidgets();
+				WOLipsDevelopmentPropertyPage.this.enableWidgets();
 			}
 
 			public void widgetDefaultSelected(SelectionEvent e) {
@@ -209,7 +188,7 @@ public class ProjectNaturePage extends PropertyPage implements IAdaptable {
 
 		_projectFrameworkFolderText = _addTextField(textSettingsGroup, "Framework Folder");
 		if (project != null) {
-			String projectFrameworkFolder = project.getProjectFrameworkFolder();
+			String projectFrameworkFolder = getBuildProperties().getProjectFrameworkFolder();
 			if (projectFrameworkFolder == null) {
 				projectFrameworkFolder = "";
 			}
@@ -228,7 +207,7 @@ public class ProjectNaturePage extends PropertyPage implements IAdaptable {
 		_bundleTypeApplicationButton.setLayoutData(applicationLayoutData);
 		_bundleTypeApplicationButton.addSelectionListener(new SelectionListener() {
 			public void widgetSelected(SelectionEvent e) {
-				ProjectNaturePage.this.enableWidgets();
+				WOLipsDevelopmentPropertyPage.this.enableWidgets();
 			}
 
 			public void widgetDefaultSelected(SelectionEvent e) {
@@ -260,201 +239,45 @@ public class ProjectNaturePage extends PropertyPage implements IAdaptable {
 		textSettingsGroup.setLayoutData(textSettingsLayoutData);
 		_principalClassText = _addTextField(textSettingsGroup, "Principal Class");
 		if (project != null) {
-			_principalClassText.setText(project.getPrincipalClass(true));
+			_principalClassText.setText(project.getBuildProperties().getPrincipalClass(true));
 		}
 
 		_eoAdaptorClassText = _addTextField(textSettingsGroup, "EOAdaptor Class");
 		if (project != null) {
-			_eoAdaptorClassText.setText(project.getEOAdaptorClassName(true));
-		}
-
-		_customInfoPListText = _addTextArea(textSettingsGroup, "Custom Info.plist");
-		if (project != null) {
-			_customInfoPListText.setText(project.getCustomInfoPListContent(true));
-		}
-	}
-
-	private Text _addTextField(Composite parent, String label) {
-		GridData gd = new GridData();
-		Label textLabel = new Label(parent, SWT.NONE);
-		textLabel.setText(label);
-		textLabel.setLayoutData(gd);
-		gd = new GridData(GridData.FILL_HORIZONTAL);
-		gd.grabExcessHorizontalSpace = true;
-		// Owner text field
-		Text text = new Text(parent, SWT.SINGLE | SWT.BORDER);
-		text.setLayoutData(gd);
-		return (text);
-	}
-
-	private Text _addTextArea(Composite parent, String label) {
-		Label textLabel = new Label(parent, SWT.NONE);
-		textLabel.setText(label);
-		GridData labelData = new GridData();
-		labelData.horizontalSpan = 2;
-		labelData.verticalAlignment = SWT.BEGINNING;
-		labelData.verticalIndent = 7;
-		textLabel.setLayoutData(labelData);
-
-		GridData textData = new GridData();
-		textData = new GridData(GridData.FILL_HORIZONTAL);
-		textData.horizontalSpan = 2;
-		textData.horizontalIndent = 0;
-		textData.grabExcessHorizontalSpace = true;
-		textData.grabExcessVerticalSpace = true;
-		textData.heightHint = 70;
-		// Owner text field
-		// Scrollable scrollable = new Scrollable(parent, SWT.H_SCROLL |
-		// SWT.V_SCROLL);
-		Text text = new Text(parent, SWT.MULTI | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
-		text.setLayoutData(textData);
-		return (text);
-	}
-
-	private static String _getArg(Map values, String key, String defVal) {
-		String result = null;
-		try {
-			result = (String) values.get(key);
-		} catch (Exception up) {
-			// hmm, how did that get there?
-		}
-		if (null == result) {
-			result = defVal;
-		}
-		return result;
-	}
-
-	private void addServletDeploymentSection(Composite parent, ProjectAdapter project) {
-		Composite group = _createGroupWithLabel(parent, "Servlet Deployment");
-		group.setLayout(new GridLayout(2, false));
-
-		_servletDeploymentCheck = new Button(group, SWT.CHECK | SWT.LEFT);
-		GridData servletDeploymentData = new GridData();
-		servletDeploymentData.horizontalSpan = 2;
-		_servletDeploymentCheck.setLayoutData(servletDeploymentData);
-		_servletDeploymentCheck.setText("Servlet Deployment");
-		_servletDeploymentCheck.setEnabled(true);
-		_servletDeploymentCheck.setSelection(project != null && project.isServletDeployment());
-		_servletDeploymentCheck.addSelectionListener(new SelectionListener() {
-			public void widgetSelected(SelectionEvent e) {
-				ProjectNaturePage.this.enableWidgets();
-			}
-
-			public void widgetDefaultSelected(SelectionEvent e) {
-				widgetSelected(e);
-			}
-		});
-
-		_generateWebXMLCheck = new Button(group, SWT.CHECK | SWT.LEFT);
-		GridData generateWebXmlData = new GridData();
-		generateWebXmlData.horizontalSpan = 2;
-		_generateWebXMLCheck.setLayoutData(generateWebXmlData);
-		_generateWebXMLCheck.setText("Autogenerate web.xml");
-		_generateWebXMLCheck.setEnabled(true);
-		_generateWebXMLCheck.setSelection(project != null && project.getWebXML());
-		_generateWebXMLCheck.addSelectionListener(new SelectionListener() {
-			public void widgetSelected(SelectionEvent e) {
-				ProjectNaturePage.this.enableWidgets();
-			}
-
-			public void widgetDefaultSelected(SelectionEvent e) {
-				widgetSelected(e);
-			}
-		});
-
-		_customWebXMLText = _addTextArea(group, "Custom web.xml");
-		if (project != null) {
-			_customWebXMLText.setText(project.getWebXML_CustomContent(true));
+			_eoAdaptorClassText.setText(project.getBuildProperties().getEOAdaptorClassName(true));
 		}
 	}
 
 	protected void enableWidgets() {
 		_useTargetBuilderCheck.setEnabled(_buildStyleIncrementalButton.getSelection());
-
 		_principalClassText.setEnabled(true);
 		_eoAdaptorClassText.setEnabled(!_bundleTypeApplicationButton.getSelection());
-		_customInfoPListText.setEnabled(true);
-
-		_servletDeploymentCheck.setEnabled(_bundleTypeApplicationButton.getSelection());
-		_generateWebXMLCheck.setEnabled(_bundleTypeApplicationButton.getSelection() && _servletDeploymentCheck.getSelection());
-		_customWebXMLText.setEnabled(_bundleTypeApplicationButton.getSelection() && _servletDeploymentCheck.getSelection() && !_generateWebXMLCheck.getSelection());
 	}
 
-	protected Control createContents(Composite parent) {
-		Composite composite = new Composite(parent, SWT.NONE);
-		GridLayout layout = new GridLayout();
-		layout.marginLeft = 0;
-		layout.marginRight = 0;
-		composite.setLayout(layout);
-		GridData data = new GridData(GridData.FILL);
-		data.grabExcessHorizontalSpace = true;
-		composite.setLayoutData(data);
+	@Override
+	protected void _createContents(Composite parent, ProjectAdapter projectAdapter, boolean isWOProject) {
+		_addWOProjectSection(parent, isWOProject);
+		_addBuildStyleSection(parent, projectAdapter);
+		_addBundleSettingsSection(parent, projectAdapter);
 
-		IProject project = getProject();
-		if (project != null) {
-			ProjectAdapter projectAdapter = getProjectAdapter();
-			boolean isWOProject = (projectAdapter != null);
-			if (!isWOProject) {
-				projectAdapter = new ProjectAdapter(getProject(), false);
-			}
-			_addWOProjectSection(composite, isWOProject);
-			_addBuildStyleSection(composite, projectAdapter);
-			_addBundleSettingsSection(composite, projectAdapter);
-			addServletDeploymentSection(composite, projectAdapter);
-
-			enableWidgets();
-		}
-
-		return composite;
+		enableWidgets();
 	}
 
-	protected Composite _createGroupWithLabel(Composite parent, String label) {
-		Group composite = new Group(parent, SWT.NULL);
-		FormLayout layout = new FormLayout();
-		// layout.numColumns = 2;
-		layout.marginHeight = 5;
-		layout.marginWidth = 5;
-		composite.setLayout(layout);
-		GridData data = new GridData();
-		data.verticalAlignment = GridData.FILL;
-		data.horizontalAlignment = GridData.FILL;
-		composite.setLayoutData(data);
-		if (null != label) {
-			composite.setText(label);
-		}
-		return composite;
-	}
-
-	protected void performDefaults() {
-		ProjectAdapter projectAdapter = getProjectAdapter();
-		if (projectAdapter != null) {
-			setDefaults(projectAdapter);
-		}
-	}
-
-	private void setDefaults(ProjectAdapter project) {
+	@Override
+	protected void setDefaults(ProjectAdapter project) {
 		Map args = project.getBuilderArgs();
 		String string = _getArg(args, BuilderPlugin.NS_PRINCIPAL_CLASS, "");
 		if (string == null || string.length() == 0) {
-			string = project.getPrincipalClass(true);
+			string = project.getBuildProperties().getPrincipalClass(true);
 		}
 		if (string != null) {
 			_principalClassText.setText(string);
 		}
 
-		string = project.getCustomInfoPListContent(true);
-		if (string != null) {
-			_customInfoPListText.setText(string);
-		}
-
-		string = project.getEOAdaptorClassName(true);
+		string = project.getBuildProperties().getEOAdaptorClassName(true);
 		if (string != null) {
 			_eoAdaptorClassText.setText(string);
 		}
-
-		_customWebXMLText.setText("");
-		_servletDeploymentCheck.setSelection(false);
-		_generateWebXMLCheck.setSelection(false);
 	}
 
 	public boolean performOk() {
@@ -477,70 +300,24 @@ public class ProjectNaturePage extends PropertyPage implements IAdaptable {
 				}
 				ProjectAdapter project = getProjectAdapter();
 				if (project != null) {
-					project.setPrincipalClass(_principalClassText.getText());
-					project.setCustomInfoPListContent(_customInfoPListText.getText());
-					project.setServletDeployment(_servletDeploymentCheck.getSelection());
-					project.setWebXML(_generateWebXMLCheck.getSelection());
-					project.setWebXML_CustomContent(_customWebXMLText.getText());
-					project.setEOAdaptorClassName(_eoAdaptorClassText.getText());
+					BuildProperties buildProperties = getBuildProperties();
+					buildProperties.setPrincipalClass(_principalClassText.getText());
+					buildProperties.setEOAdaptorClassName(_eoAdaptorClassText.getText());
 					String projectFrameworkFolderText = _projectFrameworkFolderText.getText();
 					if (projectFrameworkFolderText.length() == 0) {
-						project.setProjectFrameworkFolder(null);
+						buildProperties.setProjectFrameworkFolder(null);
 					} else {
-						project.setProjectFrameworkFolder(projectFrameworkFolderText);
+						buildProperties.setProjectFrameworkFolder(projectFrameworkFolderText);
 					}
-
-					ProjectFrameworkAdapter projectFrameworkAdapter = getProjectFrameworkAdapter();
-					if (project.isServletDeployment()) {
-						projectFrameworkAdapter.addFrameworkNamed("JavaWOJSPServlet");
-					} else {
-						projectFrameworkAdapter.removeFrameworkNamed("JavaWOJSPServlet");
-					}
+					buildProperties.save();
 				}
 			} else {
 				Nature.removeNaturesFromProject(getProject(), new NullProgressMonitor());
 			}
-		} catch (CoreException up) {
+		} catch (Exception up) {
 			UIPlugin.getDefault().log(up);
 			return false;
 		}
 		return true;
-	}
-
-	public IJavaProject getJavaProject() {
-		return JavaCore.create(getProject());
-	}
-
-	public IProject getProject() {
-		IProject project;
-		IAdaptable element = getElement();
-		if (element instanceof IResource) {
-			project = ((IResource) element).getProject();
-		} else {
-			project = (IProject) getElement().getAdapter(IProject.class);
-		}
-		return project;
-	}
-
-	public ProjectAdapter getProjectAdapter() {
-		IProject project = getProject();
-		ProjectAdapter projectAdapter = null;
-		if (project != null) {
-			projectAdapter = (ProjectAdapter) project.getAdapter(IProjectAdapter.class);
-		}
-		return projectAdapter;
-	}
-
-	public ProjectFrameworkAdapter getProjectFrameworkAdapter() {
-		IProject project = getProject();
-		ProjectFrameworkAdapter projectFrameworkAdapter = null;
-		if (project != null) {
-			projectFrameworkAdapter = (ProjectFrameworkAdapter) project.getAdapter(ProjectFrameworkAdapter.class);
-		}
-		return projectFrameworkAdapter;
-	}
-
-	public Object getAdapter(Class theClass) {
-		return Platform.getAdapterManager().getAdapter(this, theClass);
 	}
 }
