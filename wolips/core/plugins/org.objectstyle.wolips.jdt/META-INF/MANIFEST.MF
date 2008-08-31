@@ -23,7 +23,7 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.ltk.ui.refactoring,
  org.objectstyle.wolips.refactoring,
  org.eclipse.jdt.launching;bundle-version="3.4.0"
-Eclipse-LazyStart: true
+Bundle-ActivationPolicy: lazy
 Export-Package: org.objectstyle.wolips.jdt,
  org.objectstyle.wolips.jdt.classpath,
  org.objectstyle.wolips.jdt.classpath.model,

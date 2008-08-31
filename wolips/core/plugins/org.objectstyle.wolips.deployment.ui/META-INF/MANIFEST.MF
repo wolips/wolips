@@ -10,6 +10,6 @@ Require-Bundle: org.objectstyle.wolips,
  org.objectstyle.wolips.ant,
  org.objectstyle.wolips.baseforuiplugins,
  org.objectstyle.wolips.jdt;bundle-version="1.0.6"
-Eclipse-LazyStart: true
+Bundle-ActivationPolicy: lazy
 Export-Package: org.objectstyle.wolips.deployment.ui,
  org.objectstyle.wolips.deployment.ui.actions

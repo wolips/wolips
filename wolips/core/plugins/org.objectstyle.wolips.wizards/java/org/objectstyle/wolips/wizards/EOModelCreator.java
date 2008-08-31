@@ -71,7 +71,7 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.widgets.Display;
-import org.objectstyle.wolips.baseforplugins.plist.PropertyListParserException;
+import org.objectstyle.woenvironment.plist.PropertyListParserException;
 import org.objectstyle.wolips.eogenerator.core.model.EOGeneratorModel;
 import org.objectstyle.wolips.eogenerator.core.model.EOModelReference;
 import org.objectstyle.wolips.eogenerator.jdt.EOGeneratorCreator;

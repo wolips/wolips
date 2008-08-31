@@ -442,7 +442,7 @@ public class ProjectPatternsets implements IProjectPatternsets, IResourceType {
 	 * @param string
 	 */
 	public void addClassesIncludePattern(String string) {
-		List list = loadClassesIncludePatternSet();
+		List<String> list = loadClassesIncludePatternSet();
 		if (!list.contains(string)) {
 			list.add(string);
 			saveClassesIncludePatternList(list);
@@ -454,25 +454,25 @@ public class ProjectPatternsets implements IProjectPatternsets, IResourceType {
 	 * @param string
 	 */
 	public void removeClassesIncludePattern(String string) {
-		List patterns = loadClassesIncludePatternSet();
+		List<String> patterns = loadClassesIncludePatternSet();
 		if (patterns.remove(string)) {
 			saveClassesIncludePatternList(patterns);
 		}
 	}
 
-	protected List loadClassesIncludePatternSet() {
+	protected List<String> loadClassesIncludePatternSet() {
 		PatternsetMatcher patternsetMatcher = this.getClassesIncludeMatcher();
 		String[] pattern = patternsetMatcher.getPattern();
-		ArrayList list = new ArrayList();
+		ArrayList<String> list = new ArrayList<String>();
 		for (int i = 0; i < pattern.length; i++) {
 			list.add(pattern[i]);
 		}
 		return list;
 	}
 
-	protected void saveClassesIncludePatternList(List list) {
+	protected void saveClassesIncludePatternList(List<String> list) {
 		IFile classesIncludePatternset = this.getAntFolder().getFile("classes.include.patternset");
-		PatternsetWriter.create(classesIncludePatternset, (String[]) list.toArray(new String[list.size()]));
+		PatternsetWriter.create(classesIncludePatternset, list.toArray(new String[list.size()]));
 		this.classesIncludeMatcher = new PatternsetMatcher(classesIncludePatternset);
 		try {
 			classesIncludePatternset.refreshLocal(IResource.DEPTH_ONE, new NullProgressMonitor());
@@ -485,7 +485,7 @@ public class ProjectPatternsets implements IProjectPatternsets, IResourceType {
 	 * @param string
 	 */
 	public void addClassesExcludePattern(String string) {
-		List list = loadClassesExcludePatternList();
+		List<String> list = loadClassesExcludePatternList();
 		if (!list.contains(string)) {
 			list.add(string);
 			saveClassesExcludePatternList(list);
@@ -497,7 +497,7 @@ public class ProjectPatternsets implements IProjectPatternsets, IResourceType {
 	 * @param string
 	 */
 	public void removeClassesExcludePattern(String string) {
-		List list = loadClassesExcludePatternList();
+		List<String> list = loadClassesExcludePatternList();
 		if (list.remove(string)) {
 			saveClassesExcludePatternList(list);
 		}
@@ -506,19 +506,19 @@ public class ProjectPatternsets implements IProjectPatternsets, IResourceType {
 	/**
 	 * @param string
 	 */
-	public List loadClassesExcludePatternList() {
+	public List<String> loadClassesExcludePatternList() {
 		PatternsetMatcher patternsetMatcher = this.getClassesExcludeMatcher();
 		String[] pattern = patternsetMatcher.getPattern();
-		ArrayList list = new ArrayList();
+		ArrayList<String> list = new ArrayList<String>();
 		for (int i = 0; i < pattern.length; i++) {
 			list.add(pattern[i]);
 		}
 		return list;
 	}
 
-	public void saveClassesExcludePatternList(List list) {
+	public void saveClassesExcludePatternList(List<String> list) {
 		IFile classesExcludePatternset = this.getAntFolder().getFile("classes.exclude.patternset");
-		PatternsetWriter.create(classesExcludePatternset, (String[]) list.toArray(new String[list.size()]));
+		PatternsetWriter.create(classesExcludePatternset, list.toArray(new String[list.size()]));
 		this.classesExcludeMatcher = new PatternsetMatcher(classesExcludePatternset);
 		try {
 			classesExcludePatternset.refreshLocal(IResource.DEPTH_ONE, new NullProgressMonitor());
@@ -531,7 +531,7 @@ public class ProjectPatternsets implements IProjectPatternsets, IResourceType {
 	 * @param string
 	 */
 	public void addWOAppResourcesIncludePattern(String string) {
-		List list = loadWOAppResourcesIncludePatternList();
+		List<String> list = loadWOAppResourcesIncludePatternList();
 		if (!list.contains(string)) {
 			list.add(string);
 			saveWOAppResourcesIncludePatternList(list);
@@ -540,25 +540,25 @@ public class ProjectPatternsets implements IProjectPatternsets, IResourceType {
 	}
 
 	public void removeWOAppResourcesIncludePattern(String string) {
-		List list = loadWOAppResourcesIncludePatternList();
+		List<String> list = loadWOAppResourcesIncludePatternList();
 		if (list.remove(string)) {
 			saveWOAppResourcesIncludePatternList(list);
 		}
 	}
 
-	public List loadWOAppResourcesIncludePatternList() {
+	public List<String> loadWOAppResourcesIncludePatternList() {
 		PatternsetMatcher patternsetMatcher = this.getWoappResourcesIncludeMatcher();
 		String[] pattern = patternsetMatcher.getPattern();
-		ArrayList list = new ArrayList();
+		ArrayList<String> list = new ArrayList<String>();
 		for (int i = 0; i < pattern.length; i++) {
 			list.add(pattern[i]);
 		}
 		return list;
 	}
 
-	public void saveWOAppResourcesIncludePatternList(List list) {
+	public void saveWOAppResourcesIncludePatternList(List<String> list) {
 		IFile wsresourcesIncludePatternset = this.getAntFolder().getFile("wsresources.include.patternset");
-		PatternsetWriter.create(wsresourcesIncludePatternset, (String[]) list.toArray(new String[list.size()]));
+		PatternsetWriter.create(wsresourcesIncludePatternset, list.toArray(new String[list.size()]));
 		this.woappResourcesIncludeMatcher = new PatternsetMatcher(wsresourcesIncludePatternset);
 		try {
 			wsresourcesIncludePatternset.refreshLocal(IResource.DEPTH_ONE, new NullProgressMonitor());
@@ -571,7 +571,7 @@ public class ProjectPatternsets implements IProjectPatternsets, IResourceType {
 	 * @param string
 	 */
 	public void addWOAppResourcesExcludePattern(String string) {
-		List list = loadWOAppResourcesExcludePatternList();
+		List<String> list = loadWOAppResourcesExcludePatternList();
 		if (!list.contains(string)) {
 			list.add(string);
 			saveWOAppResourcesExcludePatternList(list);
@@ -580,25 +580,25 @@ public class ProjectPatternsets implements IProjectPatternsets, IResourceType {
 	}
 
 	public void removeWOAppResourcesExcludePattern(String string) {
-		List list = loadWOAppResourcesExcludePatternList();
+		List<String> list = loadWOAppResourcesExcludePatternList();
 		if (list.remove(string)) {
 			saveWOAppResourcesExcludePatternList(list);
 		}
 	}
 
-	public List loadWOAppResourcesExcludePatternList() {
+	public List<String> loadWOAppResourcesExcludePatternList() {
 		PatternsetMatcher patternsetMatcher = this.getWoappResourcesExcludeMatcher();
 		String[] pattern = patternsetMatcher.getPattern();
-		ArrayList list = new ArrayList();
+		ArrayList<String> list = new ArrayList<String>();
 		for (int i = 0; i < pattern.length; i++) {
 			list.add(pattern[i]);
 		}
 		return list;
 	}
 
-	public void saveWOAppResourcesExcludePatternList(List list) {
+	public void saveWOAppResourcesExcludePatternList(List<String> list) {
 		IFile wsresourcesExcludePatternset = this.getAntFolder().getFile("wsresources.exclude.patternset");
-		PatternsetWriter.create(wsresourcesExcludePatternset, (String[]) list.toArray(new String[list.size()]));
+		PatternsetWriter.create(wsresourcesExcludePatternset, list.toArray(new String[list.size()]));
 		this.woappResourcesExcludeMatcher = new PatternsetMatcher(wsresourcesExcludePatternset);
 		try {
 			wsresourcesExcludePatternset.refreshLocal(IResource.DEPTH_ONE, new NullProgressMonitor());
@@ -611,7 +611,7 @@ public class ProjectPatternsets implements IProjectPatternsets, IResourceType {
 	 * @param string
 	 */
 	public void addResourcesIncludePattern(String string) {
-		List list = loadResourcesIncludePatternList();
+		List<String> list = loadResourcesIncludePatternList();
 		if (!list.contains(string)) {
 			list.add(string);
 			saveResourcesIncludePatternList(list);
@@ -620,25 +620,25 @@ public class ProjectPatternsets implements IProjectPatternsets, IResourceType {
 	}
 
 	public void removeResourcesIncludePattern(String string) {
-		List list = loadResourcesIncludePatternList();
+		List<String> list = loadResourcesIncludePatternList();
 		if (list.remove(string)) {
 			saveResourcesIncludePatternList(list);
 		}
 	}
 
-	public List loadResourcesIncludePatternList() {
+	public List<String> loadResourcesIncludePatternList() {
 		PatternsetMatcher patternsetMatcher = this.getResourcesIncludeMatcher();
 		String[] pattern = patternsetMatcher.getPattern();
-		ArrayList list = new ArrayList();
+		ArrayList<String> list = new ArrayList<String>();
 		for (int i = 0; i < pattern.length; i++) {
 			list.add(pattern[i]);
 		}
 		return list;
 	}
 
-	public void saveResourcesIncludePatternList(List list) {
+	public void saveResourcesIncludePatternList(List<String> list) {
 		IFile resourcesIncludePatternset = this.getAntFolder().getFile("resources.include.patternset");
-		PatternsetWriter.create(resourcesIncludePatternset, (String[]) list.toArray(new String[list.size()]));
+		PatternsetWriter.create(resourcesIncludePatternset, list.toArray(new String[list.size()]));
 		this.resourcesIncludeMatcher = new PatternsetMatcher(resourcesIncludePatternset);
 		try {
 			resourcesIncludePatternset.refreshLocal(IResource.DEPTH_ONE, new NullProgressMonitor());
@@ -651,7 +651,7 @@ public class ProjectPatternsets implements IProjectPatternsets, IResourceType {
 	 * @param string
 	 */
 	public void addResourcesExcludePattern(String string) {
-		List list = loadResourcesExcludePatternList();
+		List<String> list = loadResourcesExcludePatternList();
 		if (!list.contains(string)) {
 			list.add(string);
 			saveResourcesExcludePatternList(list);
@@ -660,25 +660,25 @@ public class ProjectPatternsets implements IProjectPatternsets, IResourceType {
 	}
 
 	public void removeResourcesExcludePattern(String string) {
-		List list = loadResourcesExcludePatternList();
+		List<String> list = loadResourcesExcludePatternList();
 		if (list.remove(string)) {
 			saveResourcesExcludePatternList(list);
 		}
 	}
 
-	public List loadResourcesExcludePatternList() {
+	public List<String> loadResourcesExcludePatternList() {
 		PatternsetMatcher patternsetMatcher = this.getResourcesExcludeMatcher();
 		String[] pattern = patternsetMatcher.getPattern();
-		ArrayList list = new ArrayList();
+		ArrayList<String> list = new ArrayList<String>();
 		for (int i = 0; i < pattern.length; i++) {
 			list.add(pattern[i]);
 		}
 		return list;
 	}
 
-	public void saveResourcesExcludePatternList(List list) {
+	public void saveResourcesExcludePatternList(List<String> list) {
 		IFile resourcesexcludePatternset = this.getAntFolder().getFile("resources.exclude.patternset");
-		PatternsetWriter.create(resourcesexcludePatternset, (String[]) list.toArray(new String[list.size()]));
+		PatternsetWriter.create(resourcesexcludePatternset, list.toArray(new String[list.size()]));
 		this.resourcesIncludeMatcher = new PatternsetMatcher(resourcesexcludePatternset);
 		try {
 			resourcesexcludePatternset.refreshLocal(IResource.DEPTH_ONE, new NullProgressMonitor());

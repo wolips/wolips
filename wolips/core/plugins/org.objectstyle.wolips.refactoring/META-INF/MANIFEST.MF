@@ -13,6 +13,6 @@ Require-Bundle: org.eclipse.jdt.core,
  org.objectstyle.wolips.locate,
  org.objectstyle.wolips.baseforuiplugins,
  org.objectstyle.wolips
-Eclipse-LazyStart: true
+Bundle-ActivationPolicy: lazy
 Export-Package: org.objectstyle.wolips.refactoring,
  org.objectstyle.wolips.refactoring.actions

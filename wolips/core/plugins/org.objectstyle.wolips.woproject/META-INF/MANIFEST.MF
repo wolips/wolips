@@ -11,5 +11,6 @@ Export-Package: org.objectstyle.woenvironment.env,
  org.objectstyle.woenvironment.frameworks,
  org.objectstyle.woenvironment.pb,
  org.objectstyle.woenvironment.pbx,
+ org.objectstyle.woenvironment.plist,
  org.objectstyle.woenvironment.util
-Require-Bundle: org.objectstyle.wolips.baseforplugins
+Require-Bundle: org.eclipse.core.runtime;bundle-version="3.4.0"

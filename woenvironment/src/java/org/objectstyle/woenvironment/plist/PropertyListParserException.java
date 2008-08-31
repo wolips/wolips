@@ -1,4 +1,4 @@
-package org.objectstyle.wolips.baseforplugins.plist;
+package org.objectstyle.woenvironment.plist;
 
 public class PropertyListParserException extends Exception {
 	public PropertyListParserException(String message) {

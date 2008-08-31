@@ -26,7 +26,7 @@ Require-Bundle: org.eclipse.jdt.ui,
  org.objectstyle.wolips.bindings,
  org.objectstyle.wolips.locate,
  org.objectstyle.wolips.woproject;bundle-version="1.0.6"
-Eclipse-LazyStart: true
+Bundle-ActivationPolicy: lazy
 Export-Package: org.objectstyle.wolips.wizards,
  org.objectstyle.wolips.wizards.actions,
  org.objectstyle.wolips.wizards.template

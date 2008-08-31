@@ -77,7 +77,7 @@ import org.eclipse.jdt.core.JavaCore;
 import org.objectstyle.woenvironment.pb.PBXProject;
 import org.objectstyle.woenvironment.pb.XcodeProjProject;
 import org.objectstyle.woenvironment.pb.XcodeProject;
-import org.objectstyle.wolips.baseforplugins.plist.PropertyListParserException;
+import org.objectstyle.woenvironment.plist.PropertyListParserException;
 import org.objectstyle.wolips.builder.BuilderPlugin;
 import org.objectstyle.wolips.core.resources.builder.IFullBuilder;
 import org.objectstyle.wolips.core.resources.builder.IIncrementalBuilder;

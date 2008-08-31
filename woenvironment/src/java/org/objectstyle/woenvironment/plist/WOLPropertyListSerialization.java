@@ -1,4 +1,4 @@
-package org.objectstyle.wolips.baseforplugins.plist;
+package org.objectstyle.woenvironment.plist;
 
 import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
