@@ -10,6 +10,7 @@
 	<!-- Build all.                                 -->
 	<!-- ========================================== -->
 	<target name="all">
+		<ant dir="org.objectstyle.wolips.woproject" target="all" />
 		<ant dir="org.objectstyle.wolips.variables" target="all" />
 		<ant dir="org.objectstyle.wolips.workbenchutilities" target="all" />
 		<ant dir="org.objectstyle.wolips.preferences" target="all" />
@@ -48,7 +49,6 @@
 		<ant dir="org.objectstyle.wolips.wooeditor" target="all" />
 		<ant dir="org.objectstyle.wolips.componenteditor" target="all" />
 		<ant dir="org.objectstyle.wolips.ruleeditor" target="all" />
-		<ant dir="org.objectstyle.wolips.woproject" target="all" />
 		<ant dir="org.objectstyle.wolips.woproject.ant" target="all" />
 		<ant dir="org.objectstyle.wolips.womodeler" target="all" />
 		<ant dir="org.objectstyle.wolips.debug" target="all" />
@@ -57,6 +57,7 @@
 	<!-- Build dist.                                -->
 	<!-- ========================================== -->
 	<target name="dist">
+		<ant dir="org.objectstyle.wolips.woproject" target="dist" />
 		<ant dir="org.objectstyle.wolips.variables" target="dist" />
 		<ant dir="org.objectstyle.wolips.workbenchutilities" target="dist" />
 		<ant dir="org.objectstyle.wolips.preferences" target="dist" />
@@ -92,7 +93,6 @@
 		<ant dir="org.objectstyle.wolips.tkhtmleditor" target="dist" />
 		<ant dir="org.objectstyle.wolips.componenteditor" target="dist" />
 		<ant dir="org.objectstyle.wolips.ruleeditor" target="dist" />
-		<ant dir="org.objectstyle.wolips.woproject" target="dist" />
 		<ant dir="org.objectstyle.wolips.woproject.ant" target="dist" />
 		<ant dir="org.objectstyle.wolips.womodeler" target="dist" />
 		<ant dir="org.objectstyle.wolips.builder" target="dist" />
