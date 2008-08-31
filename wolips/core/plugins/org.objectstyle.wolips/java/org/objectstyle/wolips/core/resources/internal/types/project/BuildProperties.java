@@ -180,7 +180,7 @@ public class BuildProperties {
 	 *            the principalClass for the Info.plist
 	 */
 	public void setPrincipalClass(String principalClass) {
-		put(principalClass, (principalClass == null) ? "" : principalClass);
+		put("principalClass", (principalClass == null) ? "" : principalClass);
 	}
 
 	public boolean isEmbed(Root root) {
