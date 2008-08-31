@@ -58,6 +58,8 @@ package org.objectstyle.wolips.jdt.ui;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -67,7 +69,9 @@ import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.ui.wizards.IClasspathContainerPage;
 import org.eclipse.jdt.ui.wizards.IClasspathContainerPageExtension;
 import org.eclipse.jdt.ui.wizards.IClasspathContainerPageExtension2;
+import org.eclipse.jface.viewers.CheckStateChangedEvent;
 import org.eclipse.jface.viewers.CheckboxTableViewer;
+import org.eclipse.jface.viewers.ICheckStateListener;
 import org.eclipse.jface.viewers.ViewerSorter;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
@@ -102,6 +106,7 @@ public class WOFrameworkContainerPage extends WizardPage implements IClasspathCo
 		thisPage.setLayout(new GridLayout());
 
 		this.frameworks = JdtPlugin.getDefault().getFrameworkModel(project.getProject()).getAllFrameworks();
+		final List<IEclipseFramework> usedFrameworks = new LinkedList<IEclipseFramework>();
 		try {
 			Map<String, IEclipseFramework> namedFrameworksMap = new HashMap<String, IEclipseFramework>();
 			for (IEclipseFramework framework : this.frameworks) {
@@ -115,7 +120,7 @@ public class WOFrameworkContainerPage extends WizardPage implements IClasspathCo
 					IEclipseFramework framework = frameworkContainer.getFramework();
 					IEclipseFramework localFramework = namedFrameworksMap.get(framework.getName());
 					if (localFramework != null) {
-						frameworks.remove(localFramework);
+						usedFrameworks.add(localFramework);
 					}
 				}
 			}
@@ -124,7 +129,7 @@ public class WOFrameworkContainerPage extends WizardPage implements IClasspathCo
 		}
 
 		WOFrameworkContentProvider frameworkContentProvider = new WOFrameworkContentProvider(frameworks);
-		WOFrameworkLabelProvider labelProvider = new WOFrameworkLabelProvider();
+		WOFrameworkLabelProvider labelProvider = new WOFrameworkLabelProvider(usedFrameworks);
 		this.frameworkTableViewer = CheckboxTableViewer.newCheckList(thisPage, SWT.MULTI | SWT.BORDER);
 
 		TableColumn frameworkNameColumn = new TableColumn(this.frameworkTableViewer.getTable(), SWT.NONE);
@@ -144,6 +149,18 @@ public class WOFrameworkContainerPage extends WizardPage implements IClasspathCo
 		this.frameworkTableViewer.setInput(frameworkContentProvider);
 		this.frameworkTableViewer.setSorter(new ViewerSorter());
 		// _frameworkTableViewer.addSelectionChangedListener(this);
+		this.frameworkTableViewer.setGrayedElements(usedFrameworks.toArray());
+		this.frameworkTableViewer.setCheckedElements(usedFrameworks.toArray());
+		
+		final CheckboxTableViewer finalFrameworkTableViewer = this.frameworkTableViewer;
+		this.frameworkTableViewer.addCheckStateListener(new ICheckStateListener() {
+			public void checkStateChanged(CheckStateChangedEvent event) {
+				Object checkedFramework = event.getElement();
+				if (!event.getChecked() && usedFrameworks.contains(checkedFramework)) {
+					finalFrameworkTableViewer.setChecked(checkedFramework, true);
+				}
+			}
+		});
 
 		setControl(thisPage);
 		// this.frameworkChanged();
@@ -170,8 +187,10 @@ public class WOFrameworkContainerPage extends WizardPage implements IClasspathCo
 		Set<IClasspathEntry> classpathEntries = new HashSet<IClasspathEntry>();
 		for (Object checkedObject : checkedObjects) {
 			IEclipseFramework selectedFramework = (IEclipseFramework) checkedObject;
-			WOFrameworkClasspathContainer frameworkContainer = new WOFrameworkClasspathContainer(selectedFramework);
-			classpathEntries.add(JavaCore.newContainerEntry(frameworkContainer.getPath()));
+			if (!this.frameworks.contains(selectedFramework)) {
+				WOFrameworkClasspathContainer frameworkContainer = new WOFrameworkClasspathContainer(selectedFramework);
+				classpathEntries.add(JavaCore.newContainerEntry(frameworkContainer.getPath()));
+			}
 		}
 		return classpathEntries.toArray(new IClasspathEntry[classpathEntries.size()]);
 	}

@@ -55,13 +55,24 @@
  */
 package org.objectstyle.wolips.jdt.ui;
 
+import java.util.List;
+
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ILabelProviderListener;
+import org.eclipse.jface.viewers.ITableColorProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.widgets.Display;
 import org.objectstyle.wolips.jdt.classpath.model.IEclipseFramework;
 
-public class WOFrameworkLabelProvider implements ITableLabelProvider, ILabelProvider {
+public class WOFrameworkLabelProvider implements ITableLabelProvider, ILabelProvider, ITableColorProvider {
+	private List<IEclipseFramework> _usedFrameworks;
+
+	public WOFrameworkLabelProvider(List<IEclipseFramework> usedFrameworks) {
+		_usedFrameworks = usedFrameworks;
+	}
 
 	public Image getImage(Object element) {
 		return getColumnImage(element, 0);
@@ -86,6 +97,18 @@ public class WOFrameworkLabelProvider implements ITableLabelProvider, ILabelProv
 			text = "";
 		}
 		return text;
+	}
+
+	public Color getBackground(Object element, int columnIndex) {
+		return null;
+	}
+
+	public Color getForeground(Object element, int columnIndex) {
+		Color foreground = null;
+		if (_usedFrameworks.contains(element)) {
+			foreground = Display.getCurrent().getSystemColor(SWT.COLOR_DARK_GRAY);
+		}
+		return foreground;
 	}
 
 	public void addListener(ILabelProviderListener listener) {
