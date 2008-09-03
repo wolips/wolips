@@ -55,7 +55,7 @@
  */
 package org.objectstyle.wolips.jdt.ui;
 
-import java.util.List;
+import java.util.Set;
 
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ILabelProviderListener;
@@ -68,9 +68,9 @@ import org.eclipse.swt.widgets.Display;
 import org.objectstyle.wolips.jdt.classpath.model.IEclipseFramework;
 
 public class WOFrameworkLabelProvider implements ITableLabelProvider, ILabelProvider, ITableColorProvider {
-	private List<IEclipseFramework> _usedFrameworks;
+	private Set<IEclipseFramework> _usedFrameworks;
 
-	public WOFrameworkLabelProvider(List<IEclipseFramework> usedFrameworks) {
+	public WOFrameworkLabelProvider(Set<IEclipseFramework> usedFrameworks) {
 		_usedFrameworks = usedFrameworks;
 	}
 

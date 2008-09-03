@@ -58,8 +58,6 @@ package org.objectstyle.wolips.jdt.ui;
 
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -84,11 +82,13 @@ import org.objectstyle.wolips.jdt.classpath.WOFrameworkClasspathContainer;
 import org.objectstyle.wolips.jdt.classpath.model.IEclipseFramework;
 
 public class WOFrameworkContainerPage extends WizardPage implements IClasspathContainerPage, IClasspathContainerPageExtension2, IClasspathContainerPageExtension {
-	private CheckboxTableViewer frameworkTableViewer;
+	private CheckboxTableViewer _frameworkTableViewer;
 
-	private Set<IEclipseFramework> frameworks;
+	private Set<IEclipseFramework> _frameworks;
 
-	private IJavaProject project;
+	private Set<IEclipseFramework> _usedFrameworks;
+
+	private IJavaProject _project;
 
 	/**
 	 * The constructor.
@@ -99,28 +99,73 @@ public class WOFrameworkContainerPage extends WizardPage implements IClasspathCo
 		setMessage("Select the frameworks to add to this project.");
 	}
 
+	protected boolean isFrameworkUsed(IEclipseFramework framework) {
+		return _usedFrameworks.contains(framework);
+	}
+	
 	public void createControl(Composite parent) {
 		Composite thisPage = new Composite(parent, SWT.NONE);
 
 		thisPage.setLayoutData(new GridData(GridData.FILL_BOTH));
 		thisPage.setLayout(new GridLayout());
 
-		this.frameworks = JdtPlugin.getDefault().getFrameworkModel(project.getProject()).getAllFrameworks();
-		final List<IEclipseFramework> usedFrameworks = new LinkedList<IEclipseFramework>();
+		_frameworkTableViewer = CheckboxTableViewer.newCheckList(thisPage, SWT.MULTI | SWT.BORDER);
+
+		TableColumn frameworkNameColumn = new TableColumn(_frameworkTableViewer.getTable(), SWT.NONE);
+		frameworkNameColumn.setText("Name");
+		frameworkNameColumn.setWidth(200);
+
+		TableColumn rootNameColumn = new TableColumn(_frameworkTableViewer.getTable(), SWT.NONE);
+		rootNameColumn.setText("Location");
+		rootNameColumn.setWidth(200);
+
+		GridData tableLayoutData = new GridData(GridData.FILL_BOTH);
+		tableLayoutData.heightHint = 200;
+		_frameworkTableViewer.getTable().setHeaderVisible(true);
+		_frameworkTableViewer.getTable().setLayoutData(tableLayoutData);
+		_frameworkTableViewer.setSorter(new ViewerSorter());
+		// _frameworkTableViewer.addSelectionChangedListener(this);
+
+		final CheckboxTableViewer finalFrameworkTableViewer = _frameworkTableViewer;
+		_frameworkTableViewer.addCheckStateListener(new ICheckStateListener() {
+			public void checkStateChanged(CheckStateChangedEvent event) {
+				IEclipseFramework checkedFramework = (IEclipseFramework) event.getElement();
+				if (!event.getChecked() && isFrameworkUsed(checkedFramework)) {
+					finalFrameworkTableViewer.setChecked(checkedFramework, true);
+				}
+			}
+		});
+
+		WOFrameworkContentProvider frameworkContentProvider = new WOFrameworkContentProvider(_frameworks);
+		WOFrameworkLabelProvider labelProvider = new WOFrameworkLabelProvider(_usedFrameworks);
+
+		_frameworkTableViewer.setContentProvider(frameworkContentProvider);
+		_frameworkTableViewer.setLabelProvider(labelProvider);
+		_frameworkTableViewer.setInput(frameworkContentProvider);
+		_frameworkTableViewer.setGrayedElements(_usedFrameworks.toArray());
+		_frameworkTableViewer.setCheckedElements(_usedFrameworks.toArray());
+
+		setControl(thisPage);
+		// frameworkChanged();
+	}
+
+	public void initialize(IJavaProject javaProject, IClasspathEntry[] currentEntries) {
+		_project = javaProject;
+		_frameworks = JdtPlugin.getDefault().getFrameworkModel(_project.getProject()).getAllFrameworks();
+		_usedFrameworks = new HashSet<IEclipseFramework>();
 		try {
 			Map<String, IEclipseFramework> namedFrameworksMap = new HashMap<String, IEclipseFramework>();
-			for (IEclipseFramework framework : this.frameworks) {
+			for (IEclipseFramework framework : _frameworks) {
 				namedFrameworksMap.put(framework.getName(), framework);
 			}
 
-			IClasspathEntry[] classpathEntries = project.getRawClasspath();
-			for (IClasspathEntry classpathEntry : classpathEntries) {
-				WOFrameworkClasspathContainer frameworkContainer = WOFrameworkClasspathContainer.getFrameworkClasspathContainer(project, classpathEntry);
+			for (IClasspathEntry classpathEntry : currentEntries) {
+				WOFrameworkClasspathContainer frameworkContainer = WOFrameworkClasspathContainer.getFrameworkClasspathContainer(_project, classpathEntry);
 				if (frameworkContainer != null) {
 					IEclipseFramework framework = frameworkContainer.getFramework();
 					IEclipseFramework localFramework = namedFrameworksMap.get(framework.getName());
 					if (localFramework != null) {
-						usedFrameworks.add(localFramework);
+						_usedFrameworks.add(localFramework);
 					}
 				}
 			}
@@ -128,50 +173,15 @@ public class WOFrameworkContainerPage extends WizardPage implements IClasspathCo
 			throw new RuntimeException("Failed to remove already linked frameworks from the framework list.", t);
 		}
 
-		WOFrameworkContentProvider frameworkContentProvider = new WOFrameworkContentProvider(frameworks);
-		WOFrameworkLabelProvider labelProvider = new WOFrameworkLabelProvider(usedFrameworks);
-		this.frameworkTableViewer = CheckboxTableViewer.newCheckList(thisPage, SWT.MULTI | SWT.BORDER);
-
-		TableColumn frameworkNameColumn = new TableColumn(this.frameworkTableViewer.getTable(), SWT.NONE);
-		frameworkNameColumn.setText("Name");
-		frameworkNameColumn.setWidth(200);
-
-		TableColumn rootNameColumn = new TableColumn(this.frameworkTableViewer.getTable(), SWT.NONE);
-		rootNameColumn.setText("Location");
-		rootNameColumn.setWidth(200);
-
-		GridData tableLayoutData = new GridData(GridData.FILL_BOTH);
-		tableLayoutData.heightHint = 200;
-		this.frameworkTableViewer.getTable().setHeaderVisible(true);
-		this.frameworkTableViewer.getTable().setLayoutData(tableLayoutData);
-		this.frameworkTableViewer.setContentProvider(frameworkContentProvider);
-		this.frameworkTableViewer.setLabelProvider(labelProvider);
-		this.frameworkTableViewer.setInput(frameworkContentProvider);
-		this.frameworkTableViewer.setSorter(new ViewerSorter());
-		// _frameworkTableViewer.addSelectionChangedListener(this);
-		this.frameworkTableViewer.setGrayedElements(usedFrameworks.toArray());
-		this.frameworkTableViewer.setCheckedElements(usedFrameworks.toArray());
-		
-		final CheckboxTableViewer finalFrameworkTableViewer = this.frameworkTableViewer;
-		this.frameworkTableViewer.addCheckStateListener(new ICheckStateListener() {
-			public void checkStateChanged(CheckStateChangedEvent event) {
-				Object checkedFramework = event.getElement();
-				if (!event.getChecked() && usedFrameworks.contains(checkedFramework)) {
-					finalFrameworkTableViewer.setChecked(checkedFramework, true);
-				}
-			}
-		});
-
-		setControl(thisPage);
-		// this.frameworkChanged();
-	}
-
-	public void initialize(IJavaProject javaProject, IClasspathEntry[] currentEntries) {
-		this.project = javaProject;
 	}
 
 	public boolean finish() {
 		return true;
+	}
+	
+	@Override
+	public void setVisible(boolean visible) {
+		super.setVisible(visible);
 	}
 
 	public void setSelection(IClasspathEntry containerEntry) {
@@ -183,13 +193,15 @@ public class WOFrameworkContainerPage extends WizardPage implements IClasspathCo
 	}
 
 	public IClasspathEntry[] getNewContainers() {
-		Object[] checkedObjects = this.frameworkTableViewer.getCheckedElements();
 		Set<IClasspathEntry> classpathEntries = new HashSet<IClasspathEntry>();
-		for (Object checkedObject : checkedObjects) {
-			IEclipseFramework selectedFramework = (IEclipseFramework) checkedObject;
-			if (!this.frameworks.contains(selectedFramework)) {
-				WOFrameworkClasspathContainer frameworkContainer = new WOFrameworkClasspathContainer(selectedFramework);
-				classpathEntries.add(JavaCore.newContainerEntry(frameworkContainer.getPath()));
+		if (_frameworkTableViewer != null) {
+			Object[] checkedObjects = _frameworkTableViewer.getCheckedElements();
+			for (Object checkedObject : checkedObjects) {
+				IEclipseFramework selectedFramework = (IEclipseFramework) checkedObject;
+				if (!isFrameworkUsed(selectedFramework)) {
+					WOFrameworkClasspathContainer frameworkContainer = new WOFrameworkClasspathContainer(selectedFramework);
+					classpathEntries.add(JavaCore.newContainerEntry(frameworkContainer.getPath()));
+				}
 			}
 		}
 		return classpathEntries.toArray(new IClasspathEntry[classpathEntries.size()]);
