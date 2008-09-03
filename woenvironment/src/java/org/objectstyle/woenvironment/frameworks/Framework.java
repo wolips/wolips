@@ -78,4 +78,9 @@ public abstract class Framework implements IFramework {
 	public int compareTo(IFramework o) {
 		return (o == null) ? 0 : o.getName().compareTo(getName());
 	}
+	
+	@Override
+	public String toString() {
+	  return "[" + getClass().getSimpleName() + ": root = " + root + "; name = " + this.name + "]";
+	}
 }
