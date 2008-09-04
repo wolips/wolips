@@ -140,7 +140,7 @@
 
 		<!-- the WebObject Extensions -->
 		<copy todir="${dest.dir}/${project.name}/WEB-INF/lib">
-			<fileset dir="/Library/WebObjects/Extensions/">
+			<fileset dir="${wo.extensions}">
 				<include name="*.jar" />
 				<exclude name="servlet.jar" />
 			</fileset>
