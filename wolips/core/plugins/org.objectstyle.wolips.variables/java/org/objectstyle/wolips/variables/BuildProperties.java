@@ -257,7 +257,11 @@ public class BuildProperties {
 	}
 
 	public void setJavaClient(boolean javaClient) {
-		put("javaClient", javaClient);
+		if (javaClient) {
+			put("javaClient", javaClient);
+		} else {
+			remove("javaClient");
+		}
 	}
 
 	public boolean isJavaClient() {
@@ -265,7 +269,11 @@ public class BuildProperties {
 	}
 
 	public void setJavaWebStart(boolean javaWebStart) {
-		put("javaWebStart", javaWebStart);
+		if (javaWebStart) {
+			put("javaWebStart", javaWebStart);
+		} else {
+			remove("javaWebStart");
+		}
 	}
 
 	public boolean isJavaWebStart() {
