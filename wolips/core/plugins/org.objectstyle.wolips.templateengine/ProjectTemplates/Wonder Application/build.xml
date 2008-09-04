@@ -181,6 +181,9 @@
 				<fileset dir="Libraries">
 					<include name="*.jar" />
 				</fileset>
+				<fileset dir="${wo.extensions}">
+					<include name="*.jar" />
+				</fileset>
 			</classpath>
 		</wocompile>
 	</target>
