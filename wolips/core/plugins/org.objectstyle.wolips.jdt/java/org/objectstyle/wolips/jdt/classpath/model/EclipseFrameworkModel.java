@@ -65,6 +65,7 @@ import org.eclipse.core.runtime.IPath;
 import org.objectstyle.woenvironment.frameworks.FrameworkModel;
 import org.objectstyle.woenvironment.frameworks.Root;
 import org.objectstyle.wolips.core.resources.types.project.IProjectAdapter;
+import org.objectstyle.wolips.variables.ProjectVariables;
 import org.objectstyle.wolips.variables.VariablesPlugin;
 
 public class EclipseFrameworkModel extends FrameworkModel<IEclipseFramework> {
@@ -88,32 +89,34 @@ public class EclipseFrameworkModel extends FrameworkModel<IEclipseFramework> {
 		}
 		roots.add(new EclipseProjectRoot(Root.PROJECT_ROOT, "Project Frameworks", ResourcesPlugin.getWorkspace().getRoot()));
 
-		IPath externalBuildRootPath = VariablesPlugin.getDefault().getExternalBuildRoot();
-		IPath externalBuildFrameworkPath = VariablesPlugin.getDefault().getExternalBuildFrameworkPath();
+		ProjectVariables variables = VariablesPlugin.getDefault().getProjectVariables(this.project);
+		
+		IPath externalBuildRootPath = variables.getExternalBuildRoot();
+		IPath externalBuildFrameworkPath = variables.getExternalBuildFrameworkPath();
 		if (externalBuildRootPath != null && externalBuildFrameworkPath != null) {
 			roots.add(new EclipseFolderRoot(Root.EXTERNAL_ROOT, "External Build Root", externalBuildFrameworkPath.toFile(), externalBuildRootPath.toFile()));
 		}
 		
-		IPath userRoot = VariablesPlugin.getDefault().getUserRoot();
-		IPath userFrameworkPath = VariablesPlugin.getDefault().getUserFrameworkPath();
+		IPath userRoot = variables.getUserRoot();
+		IPath userFrameworkPath = variables.getUserFrameworkPath();
 		if (userRoot != null && userFrameworkPath != null) {
 			roots.add(new EclipseFolderRoot(Root.USER_ROOT, "User Frameworks", userRoot.toFile(), userFrameworkPath.toFile()));
 		}
 		
-		IPath localRoot = VariablesPlugin.getDefault().getLocalRoot();
-		IPath localFrameworkPath = VariablesPlugin.getDefault().getLocalFrameworkPatb();
+		IPath localRoot = variables.getLocalRoot();
+		IPath localFrameworkPath = variables.getLocalFrameworkPatb();
 		if (localRoot != null && localFrameworkPath != null) {
 			roots.add(new EclipseFolderRoot(Root.LOCAL_ROOT, "Local Frameworks", localRoot.toFile(), localFrameworkPath.toFile()));
 		}
 		
-		IPath systemRoot = VariablesPlugin.getDefault().getSystemRoot();
-		IPath systemFrameworkPath = VariablesPlugin.getDefault().getSystemFrameworkPath();
+		IPath systemRoot = variables.getSystemRoot();
+		IPath systemFrameworkPath = variables.getSystemFrameworkPath();
 		if (systemRoot != null && systemFrameworkPath != null) {
 			roots.add(new EclipseFolderRoot(Root.SYSTEM_ROOT, "System Frameworks", systemRoot.toFile(), systemFrameworkPath.toFile()));
 		}
 		
-		IPath networkRoot = VariablesPlugin.getDefault().getNetworkRoot();
-		IPath networkSystemPath = VariablesPlugin.getDefault().getNetworkFrameworkPath();
+		IPath networkRoot = variables.getNetworkRoot();
+		IPath networkSystemPath = variables.getNetworkFrameworkPath();
 		if (networkRoot != null && networkSystemPath != null) {
 			roots.add(new EclipseFolderRoot(Root.NETWORK_ROOT, "Network Frameworks", networkRoot.toFile(), networkSystemPath.toFile()));
 		}

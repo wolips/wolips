@@ -6,12 +6,19 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.jdt.launching.IRuntimeClasspathEntry;
 import org.objectstyle.woenvironment.frameworks.Dependency;
 import org.objectstyle.wolips.core.resources.types.project.IProjectAdapter;
+import org.objectstyle.wolips.variables.ProjectVariables;
 import org.objectstyle.wolips.variables.VariablesPlugin;
 
 public class EclipseDependency extends Dependency {
-	private IRuntimeClasspathEntry _classpathEntry;
+	private IProject _project;
 
-	public EclipseDependency(IRuntimeClasspathEntry classpathEntry) {
+	private IRuntimeClasspathEntry _classpathEntry;
+	
+	private ProjectVariables _variables;
+
+	public EclipseDependency(IProject project, IRuntimeClasspathEntry classpathEntry) {
+		_project = project;
+		_variables = VariablesPlugin.getDefault().getProjectVariables(project);
 		_classpathEntry = classpathEntry;
 	}
 
@@ -48,7 +55,7 @@ public class EclipseDependency extends Dependency {
 
 	@Override
 	public String getSystemRoot() {
-		return VariablesPlugin.getDefault().getSystemRoot().toString();
+		return _variables.getSystemRoot().toString();
 	}
 
 	public IPath getWOJavaArchive() {

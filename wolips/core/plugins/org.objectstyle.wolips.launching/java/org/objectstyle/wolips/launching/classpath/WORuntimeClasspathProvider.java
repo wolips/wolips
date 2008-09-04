@@ -48,9 +48,11 @@ package org.objectstyle.wolips.launching.classpath;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.jdt.launching.IRuntimeClasspathEntry;
+import org.eclipse.jdt.launching.JavaRuntime;
 import org.eclipse.jdt.launching.StandardClasspathProvider;
 import org.objectstyle.wolips.jdt.classpath.model.EclipseDependency;
 
@@ -85,11 +87,12 @@ public class WORuntimeClasspathProvider extends StandardClasspathProvider {
 	public IRuntimeClasspathEntry[] resolveClasspath(IRuntimeClasspathEntry[] entries, ILaunchConfiguration configuration) throws CoreException {
 		IRuntimeClasspathEntry[] resolvedEntries = super.resolveClasspath(entries, configuration);
 
+		IProject project = JavaRuntime.getJavaProject(configuration).getProject();
 		List<EclipseDependency> unorderedDependencies = new ArrayList<EclipseDependency>(resolvedEntries.length);
 		for (IRuntimeClasspathEntry entry : resolvedEntries) {
-			unorderedDependencies.add(new EclipseDependency(entry));
+			unorderedDependencies.add(new EclipseDependency(project, entry));
 		}
-		List<EclipseDependency> orderedDependencies = new EclipseDependencyOrdering().orderDependencies(unorderedDependencies);
+		List<EclipseDependency> orderedDependencies = new EclipseDependencyOrdering(project).orderDependencies(unorderedDependencies);
 
 		IRuntimeClasspathEntry[] orderedEntries = new IRuntimeClasspathEntry[orderedDependencies.size()];
 		int orderedEntryNum = 0;

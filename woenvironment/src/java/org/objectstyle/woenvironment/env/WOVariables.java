@@ -105,55 +105,59 @@ public class WOVariables {
 
   private Environment environment;
 
-  /**
-   * Constructor for WOVariables.
-   * 
-   * @param environment
-   * @param altProperties
-   * @throws IOException 
-   */
+  public WOVariables(Environment environment, WOVariables variables, Map<Object, Object> existingProperties) {
+    this.environment = environment;
+    this.init(variables, existingProperties);
+  }
+  
   public WOVariables(Environment environment, Map<Object, Object> existingProperties) {
     this.environment = environment;
-    this.init(existingProperties);
+    this.init(null, existingProperties);
   }
 
-  public void init(Map<Object, Object> existingProperties) {
-    // load properties
-    this.wolipsProperties = new Properties();
-
-    String wobuildPropertiesPath = System.getProperty(WOVariables.WOLIPS_PROPERTIES);
-    if (wobuildPropertiesPath != null) {
-      this.wolipsPropertiesFile = new File(wobuildPropertiesPath);
-    }
-    if (!isValidWOlipsPropertiesFile()) {
-      wobuildPropertiesPath = this.environment.getEnvVars().getProperty(WOVariables.WOLIPS_PROPERTIES);
+  public void init(WOVariables variables, Map<Object, Object> existingProperties) {
+    if (variables == null) {
+      // load properties
+      this.wolipsProperties = new Properties();
+  
+      String wobuildPropertiesPath = System.getProperty(WOVariables.WOLIPS_PROPERTIES);
       if (wobuildPropertiesPath != null) {
         this.wolipsPropertiesFile = new File(wobuildPropertiesPath);
       }
-    }
-
-    if (!isValidWOlipsPropertiesFile()) {
-      if (isWindows()) {
-        this.wolipsPropertiesFile = new File(System.getProperty("user.home"), "Documents and Settings/Application Data/WOLips/" + WOVariables.WOLIPS_PROPERTIES_FILE_NAME);
-        if (!isValidWOlipsPropertiesFile()) {
-          this.wolipsPropertiesFile = new File(System.getProperty("user.home"), "Documents and Settings/AppData/Local/WOLips/" + WOVariables.WOLIPS_PROPERTIES_FILE_NAME);
+      if (!isValidWOlipsPropertiesFile()) {
+        wobuildPropertiesPath = this.environment.getEnvVars().getProperty(WOVariables.WOLIPS_PROPERTIES);
+        if (wobuildPropertiesPath != null) {
+          this.wolipsPropertiesFile = new File(wobuildPropertiesPath);
         }
       }
-      else {
-        this.wolipsPropertiesFile = new File(this.environment.userHome(), "Library/Application Support/WOLips/" + WOVariables.WOLIPS_PROPERTIES_FILE_NAME);
+  
+      if (!isValidWOlipsPropertiesFile()) {
+        if (isWindows()) {
+          this.wolipsPropertiesFile = new File(System.getProperty("user.home"), "Documents and Settings/Application Data/WOLips/" + WOVariables.WOLIPS_PROPERTIES_FILE_NAME);
+          if (!isValidWOlipsPropertiesFile()) {
+            this.wolipsPropertiesFile = new File(System.getProperty("user.home"), "Documents and Settings/AppData/Local/WOLips/" + WOVariables.WOLIPS_PROPERTIES_FILE_NAME);
+          }
+        }
+        else {
+          this.wolipsPropertiesFile = new File(this.environment.userHome(), "Library/Application Support/WOLips/" + WOVariables.WOLIPS_PROPERTIES_FILE_NAME);
+        }
+      }
+  
+      if (isValidWOlipsPropertiesFile()) {
+        try {
+          this.wolipsProperties.load(new FileInputStream(this.wolipsPropertiesFile));
+        }
+        catch (IOException e) {
+          throw new RuntimeException("Failed to configure " + wolipsPropertiesFile + ".", e);
+        }
+      }
+      else if (existingProperties == null || existingProperties.isEmpty()) {
+        createDefaultProperties();
       }
     }
-
-    if (isValidWOlipsPropertiesFile()) {
-      try {
-        this.wolipsProperties.load(new FileInputStream(this.wolipsPropertiesFile));
-      }
-      catch (IOException e) {
-        throw new RuntimeException("Failed to configure " + wolipsPropertiesFile + ".", e);
-      }
-    }
-    else if (existingProperties == null || existingProperties.isEmpty()) {
-      createDefaultProperties();
+    else {
+      this.wolipsProperties = new Properties();
+      this.wolipsProperties.putAll(variables.wolipsProperties);
     }
 
     if (existingProperties != null) {

@@ -86,6 +86,7 @@ import org.objectstyle.wolips.core.resources.types.folder.IDotFrameworkAdapter;
 import org.objectstyle.wolips.core.resources.types.folder.IProductAdapter;
 import org.objectstyle.wolips.core.resources.types.folder.IWoprojectAdapter;
 import org.objectstyle.wolips.core.resources.types.project.IProjectAdapter;
+import org.objectstyle.wolips.variables.BuildProperties;
 import org.objectstyle.wolips.variables.VariablesPlugin;
 
 public class ProjectAdapter extends AbstractResourceAdapter implements IProjectAdapter {
@@ -603,7 +604,7 @@ public class ProjectAdapter extends AbstractResourceAdapter implements IProjectA
 			if (resource != null && resource.exists()) {
 				path = resource.getLocation();
 			} else {
-				IPath externalBuildRoot = VariablesPlugin.getDefault().getExternalBuildRoot();
+				IPath externalBuildRoot = VariablesPlugin.getDefault().getProjectVariables(_underlyingProject).getExternalBuildRoot();
 				if (externalBuildRoot != null) {
 					path = externalBuildRoot.append(projectName + ".framework/Resources/Java/" + projectName + ".jar");
 				}
@@ -623,7 +624,7 @@ public class ProjectAdapter extends AbstractResourceAdapter implements IProjectA
 			if (resource != null && (resource.exists())) {
 				path = resource.getLocation();
 			} else {
-				IPath externalBuildRoot = VariablesPlugin.getDefault().getExternalBuildRoot();
+				IPath externalBuildRoot = VariablesPlugin.getDefault().getProjectVariables(_underlyingProject).getExternalBuildRoot();
 				if (externalBuildRoot != null) {
 					path = externalBuildRoot.append(projectName + ".woa/Contents/Resources/Java/" + projectName + ".jar");
 				}
@@ -641,8 +642,8 @@ public class ProjectAdapter extends AbstractResourceAdapter implements IProjectA
 		}
 		return result;
 	}
-	
+
 	public BuildProperties getBuildProperties() {
-		return new BuildProperties(_underlyingProject); 
+		return (BuildProperties) _underlyingProject.getAdapter(BuildProperties.class);
 	}
 }

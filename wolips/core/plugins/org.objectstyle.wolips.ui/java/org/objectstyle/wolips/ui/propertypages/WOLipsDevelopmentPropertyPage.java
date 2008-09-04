@@ -64,9 +64,9 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
 import org.objectstyle.wolips.builder.BuilderPlugin;
 import org.objectstyle.wolips.core.resources.internal.build.Nature;
-import org.objectstyle.wolips.core.resources.internal.types.project.BuildProperties;
 import org.objectstyle.wolips.core.resources.internal.types.project.ProjectAdapter;
 import org.objectstyle.wolips.ui.UIPlugin;
+import org.objectstyle.wolips.variables.BuildProperties;
 
 /**
  * @author ulrich

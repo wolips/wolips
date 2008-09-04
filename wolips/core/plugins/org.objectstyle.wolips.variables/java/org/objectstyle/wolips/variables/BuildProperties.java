@@ -1,4 +1,4 @@
-package org.objectstyle.wolips.core.resources.internal.types.project;
+package org.objectstyle.wolips.variables;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -23,6 +23,23 @@ public class BuildProperties {
 		_project = project;
 	}
 
+	public IFile getBuildPropertiesFile() {
+		IFile file = _project.getFile("build.properties");
+		return file;
+	}
+
+	public synchronized long getModificationStamp() {
+		long version;
+		IFile file = getBuildPropertiesFile();
+		if (file.exists()) {
+			version = file.getModificationStamp();
+		}
+		else {
+			version = -1;
+		}
+		return version;
+	}
+
 	public synchronized void setProperties(Properties properties) {
 		ensureLoaded();
 		if (!_properties.equals(properties)) {
@@ -33,7 +50,9 @@ public class BuildProperties {
 
 	public synchronized Properties getProperties() {
 		ensureLoaded();
-		return new Properties(_properties);
+		Properties cloneProperties = new Properties();
+		cloneProperties.putAll(_properties);
+		return cloneProperties;
 	}
 
 	public synchronized boolean getBoolean(String key, boolean defaultValue) {
@@ -84,7 +103,7 @@ public class BuildProperties {
 	public synchronized void revert() {
 		try {
 			Properties properties = new Properties();
-			IFile file = _project.getFile("build.properties");
+			IFile file = getBuildPropertiesFile();
 			if (file.exists()) {
 				InputStream inputStream = file.getContents();
 				try {
@@ -117,7 +136,7 @@ public class BuildProperties {
 		_properties.store(propertiesOutputStream, null);
 		ByteArrayInputStream propertiesInputStream = new ByteArrayInputStream(propertiesOutputStream.toByteArray());
 
-		IFile file = _project.getFile("build.properties");
+		IFile file = getBuildPropertiesFile();
 		if (file.exists()) {
 			file.setContents(propertiesInputStream, true, true, new NullProgressMonitor());
 		} else {
@@ -236,19 +255,19 @@ public class BuildProperties {
 	public void setProjectFrameworkFolder(String projectFrameworkFolder) {
 		put("projectFrameworkFolder", projectFrameworkFolder);
 	}
-	
+
 	public void setJavaClient(boolean javaClient) {
 		put("javaClient", javaClient);
 	}
-	
+
 	public boolean isJavaClient() {
 		return getBoolean("javaClient", false);
 	}
-	
+
 	public void setJavaWebStart(boolean javaWebStart) {
 		put("javaWebStart", javaWebStart);
 	}
-	
+
 	public boolean isJavaWebStart() {
 		return getBoolean("javaWebStart", false);
 	}

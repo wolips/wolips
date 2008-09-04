@@ -1,8 +1,8 @@
 /* ====================================================================
- * 
- * The ObjectStyle Group Software License, Version 1.0 
  *
- * Copyright (c) 2002 - 2006 The ObjectStyle Group 
+ * The ObjectStyle Group Software License, Version 1.0
+ *
+ * Copyright (c) 2005 - 2006 The ObjectStyle Group,
  * and individual authors of the software.  All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -10,7 +10,7 @@
  * are met:
  *
  * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer. 
+ *    notice, this list of conditions and the following disclaimer.
  *
  * 2. Redistributions in binary form must reproduce the above copyright
  *    notice, this list of conditions and the following disclaimer in
@@ -18,15 +18,15 @@
  *    distribution.
  *
  * 3. The end-user documentation included with the redistribution, if
- *    any, must include the following acknowlegement:  
- *       "This product includes software developed by the 
+ *    any, must include the following acknowlegement:
+ *       "This product includes software developed by the
  *        ObjectStyle Group (http://objectstyle.org/)."
  *    Alternately, this acknowlegement may appear in the software itself,
  *    if and wherever such third-party acknowlegements normally appear.
  *
- * 4. The names "ObjectStyle Group" and "Cayenne" 
+ * 4. The names "ObjectStyle Group" and "Cayenne"
  *    must not be used to endorse or promote products derived
- *    from this software without prior written permission. For written 
+ *    from this software without prior written permission. For written
  *    permission, please contact andrus@objectstyle.org.
  *
  * 5. Products derived from this software may not be called "ObjectStyle"
@@ -53,74 +53,32 @@
  * <http://objectstyle.org/>.
  *
  */
+package org.objectstyle.wolips.variables;
 
-package org.objectstyle.woenvironment.env;
-
-import java.io.File;
+import java.util.HashMap;
 import java.util.Map;
 
-/**
- * @author uli
- * 
- * To prevent static variables create an instance of WOEnvironment to access the
- * environment and WOVariables.
- */
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.runtime.IAdapterFactory;
 
-public final class WOEnvironment extends Environment {
-  private WOVariables woVariables;
+public class BuildPropertiesAdapterFactory implements IAdapterFactory {
+	private Map<IProject, BuildProperties> _cache = new HashMap<IProject, BuildProperties>();
 
-  public WOEnvironment(Map<Object, Object> existingProperties) {
-    this.woVariables = new WOVariables(this, existingProperties);
-  }
-  
-  public WOEnvironment(WOVariables variables, Map<Object, Object> existingProperties) {
-    this.woVariables = new WOVariables(this, variables, existingProperties);
-  }
+	public Object getAdapter(Object adaptableObject, Class adapterType) {
+		BuildProperties properties = null;
+		if (adaptableObject instanceof IProject && adapterType == BuildProperties.class) {
+			IProject project = (IProject) adaptableObject;
+			properties = _cache.get(project);
+			BuildProperties newProperties = new BuildProperties((IProject) adaptableObject);
+			if (properties == null || properties.getModificationStamp() != newProperties.getModificationStamp()) {
+				properties = newProperties;
+				_cache.put(project, properties);
+			}
+		}
+		return properties;
+	}
 
-  /**
-   * @return WOVariables
-   */
-  public WOVariables getWOVariables() {
-    return this.woVariables;
-  }
-
-  /**
-   * Method wo5or51 returns true if the installe WO version is 5.0 or 5.1.
-   * 
-   * @return boolean
-   */
-  public boolean wo5or51() {
-    return (this.bootstrap() == null);
-  }
-
-  /**
-   * Method wo52 returns true if the installe WO version is 5.2.
-   * 
-   * @return boolean
-   */
-  public boolean wo52() {
-    return !this.wo5or51();
-  }
-
-  /**
-   * Method bootstrap returns the bootstrap.jar if it exists.
-   * 
-   * @param project
-   * @return File
-   */
-  public File bootstrap() {
-    String bootstrapJarPath = getWOVariables().boostrapJar();
-    File bootstrapJar = null;
-    if (bootstrapJarPath != null) {
-      bootstrapJar = new File(bootstrapJarPath);
-      if (!bootstrapJar.exists()) {
-        bootstrapJar = null;
-      }
-    }
-    return null;
-  }
-
-  public boolean variablesConfigured() {
-    return getWOVariables().systemRoot() != null && getWOVariables().localRoot() != null;
-  }
+	public Class[] getAdapterList() {
+		return new Class[] { BuildProperties.class };
+	}
 }

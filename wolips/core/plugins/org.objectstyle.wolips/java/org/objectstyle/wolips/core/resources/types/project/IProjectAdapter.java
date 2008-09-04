@@ -58,7 +58,6 @@ package org.objectstyle.wolips.core.resources.types.project;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
-import org.objectstyle.wolips.core.resources.internal.types.project.BuildProperties;
 import org.objectstyle.wolips.core.resources.types.IPBDotProjectOwner;
 import org.objectstyle.wolips.core.resources.types.IResourceType;
 import org.objectstyle.wolips.core.resources.types.folder.IBuildAdapter;
@@ -66,6 +65,7 @@ import org.objectstyle.wolips.core.resources.types.folder.IDotApplicationAdapter
 import org.objectstyle.wolips.core.resources.types.folder.IDotFrameworkAdapter;
 import org.objectstyle.wolips.core.resources.types.folder.IProductAdapter;
 import org.objectstyle.wolips.core.resources.types.folder.IWoprojectAdapter;
+import org.objectstyle.wolips.variables.BuildProperties;
 
 public interface IProjectAdapter extends IResourceType, IPBDotProjectOwner {
 	public IProject getUnderlyingProject();

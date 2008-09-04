@@ -78,7 +78,6 @@ import org.objectstyle.wolips.core.resources.types.ILocalizedPath;
 import org.objectstyle.wolips.core.resources.types.IPBDotProjectOwner;
 import org.objectstyle.wolips.core.resources.types.IResourceType;
 import org.objectstyle.wolips.core.resources.types.project.IProjectPatternsets;
-import org.objectstyle.wolips.variables.VariablesPlugin;
 
 /**
  * @author ulrich
@@ -135,36 +134,28 @@ public class ProjectPatternsets implements IProjectPatternsets, IResourceType {
 		return useCachedVersion;
 	}
 
-	private String[] getStringsFromDefaults(String key, String[] def) {
-		String values = VariablesPlugin.getDefault().getProperty(key);
-		if (values == null) {
-			return def;
-		}
-		return values.split("\\,\\s*");
-	}
-
 	private String[] getWSResourcesIncludeStringsDefault() {
-		return getStringsFromDefaults("wsresources.include.patternset", new String[] { "WebServerResources/*" });
+		return new String[] { "WebServerResources/**/*" };
 	}
 
 	private String[] getWSResourcesExcludeStringsDefault() {
-		return getStringsFromDefaults("wsresources.exclude.patternset", new String[] {});
+		return new String[0];
 	}
 
 	private String[] getResourcesIncludeStringsDefault() {
-		return getStringsFromDefaults("resources.include.patternset", new String[] { "Components/**/*.wo/**/*", "Components/**/*.api", "Resources/**/*" });
+		return new String[] { "Components/**/*.wo/**/*", "Components/**/*.api", "Resources/**/*" };
 	}
 
 	private String[] getResourcesExcludeStringsDefault() {
-		return getStringsFromDefaults("resources.exclude.patternset", new String[] { "Resources/**/*.eomodeld~/**" });
+		return new String[] { "Resources/**/*.eomodeld~/**" };
 	}
 
 	private String[] getClassesIncludeStringsDefault() {
-		return getStringsFromDefaults("classes.include.patternset", new String[] { "**/*.class", "*.properties" });
+		return new String[] { "**/*.class", "*.properties" };
 	}
 
 	private String[] getClassesExcludeStringsDefault() {
-		return getStringsFromDefaults("classes.exclude.patternset", new String[] { "build.properties" });
+		return new String[] { "build.properties" };
 	}
 
 	/**

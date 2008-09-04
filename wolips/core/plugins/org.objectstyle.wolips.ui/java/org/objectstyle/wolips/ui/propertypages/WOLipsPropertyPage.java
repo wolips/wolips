@@ -67,10 +67,10 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.dialogs.PropertyPage;
-import org.objectstyle.wolips.core.resources.internal.types.project.BuildProperties;
 import org.objectstyle.wolips.core.resources.internal.types.project.ProjectAdapter;
 import org.objectstyle.wolips.core.resources.types.project.IProjectAdapter;
 import org.objectstyle.wolips.jdt.ProjectFrameworkAdapter;
+import org.objectstyle.wolips.variables.BuildProperties;
 
 /**
  * @author mschrag
