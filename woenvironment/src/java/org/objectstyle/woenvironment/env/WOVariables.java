@@ -95,6 +95,8 @@ public class WOVariables {
 
   private static final String BOOTSTRAP_JAR_KEY = "wo.bootstrapjar";
 
+  private static final String WEBOBJECTS_EXTENSIONS = "wo.extensions";
+
   private static final String WOLIPS_PROPERTIES = "WOLIPS_PROPERTIES";
 
   private static final String WOLIPS_PROPERTIES_FILE_NAME = "wolips.properties";
@@ -183,12 +185,13 @@ public class WOVariables {
       this.wolipsProperties.setProperty(WOVariables.NETWORK_FRAMEWORKS, "C:\\Apple\\Network\\Library\\Frameworks");
       this.wolipsProperties.setProperty(WOVariables.USER_ROOT, "C:\\Documents and Settings\\" + System.getProperty("user.name"));
       this.wolipsProperties.setProperty(WOVariables.USER_FRAMEWORKS, "C:\\Documents and Settings\\" + System.getProperty("user.name") + "\\Library\\Frameworks");
+      this.wolipsProperties.setProperty(WOVariables.WEBOBJECTS_EXTENSIONS, "C:\\Apple\\Extensions");
     }
     else {
       this.wolipsProperties.setProperty(WOVariables.API_ROOT_KEY, "/Developer/ADC%20Reference%20Library/documentation/WebObjects/Reference/API/");
       this.wolipsProperties.setProperty(WOVariables.APPS_ROOT, "/Library/WebObjects/Applications");
       this.wolipsProperties.setProperty(WOVariables.BOOTSTRAP_JAR_KEY, "/System/Library/WebObjects/JavaApplications/wotaskd.woa/WOBootstrap.jar");
-      this.wolipsProperties.setProperty(WOVariables.LOCAL_ROOT, "");
+      this.wolipsProperties.setProperty(WOVariables.LOCAL_ROOT, "/");
       this.wolipsProperties.setProperty(WOVariables.LOCAL_FRAMEWORKS, "/Library/Frameworks");
       this.wolipsProperties.setProperty(WOVariables.SYSTEM_ROOT, "/System");
       this.wolipsProperties.setProperty(WOVariables.SYSTEM_FRAMEWORKS, "/System/Library/Frameworks");
@@ -196,6 +199,7 @@ public class WOVariables {
       this.wolipsProperties.setProperty(WOVariables.NETWORK_FRAMEWORKS, "/Network/Library/Frameworks");
       this.wolipsProperties.setProperty(WOVariables.USER_ROOT, "/Users/" + System.getProperty("user.name"));
       this.wolipsProperties.setProperty(WOVariables.USER_FRAMEWORKS, "/Users/" + System.getProperty("user.name") + "/Library/Frameworks");
+      this.wolipsProperties.setProperty(WOVariables.WEBOBJECTS_EXTENSIONS, "/Library/WebObjects/Extensions");
     }
 
     try {
