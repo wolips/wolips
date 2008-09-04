@@ -8,6 +8,7 @@ import java.util.Properties;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.objectstyle.woenvironment.frameworks.Root;
@@ -105,6 +106,7 @@ public class BuildProperties {
 			Properties properties = new Properties();
 			IFile file = getBuildPropertiesFile();
 			if (file.exists()) {
+				file.refreshLocal(IResource.DEPTH_INFINITE, null);
 				InputStream inputStream = file.getContents();
 				try {
 					properties.load(inputStream);
@@ -117,7 +119,7 @@ public class BuildProperties {
 			}
 			_properties = properties;
 		} catch (Exception e) {
-			throw new RuntimeException("Failed to load the build properties for the project '" + _project + "'.");
+			throw new RuntimeException("Failed to load the build properties for the project '" + _project + "'.", e);
 		}
 	}
 
@@ -138,6 +140,7 @@ public class BuildProperties {
 
 		IFile file = getBuildPropertiesFile();
 		if (file.exists()) {
+			file.refreshLocal(IResource.DEPTH_INFINITE, null);
 			file.setContents(propertiesInputStream, true, true, new NullProgressMonitor());
 		} else {
 			file.create(propertiesInputStream, false, null);
