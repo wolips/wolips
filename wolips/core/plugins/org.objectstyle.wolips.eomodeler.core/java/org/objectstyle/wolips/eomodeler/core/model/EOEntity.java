@@ -2548,12 +2548,16 @@ public class EOEntity extends UserInfoableEOModelObject<EOModel> implements IEOE
 	}
 
 	public void synchronizeNameChange(String oldName, String newName) {
+		boolean reverseEngineered = false;
 		String externalName = newName;
 		EOModel model = getModel();
 		if (model != null) {
+			reverseEngineered = model.isReverseEngineered();
 			externalName = model.getEntityNamingConvention().format(oldName, newName, getExternalName());
 		}
-		setExternalName(externalName);
+		if (!reverseEngineered) {
+			setExternalName(externalName);
+		}
 		setClassName(NamingConvention.newClassName(oldName, newName, getClassName()));
 		setClientClassName(NamingConvention.newClassName(oldName, newName, getClientClassName()));
 	}
