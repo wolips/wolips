@@ -10,7 +10,7 @@
 	<groupId>org.objectstyle.woproject.ant
 	</groupId>
 	<artifactId>woenvironment</artifactId>
-	<version>2.0.15.1</version>
+	<version>2.0.15.2-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	<name>WOEnvironment</name>
 
@@ -82,9 +82,9 @@
 	</repositories>
 
 	<scm>
-		<connection>scm:svn:http://svn.objectstyle.org/repos/woproject/tags/woenvironment-2.0.15.1</connection>
-		<developerConnection>scm:svn:https://svn.objectstyle.org/repos/woproject/tags/woenvironment-2.0.15.1</developerConnection>
-		<url>http://svn.objectstyle.org/repos/woproject/tags/woenvironment-2.0.15.1</url>
+		<connection>scm:svn:http://svn.objectstyle.org/repos/woproject/branches/woenvironment-2.0.15.x</connection>
+		<developerConnection>scm:svn:https://svn.objectstyle.org/repos/woproject/branches/woenvironment-2.0.15.x</developerConnection>
+		<url>http://svn.objectstyle.org/repos/woproject/branches/woenvironment-2.0.15.x</url>
 	</scm>
 
 	<build>
