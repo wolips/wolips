@@ -170,8 +170,6 @@ Export-Package: DTD,
  tk.eclipse.plugin.xmleditor.editors
 Require-Bundle: org.eclipse.ui.editors,
  org.eclipse.ui.views,
- org.eclipse.update.core,
- org.eclipse.update.ui,
  org.eclipse.jdt.core,
  org.eclipse.jdt.ui,
  org.eclipse.debug.ui,

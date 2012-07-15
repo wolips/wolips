@@ -129,8 +129,9 @@ public class WooEditor extends FormEditor {
 					e.printStackTrace();
 				}
 			}
-			int index = addPage(myTextEditor, input);
-			setPageText(index, "Source");
+// Disable for 4.2 until a workaround is found for the CCE it causes.
+//			int index = addPage(myTextEditor, input);
+//			setPageText(index, "Source");
 		} catch (PartInitException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
