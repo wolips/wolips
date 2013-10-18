@@ -8,7 +8,6 @@ import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IResourceChangeListener;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.viewers.ISelectionProvider;
@@ -240,7 +239,7 @@ public class SplitPageHTMLEditor extends EditorPart implements IResourceChangeLi
 			if (menuExtenders == null) {
 				menuExtenders = new ArrayList<PopupMenuExtender>(1);
 			}
-			menuExtenders.add(new PopupMenuExtender(menuId, menuManager, selectionProvider, editor, (IEclipseContext) site.getService(IEclipseContext.class)));
+			menuExtenders.add(new PopupMenuExtender(menuId, menuManager, selectionProvider, editor));
 		}
 		
 		public IWorkbenchPage getPage() {
