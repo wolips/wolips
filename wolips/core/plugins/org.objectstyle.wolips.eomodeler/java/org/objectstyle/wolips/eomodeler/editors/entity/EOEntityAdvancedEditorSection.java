@@ -72,6 +72,7 @@ import org.objectstyle.wolips.eomodeler.core.model.EOModel;
 import org.objectstyle.wolips.eomodeler.utils.BooleanUpdateValueStrategy;
 import org.objectstyle.wolips.eomodeler.utils.ComboViewerBinding;
 import org.objectstyle.wolips.eomodeler.utils.FormUtils;
+import org.objectstyle.wolips.eomodeler.utils.UglyFocusHackWorkaroundListener;
 
 public class EOEntityAdvancedEditorSection extends AbstractPropertySection {
 	private EOEntity _entity;
@@ -81,6 +82,8 @@ public class EOEntityAdvancedEditorSection extends AbstractPropertySection {
 	private Button _cacheInMemoryButton;
 
 	private Button _readOnlyButton;
+	
+	private Button _immutableButton;
 
 	private Button _generateSourceButton;
 
@@ -124,6 +127,10 @@ public class EOEntityAdvancedEditorSection extends AbstractPropertySection {
 		_readOnlyButton.setText(Messages.getString("EOEntity." + EOEntity.READ_ONLY));
 
 		getWidgetFactory().createCLabel(topForm, "", SWT.NONE);
+		_immutableButton = new Button(topForm, SWT.CHECK);
+		_immutableButton.setText(Messages.getString("EOEntity." + EOEntity.IMMUTABLE));
+
+		getWidgetFactory().createCLabel(topForm, "", SWT.NONE);
 		_generateSourceButton = new Button(topForm, SWT.CHECK);
 		_generateSourceButton.setText(Messages.getString("EOEntity." + EOEntity.GENERATE_SOURCE));
 
@@ -135,16 +142,19 @@ public class EOEntityAdvancedEditorSection extends AbstractPropertySection {
 		_externalQueryText = new Text(topForm, SWT.BORDER);
 		GridData externalQueryFieldLayoutData = new GridData(GridData.FILL_HORIZONTAL);
 		_externalQueryText.setLayoutData(externalQueryFieldLayoutData);
+		UglyFocusHackWorkaroundListener.addListener(_externalQueryText);
 
 		getWidgetFactory().createCLabel(topForm, Messages.getString("EOEntity." + EOEntity.CLIENT_CLASS_NAME), SWT.NONE);
 		_clientClassNameText = new Text(topForm, SWT.BORDER);
 		GridData clientClassNameLayoutData = new GridData(GridData.FILL_HORIZONTAL);
 		_clientClassNameText.setLayoutData(clientClassNameLayoutData);
+		UglyFocusHackWorkaroundListener.addListener(_clientClassNameText);
 
 		getWidgetFactory().createCLabel(topForm, Messages.getString("EOEntity." + EOEntity.PARENT_CLASS_NAME), SWT.NONE);
 		_parentClassNameText = new Text(topForm, SWT.BORDER);
 		GridData parentClassNameLayoutData = new GridData(GridData.FILL_HORIZONTAL);
 		_parentClassNameText.setLayoutData(parentClassNameLayoutData);
+		UglyFocusHackWorkaroundListener.addListener(_parentClassNameText);
 
 		getWidgetFactory().createCLabel(topForm, Messages.getString("EOEntity." + EOEntity.PARTIAL_ENTITY), SWT.NONE);
 		Combo partialEntityCombo = new Combo(topForm, SWT.BORDER | SWT.FLAT | SWT.READ_ONLY);
@@ -172,6 +182,7 @@ public class EOEntityAdvancedEditorSection extends AbstractPropertySection {
 			// "^[0-9]+$", "Please enter a number"), null));
 			_bindingContext.bindValue(SWTObservables.observeSelection(_cacheInMemoryButton), BeansObservables.observeValue(_entity, EOEntity.CACHES_OBJECTS), null, new BooleanUpdateValueStrategy());
 			_bindingContext.bindValue(SWTObservables.observeSelection(_readOnlyButton), BeansObservables.observeValue(_entity, EOEntity.READ_ONLY), null, new BooleanUpdateValueStrategy());
+			_bindingContext.bindValue(SWTObservables.observeSelection(_immutableButton), BeansObservables.observeValue(_entity, EOEntity.IMMUTABLE), null, new BooleanUpdateValueStrategy());
 			_bindingContext.bindValue(SWTObservables.observeSelection(_generateSourceButton), BeansObservables.observeValue(_entity, EOEntity.GENERATE_SOURCE), null, new BooleanUpdateValueStrategy());
 			_bindingContext.bindValue(SWTObservables.observeSelection(_rawRowsOnlyButton), BeansObservables.observeValue(_entity, EOEntity.RAW_ROWS_ONLY), null, new BooleanUpdateValueStrategy());
 			_bindingContext.bindValue(SWTObservables.observeText(_externalQueryText, SWT.Modify), BeansObservables.observeValue(_entity, EOEntity.EXTERNAL_QUERY), null, null);

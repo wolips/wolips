@@ -54,8 +54,7 @@ import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchManager;
 import org.objectstyle.wolips.launching.delegates.WOJavaLocalApplicationLaunchConfigurationDelegate;
 
-import com.jprofiler.integrations.eclipse.internal.ProfilingSession;
-import com.jprofiler.integrations.eclipse.internal.RemoteProfilingSession;
+import com.jprofiler.integrations.eclipse.delegates.LocalJavaDelegate;
 
 /**
  * Launches a local VM.
@@ -65,19 +64,19 @@ public class JProfilerWOJavaLocalApplicationLaunchConfigurationDelegate extends
 
 	public final static String JProfilerWOJavaLocalApplicationID = "org.objectstyle.wolips.jprofiler.launching.JProfilerWOLocalJavaApplication";
 	
-	private RemoteProfilingSession profilingSession;
-
+	private LocalJavaDelegate delegate = new LocalJavaDelegate() {
+		public String getProgramArguments(ILaunchConfiguration configuration) throws CoreException {
+			return JProfilerWOJavaLocalApplicationLaunchConfigurationDelegate.this.getProgramArguments(configuration);
+		}
+	};
 	
 	public void launch(ILaunchConfiguration configuration, String mode, ILaunch launch, IProgressMonitor monitor) throws CoreException {
-        profilingSession = ProfilingSession.createProfilingSession(this, configuration);
-        if(!profilingSession.sendProfilingRequest()) {
-            return;
-        }
-        super.launch(profilingSession.getModifiedLaunchConfiguration(configuration), ILaunchManager.RUN_MODE, launch, monitor);
+		delegate.launch(configuration, ILaunchManager.RUN_MODE, launch, monitor);
 	}
 
+	@SuppressWarnings("unchecked")
 	public Map getVMSpecificAttributesMap(ILaunchConfiguration configuration) throws CoreException {
-		return profilingSession.getModifiedAttributesMap(super.getVMSpecificAttributesMap(configuration));
+		return delegate.getVMSpecificAttributesMap(configuration);
 	}
 
 }
